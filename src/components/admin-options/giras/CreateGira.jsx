@@ -143,6 +143,13 @@ const CreateGira = () => {
 
   const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
 
+  // '¿Quieres crear esta gira?',
+  // '¿Estas seguro de que quieres crear esta gira? tus usuarios la veran, asi que asegurate de llenar toda la informacion necesaria.',
+  // 'question',
+  // '#0008FF',
+  // 'Crear Gira',
+  // 'Cancelar',
+
   // useEffect(() => {
   //   const ff = async () => {
   //     const result = await ask(
@@ -213,14 +220,11 @@ const CreateGira = () => {
     }
 
     const promiseCreateGira = new Promise(async (resolve, reject) => {
-      const result = await ask(
-        '¿Quieres crear esta gira?',
-        '¿Estas seguro de que quieres crear esta gira? tus usuarios la veran, asi que asegurate de llenar toda la informacion necesaria.',
-        'question',
-        '#0008FF',
-        'Crear Gira',
-        'Cancelar',
-      );
+      const result = ask({
+        title: '¿Quieres crear esta gira?',
+        text: '¿Estas seguro de que quieres crear esta gira? tus usuarios la veran, asi que asegurate de llenar toda la informacion necesaria.',
+        confirmButtonText: 'Crear Gira',
+      });
       if (!result.isConfirmed) {
         resolve('cancelado');
         return;
