@@ -153,12 +153,19 @@ export const useCreateOrEditGira = create((set) => ({
   dateDetaild: {},
   setDateDetaild: (value) => set(() => ({ dateDetaild: value })),
 
+  dateInMilliseconds: {},
+  setDateInMilliseconds: (value) => set(() => ({ dateInMilliseconds: value })),
+
   dateLimitForCancel: '',
   setDateLimitForCancel: (value) => set(() => ({ dateLimitForCancel: value })),
 
   dateLimitForCancelDetaild: {},
   setDateLimitForCancelDetaild: (value) =>
     set(() => ({ dateLimitForCancelDetaild: value })),
+
+  dateLimitForCancelInMilliseconds: {},
+  setDateLimitForCancelInMilliseconds: (value) =>
+    set(() => ({ dateLimitForCancelInMilliseconds: value })),
 
   hour: '',
   setHour: (value) => set(() => ({ hour: value })),

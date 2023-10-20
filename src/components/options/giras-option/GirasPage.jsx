@@ -10,11 +10,28 @@ import { useGiras, useImages } from '../../../zustand/giras/giras';
 
 // Firebase
 import { getGiras } from '../../../firebase/firestoreGiras/giras';
+import { useInfoUser } from '../../../zustand/user/user';
 
 const GirasPage = () => {
   const { giras, setGiras } = useGiras();
 
   const { images, addImage } = useImages();
+
+  const { userSawGiras, setTrueUserSawGiras } = useInfoUser();
+
+  useEffect(() => {
+    const dateInMilliseconds = new Date().getTime();
+    giras.map((gira) => {
+      if (gira.dateInMilliseconds < dateInMilliseconds)
+        alert('Ya esta gira paso');
+    });
+  }, [giras]);
+
+  // Para quitar animaciones de view de giras
+  useEffect(() => {
+    if (userSawGiras == true || giras.length == 0) return;
+    setTimeout(setTrueUserSawGiras, 1000);
+  }, [giras]);
 
   // useEffect(() => {
   //   if (giras.length == 0) {
@@ -45,6 +62,7 @@ const GirasPage = () => {
       <section className="d-flex flex-wrap justify-content-between">
         {giras.map((gira) => (
           <GiraItem
+            // userSawGiras={userSawGiras}
             key={gira.currentId}
             giraId={gira.id}
             currentId={gira.currentId}

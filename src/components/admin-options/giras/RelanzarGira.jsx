@@ -132,10 +132,16 @@ const RelanzarGira = () => {
     dateDetaild,
     setDateDetaild,
 
+    dateInMilliseconds,
+    setDateInMilliseconds,
+
     dateLimitForCancel,
     setDateLimitForCancel,
     dateLimitForCancelDetaild,
     setDateLimitForCancelDetaild,
+
+    dateLimitForCancelInMilliseconds,
+    setDateLimitForCancelInMilliseconds,
 
     hour,
     setHour,
@@ -249,6 +255,7 @@ const RelanzarGira = () => {
 
         setDate(gira.date);
         setDateDetaild(gira.dateDetaild);
+        setDateInMilliseconds(gira.dateInMilliseconds);
 
         setHour(gira.hourInformation.hour);
         setMinute(gira.hourInformation.minute);
@@ -256,6 +263,9 @@ const RelanzarGira = () => {
 
         setDateLimitForCancel(gira.dateLimitForCancel);
         setDateLimitForCancelDetaild(gira.dateLimitForCancelDetaild);
+        setDateLimitForCancelInMilliseconds(
+          gira.dateLimitForCancelInMilliseconds,
+        );
 
         setDurationDays(gira.durationDetaild.days);
         setDurationHours(gira.durationDetaild.hours);
@@ -393,6 +403,7 @@ const RelanzarGira = () => {
         utilInformation: utilInformation,
         date: date,
         dateDetaild: dateDetaild,
+        dateInMilliseconds: dateInMilliseconds,
         hourInformation: {
           hour: hour,
           minute: minute,
@@ -400,6 +411,7 @@ const RelanzarGira = () => {
         },
         dateLimitForCancel: dateLimitForCancel,
         dateLimitForCancelDetaild: dateLimitForCancelDetaild,
+        dateLimitForCancelInMilliseconds: dateLimitForCancelInMilliseconds,
         duration: `${durationDays > 0 ? `${durationDays} dias ` : ''}${
           durationHours > 0 ? `${durationHours} hrs ` : ''
         }${durationMinutes > 0 ? `${durationMinutes} mins` : ''}`,
@@ -443,7 +455,7 @@ const RelanzarGira = () => {
 
   return (
     <>
-      <Headers text="Relanzar gira" link="/giras" />
+      <Headers text="Relanzar gira" link={-1} />
       <div className="my-4">
         <form onSubmit={relanzarGira}>
           <Input
@@ -612,6 +624,7 @@ const RelanzarGira = () => {
             handleChange={setDate}
             value={dateDetaild}
             setFechaDetallada={setDateDetaild}
+            setfechaEnMilisegundos={setDateInMilliseconds}
           />
 
           <div className="my-4">
@@ -660,6 +673,7 @@ const RelanzarGira = () => {
             value={dateLimitForCancelDetaild}
             handleChange={setDateLimitForCancel}
             setFechaDetallada={setDateLimitForCancelDetaild}
+            setfechaEnMilisegundos={setDateLimitForCancelInMilliseconds}
           />
 
           <hr />

@@ -3,40 +3,43 @@ import React, { useEffect } from 'react';
 // Components
 import NameApp from './inicio/NameApp';
 import OptionsApp from './inicio/options-app/OptionsApp';
-
-// Images
-import imgSantoDomingo from '../assets/images/imgSantoDomingo.jpeg';
-
-// Components
 import ListViwerInHome from './inicio/lists-in-home/ListViwerInHome';
+import CoversSugerencias from './inicio/sugerencias/CoversSugerencias';
+
+// Firebase
+import { getSugerencias } from '../firebase/sugerencias/sugerencias';
+
+// Zustand
 import { useGiras } from '../zustand/giras/giras';
-import { getGiras } from '../firebase/firestoreGiras/giras';
+import { useSugerencias } from '../zustand/sugerencias/sugerencias';
 
 const Inicio = () => {
-  const { giras, setGiras } = useGiras();
+  const { giras } = useGiras();
+  const { searchSugerencia, sugerencias, setSugerencias } = useSugerencias();
 
-  // useEffect(() => {
-  //   if (giras.length == 0) {
-  //     const f = async () => {
-  //       const resGiras = await getGiras();
-  //       // console.log(resGiras);
-  //       console.warn('Cargando giras de BD');
-  //       setGiras(resGiras);
-  //     };
-  //     f();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!searchSugerencia) return;
+    console.log('Buscando sugerencias');
+    const f = async () => {
+      const res = await getSugerencias();
+      if (res != false) setSugerencias(res);
+    };
+    f();
+  }, []);
 
   return (
-    <div className="pt-4">
+    <div className="pt-4" style={{ marginBottom: 500 }}>
       <NameApp />
 
       <OptionsApp />
 
-      <ListViwerInHome
-        title="Descubre nuestras increibles giras"
-        content={giras}
-      />
+      <div className="">
+        <ListViwerInHome
+          title="Descubre nuestras increibles giras"
+          content={giras}
+        />
+      </div>
+      <CoversSugerencias sugerencias={sugerencias} />
     </div>
   );
 };

@@ -3,14 +3,20 @@ import { FaTicketAlt } from 'react-icons/fa';
 import { FaAnglesDown } from 'react-icons/fa6';
 import { TbClockHour5 } from 'react-icons/tb';
 import AccordinSection from './AccordinSection';
+import ReservarGiraAccordingItem from './ReservarGiraAccordingItem';
 
 const Accordings = ({
   countPersons,
+  pricePerson,
   countChildren,
+  priceChild,
   countBabies,
+  priceBaby,
   description,
+  title,
   duracion,
-  place,
+  city,
+  location,
 }) => {
   return (
     <>
@@ -25,7 +31,7 @@ const Accordings = ({
                 <FaAnglesDown className="FaAnglesDown-1 color-1 ms-2" />
               </p>
 
-              <p className="m-0 fw-bold">{place}</p>
+              <p className="m-0 fw-bold">{city}</p>
               <p className="m-0" style={{ fontSize: 14 }}>
                 jue, 21 sept.
               </p>
@@ -39,13 +45,13 @@ const Accordings = ({
         }
         content={
           <div className="mt-2" style={{ marginLeft: 37 }}>
-            <p className="m-0">Tour Por la ciudad de Dusseldorf</p>
+            <p className="m-0">{title}</p>
             <div className="d-flex align-items-center">
               <TbClockHour5 className="" />
               <p className="m-0">{duracion}</p>
             </div>
             <p className="m-0 fw-medium">Ubicacion de la actividad</p>
-            <p className="m-0">{place}</p>
+            <p className="m-0">{location}</p>
           </div>
         }
       />
@@ -55,21 +61,16 @@ const Accordings = ({
       <AccordinSection
         id={2}
         header={
-          // <div className="d-flex">
-          //   {/* <FaTicketAlt className="fs-2" /> */}
-          //   <div className="d-flex flex-column ms-2 gap-1">
-
-          //   </div>
-          // </div>
-          // // <div>
-
-          // // </div>
           <div className="d-flex justify-content-between px-3">
             <p className="m-0 fw-medium text-decoration-underline color-1">
               Total a pagar hoy
               <FaAnglesDown className="FaAnglesDown-2 color-1 ms-2" />
             </p>
-            <p className="m-0 fw-bold fs-6">$53.30</p>
+            <p className="m-0 fw-bold fs-6">
+              {countPersons * pricePerson +
+                countChildren * priceChild +
+                countBabies * priceBaby}
+            </p>
           </div>
         }
         content={
@@ -77,41 +78,36 @@ const Accordings = ({
             className="my-2 mx-5-"
             style={{ paddingRight: 30, paddingLeft: 30 }}
           >
-            <div
-              className="d-flex justify-content-between"
-              style={{ fontSize: 14 }}
-            >
-              <p className="m-0">2 adulto</p>
-              <p className="m-0">$42.60</p>
-            </div>
-            <div
-              className="d-flex justify-content-between"
-              style={{ fontSize: 14 }}
-            >
-              <p className="m-0">2 niños</p>
-              <p className="m-0">$10.66</p>
-            </div>
-            <div
-              className="d-flex justify-content-between"
-              style={{ fontSize: 14 }}
-            >
-              <p className="m-0">2 bebes</p>
-              <p className="m-0">$0.00</p>
-            </div>
-            <div
-              className="d-flex justify-content-between"
-              style={{ fontSize: 14 }}
-            >
-              <p className="m-0">2 adulto</p>
-              <p className="m-0">$0.00</p>
-            </div>
-            {/* <p className="m-0">impuestos y cargos</p> */}
-            {/* <div className="d-flex align-items-center">
-                <TbClockHour5 className="" />
-                <p className="m-0">1 h 30 min</p>
-              </div> */}
-            {/* <p className="m-0">Ubicacion de la actividad</p> */}
-            {/* <p className="m-0">Multiple locations visited</p> */}
+            {countPersons > 0 ? (
+              <ReservarGiraAccordingItem
+                head={`${countPersons} adultos`}
+                total={'$' + countPersons * pricePerson}
+              />
+            ) : (
+              <></>
+            )}
+
+            {countChildren > 0 ? (
+              <ReservarGiraAccordingItem
+                head={`${countChildren} niños`}
+                total={'$' + countChildren * priceChild}
+              />
+            ) : (
+              <></>
+            )}
+
+            {countBabies > 0 ? (
+              <ReservarGiraAccordingItem
+                head={`${countBabies} bebes`}
+                total={'$' + countBabies * priceBaby}
+              />
+            ) : (
+              <></>
+            )}
+            <ReservarGiraAccordingItem
+              head="Impuestos y cargos"
+              total="incluidos"
+            />
           </div>
         }
       />

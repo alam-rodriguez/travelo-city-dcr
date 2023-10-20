@@ -1,10 +1,21 @@
 import React from 'react';
 
-const InputDate = ({ id, head, handleChange, value, setFechaDetallada }) => {
+const InputDate = ({
+  id,
+  head,
+  handleChange,
+  value,
+  setFechaDetallada,
+  setfechaEnMilisegundos,
+}) => {
   const handleFechaChange = (event) => {
     const fecha = event.target.value;
 
+    // console.log(fecha);
+
     const fechaDate = new Date(fecha);
+
+    console.log(fechaDate.getTime());
 
     const opcionesDia = { weekday: 'long' };
     const nombreDia = new Intl.DateTimeFormat('es-ES', opcionesDia).format(
@@ -12,13 +23,13 @@ const InputDate = ({ id, head, handleChange, value, setFechaDetallada }) => {
     );
     let diaEnLetras = '';
     console.log(nombreDia);
-    if (nombreDia == 'domingo') diaEnLetras = 'lunes';
-    else if (nombreDia == 'lunes') diaEnLetras = 'martes';
-    else if (nombreDia == 'martes') diaEnLetras = 'miercoles';
-    else if (nombreDia == 'miércoles') diaEnLetras = 'jueves';
-    else if (nombreDia == 'jueves') diaEnLetras = 'viernes';
-    else if (nombreDia == 'viernes') diaEnLetras = 'sabado';
-    else if (nombreDia == 'sábado') diaEnLetras = 'domingo';
+    if (nombreDia == 'domingo') diaEnLetras = 'lun';
+    else if (nombreDia == 'lunes') diaEnLetras = 'mar';
+    else if (nombreDia == 'martes') diaEnLetras = 'mié';
+    else if (nombreDia == 'miércoles') diaEnLetras = 'jue';
+    else if (nombreDia == 'jueves') diaEnLetras = 'vie';
+    else if (nombreDia == 'viernes') diaEnLetras = 'sáb';
+    else if (nombreDia == 'sábado') diaEnLetras = 'dom';
 
     // Obtener el nombre del mes
     const opcionesMes = { month: 'long' };
@@ -34,6 +45,7 @@ const InputDate = ({ id, head, handleChange, value, setFechaDetallada }) => {
     //   mes: mesNumber,
     //   year: year,
     // });
+    setfechaEnMilisegundos(fechaDate.getTime());
     setFechaDetallada(fecha);
     console.log(`${diaEnLetras} ${dianumber} de ${mes} del ${year}`);
   };

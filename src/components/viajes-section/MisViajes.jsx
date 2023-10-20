@@ -1,8 +1,17 @@
 import React from 'react';
 
+// image
 import imageCandado from '../../assets/images/imageCandado.png';
 
+// Firebase
+import { signInWithGoogle } from '../../firebase/authentication/authWithGoogle';
+
 const MisViajes = () => {
+  const handleClickIniciarSesion = async () => {
+    const email = await signInWithGoogle();
+    console.log(email);
+  };
+
   return (
     <div className="d-flex flex-column gap-3">
       <hr />
@@ -19,6 +28,7 @@ const MisViajes = () => {
         className="form-control bg-primary text-white rounded-5"
         type="button"
         value="Iniciar sesion o crear una cuenta"
+        onClick={handleClickIniciarSesion}
       />
 
       <input

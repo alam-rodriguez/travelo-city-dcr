@@ -39,6 +39,7 @@ const CartForReserve = ({
   hora,
   canCancelFree,
   freeCancellationLimit,
+  dateLimitForCancel,
 }) => {
   const navigate = useNavigate();
   const { setViewBtnSeleccionarEntrada: setViewBtn } =
@@ -163,9 +164,11 @@ const CartForReserve = ({
         <div className="d-flex flex-column align-items-end">
           <div className="d-flex align-items-center gap-2 mb-2">
             <RiInformationLine className="text-success" />
-            <p className="m-0 w-auto">Cancelacion gratuita</p>
+            <p className="m-0 w-auto" style={{ fontSize: 12 }}>
+              Cancelacion gratuita
+            </p>
           </div>
-          <p>Hasta el {freeCancellationLimit}</p>
+          <p style={{ fontSize: 12 }}>Hasta el {dateLimitForCancel}</p>
         </div>
       ) : (
         <></>

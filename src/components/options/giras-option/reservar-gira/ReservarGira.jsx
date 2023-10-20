@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+import { v4 as uuid } from 'uuid';
 
 // Components
 import HeaderReserveGira from './reservar-gira-components/HeaderReserveGira';
@@ -23,9 +25,73 @@ import {
   useInfoPeople,
   useViewSeleccionarPersonas,
 } from '../../../../zustand/giras/giras';
+import { createReservationGira } from '../../../../firebase/firestoreGiras/reservations';
+import { useAlerts } from '../../../../zustand/alerts/alerts';
+import { signInWithGoogle } from '../../../../firebase/authentication/authWithGoogle';
+import { getUserInfo, setUserInfo } from '../../../../firebase/users/users';
+import { useInfoUser } from '../../../../zustand/user/user';
 
 const ReservarGira = () => {
+  // const [logUser, setLogUser] = useState(true);
+  const {
+    userLogged,
+    haveUserInfo,
+    id,
+    setId,
+    email,
+    setEmail,
+    setName: setNameUser,
+    setNumber: setNumberUser,
+    name: oldName,
+    number: oldNumber,
+  } = useInfoUser();
+
+  useEffect(() => {
+    console.log(haveUserInfo);
+    console.log(oldName);
+    if (haveUserInfo) {
+      setNameAndSurname(oldName);
+      setNumber(oldNumber);
+      return;
+    }
+    const f = async () => {
+      console.log('obteniendo user de BD');
+      const res = await getUserInfo(id);
+      console.log(res);
+      if (res != false) {
+        setNameUser(res.name);
+        setNameAndSurname(res.name);
+        setNumberUser(res.number);
+        setNumber(res.number);
+      }
+      console.warn(res);
+    };
+    f();
+  }, []);
+
   const { giraSelected } = useGiras();
+  // Alerts
+  const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
+
+  const [daysLeft, setDaysLeft] = useState(0);
+
+  useEffect(() => {
+    console.log(oldName);
+  }, [oldName]);
+
+  useEffect(() => {
+    console.log(giraSelected);
+    const date = new Date();
+    console.log(date.getDay());
+    console.log(giraSelected.dateDetaild);
+
+    const fechaActual = new Date();
+    const fechaEspecifica = new Date(giraSelected.dateLimitForCancelDetaild);
+    const diferenciaEnMilisegundos = fechaEspecifica - fechaActual;
+    const diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
+    setDaysLeft(Math.floor(diferenciaEnDias));
+    console.log(`La diferencia es de ${diferenciaEnDias} días.`);
+  }, []);
 
   const { countPersons, countChildren, countBabies } =
     useViewSeleccionarPersonas();
@@ -44,199 +110,160 @@ const ReservarGira = () => {
     resetNames,
   } = useInfoPeople();
 
+  const getDay = () => {
+    const fechaActual = new Date();
+    const dia = fechaActual.getDate();
+    const mes = fechaActual.getMonth() + 1;
+    const anio = fechaActual.getFullYear();
+    const dayMakeReservation = `${anio}-${mes}-${dia}`;
+    return dayMakeReservation;
+  };
+  const getHour = () => {
+    const fechaActual = new Date();
+
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true,
+    };
+
+    const formato12Horas = fechaActual.toLocaleTimeString('en-US', options);
+    return formato12Horas;
+  };
+
+  const handleClickCompletarReservacion = async (e) => {
+    e.preventDefault();
+
+    const date = getDay();
+    const dateDetailed = new Date();
+    const dateInMilliseconds = dateDetailed.getTime();
+    const hour = getHour();
+
+    const result = await ask({
+      title: '¿Quieres reservar esta gira?',
+      text: '¿Estas seguro de que quieres hacer esta reservar? si aceptas le avisaremos a nuestros administradores y te contactaremos para comfirmar tu reservacion.',
+      confirmButtonText: 'Recervar',
+    });
+    if (!result.isConfirmed) return;
+    waitingAlert();
+
+    const promise = new Promise(async (resolve, reject) => {
+      console.log(date);
+      // console.log(giraSelected);
+      const reserve = {
+        reservationId: uuid(),
+        email: email,
+        userName: nameAndSurname,
+        userNumber: number,
+        giraId: giraSelected.id,
+        giraCurrentId: giraSelected.currentId,
+        dayMadeReservation: date,
+        hourMakeReservation: hour,
+        dateInMilliseconds: dateInMilliseconds,
+        title: giraSelected.title,
+        description: giraSelected.description,
+        date: giraSelected.date,
+        dateDetaild: giraSelected.dateDetaild,
+
+        adultsNames: adultosNames,
+        adultPrice: giraSelected.prices.adult,
+
+        childrenNames: childrenNames,
+        childrenPrice: giraSelected.prices.child,
+
+        bebiesNames: bebiesNames,
+        bebiesPrice: giraSelected.prices.baby,
+      };
+
+      const res = await createReservationGira(reserve);
+
+      const newInfoUser = {
+        email: email,
+        id: id,
+        name: nameAndSurname,
+        number,
+      };
+
+      const resUserInfo = await setUserInfo(newInfoUser);
+
+      if (resUserInfo) {
+        console.log('info actualizada');
+      }
+      // const res = true;
+      if (res) resolve();
+      else reject();
+    });
+    promise
+      .then(() => {
+        successAlert(
+          'Reservacion realizada exitosamente',
+          'Tu reservacion fue creada y enviada a nuestros administradores, te estaremos contactando para confirmar tu reservacion.',
+        );
+      })
+      .catch(() => {
+        errorAlert(
+          'Error',
+          'Ha ocurrido un error al intentar crear tu reservacion, intentelo de nuevo.',
+        );
+      });
+  };
+
+  const registrarUser = async () => {
+    const infoUser = await signInWithGoogle();
+
+    const resUserInfo = await setUserInfo({
+      email: infoUser.email,
+      id: infoUser.id,
+    });
+
+    if (infoUser != false) {
+      setEmail(infoUser.email);
+      setId(infoUser.id);
+    }
+    if (resUserInfo) {
+      console.log('usuario registrado');
+    }
+  };
+
   return (
     <>
       <HeaderReserveGira resetNames={resetNames} />
-      <div className="mb-5 bg-light" style={{ paddingTop: 90 }}>
-        {/* <div className=""> */}
+      <form
+        onSubmit={handleClickCompletarReservacion}
+        className="mb-5 bg-light"
+        style={{ paddingTop: 90 }}
+      >
         <p className="m-0 fw-bold fs-3">
           Asegura tu reservacion. Solo te toma 2 minutos!
         </p>
 
         <FreeCancelationSection
-          freeCancellationLimit={giraSelected.freeCancellationLimit}
+          freeCancellationLimit={giraSelected.dateLimitForCancel}
         />
 
         <hr />
-        {/* 
-        <div className="d-flex bg-light p-2">
-          <img src={canlendario} className="" style={{ width: 60 }} />
-          <div>
-            <p className="m-0 fw-bold">
-              Cancelacion gratuita si cambias de planes
-            </p>
-            <p className="m-0 text-secondary" style={{ fontSize: 15 }}>
-              Cancela sin cargos antes del mie., 20 sep..
-            </p>
-          </div>
-        </div> */}
-
-        {/*     <div className="accordion z-0" id={`accordion-1`}>
-          <div className="accordion-item border-0">
-            <h2 className="accordion-header">
-              <button
-                className="accordion-button bg-white"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target={`#collapse-1`}
-                aria-expanded="true"
-                aria-controls="collapseOne"
-              >
-                <div>
-                  <i></i>
-                  <p>Visita a la cerveceria Dusseldorf (incluyendo 3 albier)</p>
-                  <p>Dusserdorf</p>
-                  <p>jue, 21 sept.</p>
-                  <p>2 aduldos, 2 ninos, 2 bebe</p>
-                </div>
-              </button>
-            </h2>
-            <div
-              id={`collapse-1`}
-              className="accordion-collapse collapse show-"
-              data-bs-parent={`#accordion-1`}
-            >
-              <div className="accordion-body">
-                <div className="accordion-body p-0">
-                  <div>
-                    <p>Tour Por la ciudad de Dusseldorf</p>
-                    <div>
-                      <i></i>
-                      <p>1 h 30 min</p>
-                    </div>
-                    <p>Ubicacion de la actividad</p>
-                    <p>Multiple locations visited</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
 
         <Accordings
           countPersons={countPersons}
+          pricePerson={giraSelected.prices.adult}
           countChildren={countChildren}
+          priceChild={giraSelected.prices.child}
           countBabies={countBabies}
+          priceBaby={giraSelected.prices.baby}
           description={giraSelected.description}
+          title={giraSelected.title}
           duracion={giraSelected.duration}
-          place={giraSelected.place}
+          city={giraSelected.city}
+          location={giraSelected.location}
         />
-
-        {/* <AccordinSection
-          id={1}
-          header={
-            <div className="d-flex p-2">
-              <FaTicketAlt className="fs-2" />
-              <div className="d-flex flex-column ms-2 ">
-                <p className="m-0 fw-medium text-decoration-underline- color-1">
-                  Visita a la cerveceria Dusseldorf (incluyendo 3 albier)
-                  <FaAnglesDown className="FaAnglesDown-1 color-1 ms-2" />
-                </p>
-
-                <p className="m-0 fw-bold">Dusserdorf</p>
-                <p className="m-0" style={{ fontSize: 14 }}>
-                  jue, 21 sept.
-                </p>
-                <p className="m-0">2 aduldos, 2 ninos, 2 bebe</p>
-              </div>
-            </div>
-          }
-          content={
-            <div className="mt-2" style={{ marginLeft: 37 }}>
-              <p className="m-0">Tour Por la ciudad de Dusseldorf</p>
-              <div className="d-flex align-items-center">
-                <TbClockHour5 className="" />
-                <p className="m-0">1 h 30 min</p>
-              </div>
-              <p className="m-0 fw-medium">Ubicacion de la actividad</p>
-              <p className="m-0">Multiple locations visited</p>
-            </div>
-          }
-        />
-
-        <hr />
-
-        <AccordinSection
-          id={2}
-          header={
-            
-            <div className="d-flex justify-content-between px-3">
-              <p className="m-0 fw-medium text-decoration-underline color-1">
-                Total a pagar hoy
-                <FaAnglesDown className="FaAnglesDown-2 color-1 ms-2" />
-              </p>
-              <p className="m-0 fw-bold fs-6">$53.30</p>
-            </div>
-          }
-          content={
-            <div
-              className="my-2 mx-5-"
-              style={{ paddingRight: 30, paddingLeft: 30 }}
-            >
-              <div
-                className="d-flex justify-content-between"
-                style={{ fontSize: 14 }}
-              >
-                <p className="m-0">2 adulto</p>
-                <p className="m-0">$42.60</p>
-              </div>
-              <div
-                className="d-flex justify-content-between"
-                style={{ fontSize: 14 }}
-              >
-                <p className="m-0">2 niños</p>
-                <p className="m-0">$10.66</p>
-              </div>
-              <div
-                className="d-flex justify-content-between"
-                style={{ fontSize: 14 }}
-              >
-                <p className="m-0">2 bebes</p>
-                <p className="m-0">$0.00</p>
-              </div>
-              <div
-                className="d-flex justify-content-between"
-                style={{ fontSize: 14 }}
-              >
-                <p className="m-0">2 adulto</p>
-                <p className="m-0">$0.00</p>
-              </div>
-              
-            </div>
-          }
-        /> */}
 
         <p className="m-0 mt-3">
           Las tarifas se muestran en{' '}
           <span className="fw-bold">dolares estadounidenses.</span>
         </p>
 
-        {/* <div>
-          <i></i>
-          <p>Visita a la cerveceria Dusseldorf (incluyendo 3 albier)</p>
-          <p>Dusserdorf</p>
-          <p>jue, 21 sept.</p>
-          <p>2 aduldos, 2 ninos, 2 bebe</p>
-
-          <p>Tour Por la ciudad de Dusseldorf</p>
-          <div>
-            <i></i>
-            <p>1 h 30 min</p>
-          </div>
-          <p>Ubicacion de la actividad</p>
-          <p>Multiple locations visited</p>
-        </div> */}
-        {/* </div> */}
-
-        <AlertDaysLeft />
-
-        {/* <div className="d-flex bg-light p-2 mt-3 text-danger">
-          <TbClockHour5 className="fs-3" />
-          <p className="m-0">
-            Tu viaje cominza en 5 dias. Reserva ahora, mientras hay
-            disponibilidad.
-          </p>
-        </div> */}
+        <AlertDaysLeft daysLeft={daysLeft} />
 
         <WhoTravelSection
           countPersons={countPersons}
@@ -252,95 +279,11 @@ const ReservarGira = () => {
           countBabies={countBabies}
           bebiesNames={bebiesNames}
           setBebiesNames={setBebiesNames}
+          oldName={oldName}
+          oldNumber={oldNumber}
         />
 
-        {/* <div className="bg-light mt-4">
-          <div className="border-bottom p-3">
-            <p className="m-0">Quien Viaja?</p>
-          </div>
-          <div className="p-3">
-            <p>
-              Recorrido con paradas libres en Dusselford en un autobus de dos
-              pisos
-            </p>
-            <p>jueves, 21 sept.</p>
-
-            <div className="my-4">
-              <label className="mb-1 fw-medium" htmlFor="userName">
-                Nombre del contacto
-              </label>
-              <input
-                className="w-100 bg-transparent border border-secondary rounded-2 p-2 text-black"
-                type="text"
-                placeholder="Nombre y apellidos"
-                id="userName"
-              />
-            </div>
-            <div className="my-4">
-              <label className="mb-1 fw-medium" htmlFor="userEmail">
-                Nombre del contacto
-              </label>
-              <input
-                className="w-100 bg-transparent border border-secondary rounded-2 p-2 text-black"
-                type="email"
-                placeholder="Nombre y apellidos"
-                id="userEmail"
-              />
-            </div>
-            <div className="my-4">
-              <label className="mb-1 fw-medium" htmlFor="userNumber">
-                Numero de telefono
-              </label>
-              <input
-                className="w-100 bg-transparent border border-secondary rounded-2 p-2 text-black"
-                type="email"
-                placeholder="Por si necesitamos contectarte"
-                id="userNumber"
-              />
-            </div>
-            <hr />
-
-            <div className="my-4">
-              <p className="mb-2 fs-4">adulto 2</p>
-              <label className="mb-1 fw-medium" htmlFor="userNumber">
-                Nombre
-              </label>
-              <input
-                className="w-100 bg-transparent border border-secondary rounded-2 p-2 text-black"
-                type="email"
-                placeholder="Nombre y apellidos"
-                id="userNumber"
-              />
-              <hr />
-            </div>
-          </div>
-        </div> */}
-
         <ImportantInformationSection />
-
-        {/* <div
-          className="bg-white shadow p-3 overflow-scroll"
-          style={{ height: 200 }}
-        >
-          <p>Informacion importante sobre la actividad</p>
-          <p>
-            Recorrido con paradas libres en Dusseldorf en una autobus de dos
-            pisos (Dusseldorf, ) - jueves, 21 sept.
-          </p>
-          <ul>
-            <li>
-              Recorrido con paradas libres en Dusseldorf en un autobus de dos
-              pisos
-            </li>
-            <li>Puedes cancelar sin costo hasta 24 horas antes</li>
-
-            <li>
-              Recorrido con paradas libres en Dusseldorf en un autobus de dos
-              pisos
-            </li>
-            <li>Puedes cancelar sin costo hasta 24 horas antes</li>
-          </ul>
-        </div> */}
 
         <CompletarReservacion
           nameAndSurname={nameAndSurname}
@@ -348,20 +291,10 @@ const ReservarGira = () => {
           adultosNames={adultosNames}
           childrenNames={childrenNames}
           bebiesNames={bebiesNames}
+          userLogged={userLogged}
+          registrarUser={registrarUser}
         />
-
-        {/* <div className="bg-white shadow p-3 my-3">
-          <p>
-            Al hacer click en el boton de abajo, acepto que revise el aviso de
-            privacidad y las alestar de vieje del gobierno. Tambien acepto que
-            revise y estoy de acuerdo con las normas y restricciones, y los
-            terminos de uso.
-          </p>
-          <button className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium">
-            Completar reservacion
-          </button>
-        </div> */}
-      </div>
+      </form>
     </>
   );
 };

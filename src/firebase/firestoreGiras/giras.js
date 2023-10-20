@@ -38,9 +38,12 @@ export const createGiraFirestore = async (newGira) => {
       utilInformation: newGira.utilInformation,
       date: newGira.date,
       dateDetaild: newGira.dateDetaild,
+      dateInMilliseconds: newGira.dateInMilliseconds,
       hourInformation: newGira.hourInformation,
       dateLimitForCancel: newGira.dateLimitForCancel,
       dateLimitForCancelDetaild: newGira.dateLimitForCancelDetaild,
+      dateLimitForCancelInMilliseconds:
+        newGira.dateLimitForCancelInMilliseconds,
       duration: newGira.duration,
       durationDetaild: newGira.durationDetaild,
 
@@ -48,6 +51,8 @@ export const createGiraFirestore = async (newGira) => {
       idsImages: newGira.idsImages,
 
       showGira: newGira.showGira,
+      giraDone: false,
+      giraArchivada: false,
 
       hasVotes: false,
       rate: 0,
@@ -84,9 +89,12 @@ export const updateGira = async (currentId, giraUpdated) => {
       utilInformation: giraUpdated.utilInformation,
       date: giraUpdated.date,
       dateDetaild: giraUpdated.dateDetaild,
+      dateInMilliseconds: giraUpdated.dateInMilliseconds,
       hourInformation: giraUpdated.hourInformation,
       dateLimitForCancel: giraUpdated.dateLimitForCancel,
       dateLimitForCancelDetaild: giraUpdated.dateLimitForCancelDetaild,
+      dateLimitForCancelInMilliseconds:
+        giraUpdated.dateLimitForCancelInMilliseconds,
       duration: giraUpdated.duration,
       durationDetaild: giraUpdated.durationDetaild,
 
@@ -99,6 +107,35 @@ export const updateGira = async (currentId, giraUpdated) => {
       // hasVotes: false,
       // rate: 0,
       // votes: 0,
+    });
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const saveGira = async (currentId) => {
+  try {
+    const giraRef = doc(db, 'giras', currentId);
+    await updateDoc(giraRef, {
+      showGira: false,
+      giraDone: true,
+    });
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const archivarGira = async (currentId) => {
+  try {
+    const giraRef = doc(db, 'giras', currentId);
+    await updateDoc(giraRef, {
+      showGira: false,
+      giraDone: true,
+      giraArchivada: true,
     });
     return true;
   } catch (e) {
@@ -128,6 +165,54 @@ export const getGiras = async () => {
     const q = query(collection(db, 'giras'), where('showGira', '==', true));
     const querySnapshot = await getDocs(q);
     // const querySnapshot = await getDocs(collection(db, 'giras'));
+    const giras = [];
+    querySnapshot.forEach((doc) => {
+      giras.push(doc.data());
+    });
+    return giras;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const getGirasNoArchivadas = async () => {
+  try {
+    const q = query(
+      collection(db, 'giras'),
+      where('giraArchivada', '==', false),
+    );
+    const querySnapshot = await getDocs(q);
+    const giras = [];
+    querySnapshot.forEach((doc) => {
+      giras.push(doc.data());
+    });
+    return giras;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const getGirasNoDone = async () => {
+  try {
+    const q = query(collection(db, 'giras'), where('giraDone', '==', false));
+    const querySnapshot = await getDocs(q);
+    const giras = [];
+    querySnapshot.forEach((doc) => {
+      giras.push(doc.data());
+    });
+    return giras;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const getGirasDone = async () => {
+  try {
+    const q = query(collection(db, 'giras'), where('giraDone', '==', true));
+    const querySnapshot = await getDocs(q);
     const giras = [];
     querySnapshot.forEach((doc) => {
       giras.push(doc.data());

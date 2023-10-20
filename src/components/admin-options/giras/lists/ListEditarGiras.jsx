@@ -10,14 +10,17 @@ import { girasListForAdmin } from '../../../../zustand/admin/girasAdmin';
 // Components
 import Headers from '../../admin-options-components/Headers';
 import ListGiras from '../giras-components/giras/ListGiras';
-import { getAllGiras } from '../../../../firebase/firestoreGiras/giras';
+import {
+  getAllGiras,
+  getGirasNoArchivadas,
+} from '../../../../firebase/firestoreGiras/giras';
 
 const ListEditarGiras = () => {
   useEffect(() => {
     if (giras.length == 0) {
       const f = async () => {
         console.log('first');
-        const resGiras = await getAllGiras();
+        const resGiras = await getGirasNoArchivadas();
         console.log(resGiras);
         console.warn('Cargando giras de BD');
         setGiras(resGiras);
@@ -35,7 +38,7 @@ const ListEditarGiras = () => {
 
   return (
     <>
-      <Headers text="Editar giras" link="/giras" />
+      <Headers text="Editar giras" link={-1} />
       <div className="my-4">
         {/* {giras.map((gira) => (
           <div

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // React-router-dom
 import { useNavigate, useParams } from 'react-router-dom';
@@ -22,12 +22,15 @@ import List from './giras-components/giras/List';
 import InputDate from './giras-components/giras/InputDate';
 import DurationItem from './giras-components/giras/DurationItem';
 import BtnCreateGira from './giras-components/giras/BtnCreateGira';
+import BtnArchivarGira from './giras-components/giras/BtnArchivarGira';
+
 import InputFile from './giras-components/giras/InputFile';
 import {
   deleteGira,
   getAllGiras,
   getGiras,
   getGirasById,
+  saveGira,
   updateGira,
 } from '../../../firebase/firestoreGiras/giras';
 import {
@@ -41,6 +44,7 @@ import InputFileToDeleteImage from './giras-components/giras/InputFileToDeleteIm
 import InputSelectOneImage from './giras-components/giras/InputSelectOneImage';
 import { useAlerts } from '../../../zustand/alerts/alerts';
 import BtnDeleteGira from './giras-components/giras/BtnDeleteGira';
+import BtnSaveGira from './giras-components/giras/BtnSaveGira';
 
 const EditGira = () => {
   const { images: imagesGiras } = useImages();
@@ -51,6 +55,18 @@ const EditGira = () => {
   const { giras, setGiras } = girasListForAdmin();
 
   const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
+
+  const [viewBtnForSaveGira, setViewBtnForSaveGira] = useState(false);
+
+  useEffect(() => {
+    const dateInMilliseconds = new Date().getTime();
+    giras.map((gira) => {
+      if (gira.dateInMilliseconds < dateInMilliseconds) {
+        setViewBtnForSaveGira(true);
+        alert('Ya esta gira paso');
+      }
+    });
+  }, [giras]);
 
   const {
     id,
@@ -145,10 +161,16 @@ const EditGira = () => {
     dateDetaild,
     setDateDetaild,
 
+    dateInMilliseconds,
+    setDateInMilliseconds,
+
     dateLimitForCancel,
     setDateLimitForCancel,
     dateLimitForCancelDetaild,
     setDateLimitForCancelDetaild,
+
+    dateLimitForCancelInMilliseconds,
+    setDateLimitForCancelInMilliseconds,
 
     hour,
     setHour,
@@ -224,6 +246,7 @@ const EditGira = () => {
 
         setDate(gira.date);
         setDateDetaild(gira.dateDetaild);
+        setDateInMilliseconds(gira.dateInMilliseconds);
 
         setHour(gira.hourInformation.hour);
         setMinute(gira.hourInformation.minute);
@@ -231,6 +254,9 @@ const EditGira = () => {
 
         setDateLimitForCancel(gira.dateLimitForCancel);
         setDateLimitForCancelDetaild(gira.dateLimitForCancelDetaild);
+        setDateLimitForCancelInMilliseconds(
+          gira.dateLimitForCancelInMilliseconds,
+        );
 
         setDurationDays(gira.durationDetaild.days);
         setDurationHours(gira.durationDetaild.hours);
@@ -383,6 +409,7 @@ const EditGira = () => {
         utilInformation: utilInformation,
         date: date,
         dateDetaild: dateDetaild,
+        dateInMilliseconds: dateInMilliseconds,
         hourInformation: {
           hour: hour,
           minute: minute,
@@ -390,6 +417,7 @@ const EditGira = () => {
         },
         dateLimitForCancel: dateLimitForCancel,
         dateLimitForCancelDetaild: dateLimitForCancelDetaild,
+        dateLimitForCancelInMilliseconds: dateLimitForCancelInMilliseconds,
         duration: `${durationDays > 0 ? `${durationDays} dias ` : ''}${
           durationHours > 0 ? `${durationHours} hrs ` : ''
         }${durationMinutes > 0 ? `${durationMinutes} mins` : ''}`,
@@ -486,6 +514,14 @@ const EditGira = () => {
 
     if (!result.isConfirmed) return;
 
+    const result2 = await ask({
+      title: '¿Estas realmente quieres eliminar esta gira?',
+      text: '¿Estas seguro de que realmente quieres eliminar esta gira? si la eliminas esta gira la eliminaras para siempre y nunca podras recurperla.',
+      confirmButtonText: 'Eliminar Gira',
+    });
+
+    if (!result2.isConfirmed) return;
+
     const promesa = new Promise(async (resolve, reject) => {
       waitingAlert();
 
@@ -566,9 +602,85 @@ const EditGira = () => {
       });
   };
 
+  const guardarGira = async () => {
+    const result = await ask({
+      title: '¿Quieres guardar esta gira?',
+      text: '¿Estas seguro de que quieres guardar esta gira? si la guardas esta gira estaras confirmando que se realizo la gira exitosamente, asi que sera guardada en el historial.',
+      confirmButtonText: 'Guardar Gira',
+    });
+
+    if (!result.isConfirmed) return;
+
+    const result2 = await ask({
+      title: 'Realmente quieres guardar esta gira?',
+      text: '¿Estas realmente seguro de que quieres guardar esta gira? si la guardas esta gira estaras confirmando que se realizo la gira exitosamente, asi que sera guardada en el historial.',
+      confirmButtonText: 'Guardar Gira',
+    });
+
+    if (!result2.isConfirmed) return;
+
+    waitingAlert();
+    const promesa = new Promise(async (resolve, reject) => {
+      const res = await saveGira(currentId);
+
+      if (res) resolve();
+      else reject();
+    });
+
+    promesa
+      .then(() => {
+        successAlert(
+          'Gira guardada correctamente',
+          'Toda la informacion de la gira y todas las imagenes han sido guardadas de manera exitosa',
+        );
+      })
+      .catch(() => {
+        errorAlert(
+          'Error',
+          'Ha ocurrido un error al intentar guardar la gira, intentelo de nuevo',
+        );
+      });
+  };
+
+  const archivarGira = async () => {
+    const result = await ask({
+      title: '¿Quieres archivar esta gira?',
+      text: '¿Estas seguro de que quieres archivar esta gira? si archivas esta gira estaras confirmando que se realizo la gira exitosamente, asi que sera guardada en el historial.',
+      confirmButtonText: 'Archivar Gira',
+    });
+    if (!result.isConfirmed) return;
+    const result2 = await ask({
+      title: 'Realmente quieres archivar esta gira?',
+      text: '¿Estas realmente seguro de que quieres archivar esta gira? si la archivas esta gira estaras confirmando que se realizo la gira exitosamente, asi que sera guardada en el historial.',
+      confirmButtonText: 'Archivar Gira',
+    });
+    if (!result2.isConfirmed) return;
+    waitingAlert();
+    const promesa = new Promise(async (resolve, reject) => {
+      const res = await saveGira(currentId);
+
+      if (res) resolve();
+      else reject();
+    });
+
+    promesa
+      .then(() => {
+        successAlert(
+          'Gira guardada correctamente',
+          'Toda la informacion de la gira y todas las imagenes han sido guardadas de manera exitosa',
+        );
+      })
+      .catch(() => {
+        errorAlert(
+          'Error',
+          'Ha ocurrido un error al intentar guardar la gira, intentelo de nuevo',
+        );
+      });
+  };
+
   return (
     <>
-      <Headers text="Gira seleccionada" link="/admin-options/giras-editar" />
+      <Headers text="Gira seleccionada" link={-1} />
       <form onSubmit={editarGira} className="my-4">
         <Input
           id="titulo"
@@ -736,6 +848,7 @@ const EditGira = () => {
           handleChange={setDate}
           value={dateDetaild}
           setFechaDetallada={setDateDetaild}
+          setfechaEnMilisegundos={setDateInMilliseconds}
         />
 
         <div className="my-4">
@@ -784,6 +897,7 @@ const EditGira = () => {
           handleChange={setDateLimitForCancel}
           value={dateLimitForCancelDetaild}
           setFechaDetallada={setDateLimitForCancelDetaild}
+          setfechaEnMilisegundos={setDateLimitForCancelInMilliseconds}
         />
 
         <hr />
@@ -845,6 +959,9 @@ const EditGira = () => {
           <BtnDeleteGira action={eliminarGira} />
           <BtnCreateGira />
         </div>
+
+        <BtnSaveGira action={guardarGira} />
+        <BtnArchivarGira action={archivarGira} />
       </form>
     </>
   );

@@ -35,7 +35,7 @@ const ListRelanzarGira = () => {
 
   return (
     <>
-      <Headers text="Relanzar Gira" link="/giras" />
+      <Headers text="Relanzar Gira" link={-1} />
       <div className="my-4">
         {giras.map((gira) => (
           <ListGiras

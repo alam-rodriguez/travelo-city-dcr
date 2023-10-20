@@ -105,7 +105,7 @@ const GiraSelected = () => {
   if (giraSelected.id == undefined) return <></>;
 
   return (
-    <div>
+    <div className="scale-up-center">
       <HeaderSelectedGira
         text={!viewDescription ? giraSelected.title : giraSelected.description}
         minLengthToShow={27}
@@ -165,11 +165,12 @@ const GiraSelected = () => {
         priceAdulto={giraSelected.prices.adult}
         priceChild={giraSelected.prices.child}
         priceBebe={giraSelected.prices.baby}
-        fecha={giraSelected.fecha}
+        fecha={giraSelected.date}
         giraFecha={giraSelected.giraFecha}
         hora={`${giraSelected.hourInformation.hour}:${giraSelected.hourInformation.minute} ${giraSelected.hourInformation.amORpm}`}
         canCancelFree={giraSelected.canCancelFree}
         freeCancellationLimit={giraSelected.freeCancellationLimit}
+        dateLimitForCancel={giraSelected.dateLimitForCancel}
         giraSelected={giraSelected}
       />
 

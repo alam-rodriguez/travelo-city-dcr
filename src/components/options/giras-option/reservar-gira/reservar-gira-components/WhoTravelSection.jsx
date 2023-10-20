@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useInfoPeople } from '../../../../../zustand/giras/giras';
 import Inputs from './Inputs';
@@ -17,6 +17,8 @@ const WhoTravelSection = ({
   countBabies,
   bebiesNames,
   setBebiesNames,
+  oldName,
+  oldNumber,
 }) => {
   // const { nameAndSurname, setNameAndSurname } = useInfoPeople();
 
@@ -30,6 +32,10 @@ const WhoTravelSection = ({
     setChildrenNames(key, value);
 
   const handleChangeNamesBebies = (key, value) => setBebiesNames(key, value);
+
+  useEffect(() => {
+    console.log(oldNumber);
+  }, []);
 
   return (
     <div className="bg-light my-3">
@@ -47,6 +53,7 @@ const WhoTravelSection = ({
           head="Nombre del contacto"
           placeholder="Nombre y apellidos"
           value={nameAndSurname}
+          // defaultValue={oldName}
           handleChange={handleChangeNombreYApellido}
         />
 
@@ -64,11 +71,13 @@ const WhoTravelSection = ({
         </div> */}
 
         <Inputs
-          id="userName"
-          type="number"
+          id="userNumber"
+          minLength={9}
+          type="tel"
           head="Numero de telefono"
           placeholder="Por si necesitamos contectarte"
           value={number}
+          // defaultValue={oldnumber}
           handleChange={handleChangeNumber}
         />
 

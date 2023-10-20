@@ -9,16 +9,10 @@ const CompletarReservacion = ({
   adultosNames,
   childrenNames,
   bebiesNames,
+  userLogged,
+  registrarUser,
 }) => {
   // const { personAcountInfo, setNameAndSurname } = useInfoPeople();
-
-  const handleClickCompletarReservacion = () => {
-    console.log(nameAndSurname);
-    console.log(number);
-    console.log(adultosNames);
-    console.log(childrenNames);
-    console.log(bebiesNames);
-  };
 
   return (
     <div className="bg-white shadow p-3 my-3">
@@ -28,12 +22,23 @@ const CompletarReservacion = ({
         revise y estoy de acuerdo con las normas y restricciones, y los terminos
         de uso.
       </p>
-      <button
-        className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium"
-        onClick={handleClickCompletarReservacion}
-      >
-        Completar reservacion
-      </button>
+      {!userLogged ? (
+        <button
+          className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium"
+          onClick={registrarUser}
+          type="submit"
+        >
+          Registrar usuario
+        </button>
+      ) : (
+        <button
+          className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium"
+          // onClick={handleClickCompletarReservacion}
+          type="submit"
+        >
+          Completar reservacion
+        </button>
+      )}
     </div>
   );
 };

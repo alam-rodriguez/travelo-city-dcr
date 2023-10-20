@@ -12,6 +12,7 @@ import { useGiras, useImages } from '../../../zustand/giras/giras';
 
 // Firebase
 import { getImage } from '../../../firebase/firestoreGiras/imagenesGira';
+import { useInfoUser } from '../../../zustand/user/user';
 
 const GiraItem = ({
   giraId,
@@ -31,6 +32,8 @@ const GiraItem = ({
   const navigate = useNavigate();
 
   const { images, addImage } = useImages();
+
+  const { userSawGiras } = useInfoUser();
 
   useEffect(() => {
     // console.log(imgPath);
@@ -67,11 +70,13 @@ const GiraItem = ({
 
   return (
     <div
-      className="scale-up-center rounded-4 overflow-hidden border position-relative my-2 shadow overflow-y-scroll"
+      className={`${
+        !userSawGiras ? 'scale-up-center' : ''
+      } rounded-4 overflow-hidden border position-relative my-2 shadow overflow-y-scroll`}
       style={{ width: '48%', height: 390 }}
       onClick={handleClickGira}
     >
-      {images[giraId] != undefined ? (
+      {images[giraId] != undefined && images[giraId][imgId] != undefined ? (
         <img
           src={images[giraId][imgId]}
           className="w-100 object-fit-cover"
@@ -104,17 +109,19 @@ const GiraItem = ({
         ) : (
           <></>
         )}
-        {canCancel ? (
-          <p className="m-0 text-success fw-medium" style={{ fontSize: 11 }}>
-            Cancelacion gratuita disponible
+        <div className="position-absolute" style={{ bottom: 15 }}>
+          {canCancel ? (
+            <p className="m-0 text-success fw-medium" style={{ fontSize: 11 }}>
+              Cancelacion gratuita disponible
+            </p>
+          ) : (
+            <></>
+          )}
+          <p className="m-0 fw-bold fs-1">${price}</p>
+          <p className="m-0" style={{ fontSize: 12 }}>
+            por adulto
           </p>
-        ) : (
-          <></>
-        )}
-        <p className="m-0 fw-bold fs-1">${price}</p>
-        <p className="m-0" style={{ fontSize: 13 }}>
-          por adulto
-        </p>
+        </div>
       </div>
     </div>
   );

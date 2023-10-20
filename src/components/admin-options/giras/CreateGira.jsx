@@ -115,10 +115,16 @@ const CreateGira = () => {
     dateDetaild,
     setDateDetaild,
 
+    dateInMilliseconds,
+    setDateInMilliseconds,
+
     dateLimitForCancel,
     setDateLimitForCancel,
     dateLimitForCancelDetaild,
     setDateLimitForCancelDetaild,
+
+    dateLimitForCancelInMilliseconds,
+    setDateLimitForCancelInMilliseconds,
 
     hour,
     setHour,
@@ -207,6 +213,20 @@ const CreateGira = () => {
   const crearGira = async (e) => {
     e.preventDefault();
 
+    const fecha = new Date().getTime();
+
+    if (fecha > dateInMilliseconds) {
+      alert('Debes de seleccionar una de los proximos dias como fecha');
+      return;
+    }
+
+    if (dateLimitForCancelInMilliseconds > dateInMilliseconds) {
+      alert(
+        'la fecha limite de cancelacion debe de ser antes de la fecha de la gira',
+      );
+      return;
+    }
+
     if (hour == 0 && minute == 0) {
       alert('Debes de ingresar la hora de la gira');
       return;
@@ -215,12 +235,12 @@ const CreateGira = () => {
       durationHours == 0 &&
       durationMinutes == 0
     ) {
-      alert('Debes de ingresar la hora de la gira');
+      alert('Debes de la duracion de la gira');
       return;
     }
 
     const promiseCreateGira = new Promise(async (resolve, reject) => {
-      const result = ask({
+      const result = await ask({
         title: '¿Quieres crear esta gira?',
         text: '¿Estas seguro de que quieres crear esta gira? tus usuarios la veran, asi que asegurate de llenar toda la informacion necesaria.',
         confirmButtonText: 'Crear Gira',
@@ -276,6 +296,7 @@ const CreateGira = () => {
         utilInformation: utilInformation,
         date: date,
         dateDetaild: dateDetaild,
+        dateInMilliseconds: dateInMilliseconds,
         hourInformation: {
           hour: hour,
           minute: minute,
@@ -283,6 +304,7 @@ const CreateGira = () => {
         },
         dateLimitForCancel: dateLimitForCancel,
         dateLimitForCancelDetaild: dateLimitForCancelDetaild,
+        dateLimitForCancelInMilliseconds: dateLimitForCancelInMilliseconds,
         duration: `${durationDays > 0 ? `${durationDays} dias ` : ''}${
           durationHours > 0 ? `${durationHours} hrs ` : ''
         }${durationMinutes > 0 ? `${durationMinutes} mins` : ''}`,
@@ -333,7 +355,7 @@ const CreateGira = () => {
   return (
     <>
       <form onSubmit={crearGira}>
-        <Headers text="Crear Gira" link="/giras" />
+        <Headers text="Crear Gira" link={-1} />
         <div className="my-5">
           <Input
             id="titulo"
@@ -501,6 +523,7 @@ const CreateGira = () => {
             head="Fecha de gira"
             handleChange={setDate}
             setFechaDetallada={setDateDetaild}
+            setfechaEnMilisegundos={setDateInMilliseconds}
           />
 
           <div className="my-4">
@@ -549,6 +572,7 @@ const CreateGira = () => {
             head="Fecha limite para cancelar"
             handleChange={setDateLimitForCancel}
             setFechaDetallada={setDateLimitForCancelDetaild}
+            setfechaEnMilisegundos={setDateLimitForCancelInMilliseconds}
           />
 
           <hr />
