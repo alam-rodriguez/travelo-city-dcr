@@ -1,6 +1,13 @@
 import React from 'react';
 
-const Check = ({ id, info, addGira, removeGira }) => {
+const Check = ({
+  id,
+  defaultChecked = false,
+  checked = false,
+  info,
+  addGira,
+  removeGira,
+}) => {
   const handleClick = (e) => {
     if (e.target.checked) addGira(id);
     else removeGira(id);
@@ -13,7 +20,8 @@ const Check = ({ id, info, addGira, removeGira }) => {
       <input
         className="form-check-input"
         type="checkbox"
-        value=""
+        checked={checked}
+        // defaultChecked={defaultChecked}
         id={id}
         onChange={handleClick}
       />

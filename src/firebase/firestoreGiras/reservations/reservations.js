@@ -1,4 +1,4 @@
-import { db } from '../config/firebaseConfig';
+import { db } from '../../config/firebaseConfig';
 import {
   collection,
   doc,
@@ -30,6 +30,11 @@ export const createReservationGira = async (reservation) => {
       childrenPrice: reservation.childrenPrice,
       bebiesNames: reservation.bebiesNames,
       bebiesPrice: reservation.bebiesPrice,
+
+      methodOfPay: reservation.methodOfPay,
+      bankSelected: reservation.bankSelected,
+      imageTransactionPath: reservation.imageTransactionPath,
+      reservacionPagada: reservation.reservacionPagada,
     });
     return true;
   } catch (e) {

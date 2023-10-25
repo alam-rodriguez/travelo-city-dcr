@@ -15,13 +15,19 @@ const ReservationItem = ({
   childrenPrice,
   bebiesNames,
   bebiesPrice,
+  reservacion,
+  handleClick,
 }) => {
   return (
-    <div className="border-bottom border-danger border-5 mb-5 pb-0">
+    <div
+      className="border-bottom border-danger border-5 mb-5 pb-0"
+      onClick={() => handleClick(reservacion)}
+    >
       <ReservacionP head="Fecha:" value={`${date} | ${hour}`} />
       <ReservacionP head="Nombre:" value={userName} />
       <ReservacionP head="Numero:" value={userNumber} />
-      <ReservacionP head="Precio adulto:" value={adultPrice} />
+      {/* <ReservacionP head="Precio adulto:" value={adultPrice} /> */}
+      <ReservacionP head="Estado de reservacion:" value="confirmado" />
 
       {Object.keys(adultsNames).length > 0 ||
       Object.keys(childrenNames).length > 0 ||
@@ -43,7 +49,7 @@ const ReservationItem = ({
               return elementos;
             })()}
           />
-          <ReservacionP head="Precio cada adulto:" value={adultPrice} />
+          {/* <ReservacionP head="Precio cada adulto:" value={adultPrice} /> */}
         </>
       ) : (
         <></>
@@ -61,7 +67,7 @@ const ReservationItem = ({
               return elementos;
             })()}
           />
-          <ReservacionP head="Precio cada niño:" value={childrenPrice} />
+          {/* <ReservacionP head="Precio cada niño:" value={childrenPrice} /> */}
         </>
       ) : (
         <></>
@@ -78,7 +84,7 @@ const ReservationItem = ({
               return elementos;
             })()}
           />
-          <ReservacionP head="Precio cada Bebe:" value={bebiesPrice} />
+          {/* <ReservacionP head="Precio cada Bebe:" value={bebiesPrice} /> */}
         </>
       ) : (
         <></>

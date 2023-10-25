@@ -11,7 +11,7 @@ import { girasListForAdmin } from '../../../../zustand/admin/girasAdmin';
 import Headers from '../../admin-options-components/Headers';
 import ListGiras from '../giras-components/giras/ListGiras';
 import { getAllGiras } from '../../../../firebase/firestoreGiras/giras';
-import { getReservationGira } from '../../../../firebase/firestoreGiras/reservations';
+import { getReservationGira } from '../../../../firebase/firestoreGiras/reservations/reservations';
 import { useReservacionesGiras } from '../../../../zustand/admin/giras/giras-reservaciones/reservacionesGiras';
 import ReservacionItem from './giras-reservaciones-components/ReservacionP';
 import ReservacionP from './giras-reservaciones-components/ReservacionP';
@@ -20,34 +20,37 @@ import ReservationItem from './giras-reservaciones-components/ReservationItem';
 const ReservationsOfGira = () => {
   const { currentId } = useParams();
 
-  const { reservaciones, setReservaciones } = useReservacionesGiras();
+  const { reservaciones, setReservaciones, setReservacionSelecionada } =
+    useReservacionesGiras();
 
   useEffect(() => {
-    console.log(currentId);
+    if (reservaciones.length > 0) return;
+    console.log('Cargando reservaciones');
     const f = async () => {
       const res = await getReservationGira(currentId);
+      if (res == false) return;
       res.sort((a, b) => b.dateInMilliseconds - a.dateInMilliseconds);
       setReservaciones(res);
     };
     f();
-    // if (giras.length == 0) {
-    //   const f = async () => {
-    //     console.log('first');
-    //     const resGiras = await getAllGiras();
-    //     console.log(resGiras);
-    //     console.warn('Cargando giras de BD');
-    //     setGiras(resGiras);
-    //   };
-    //   f();
-    // }
   }, []);
 
-  const { giras, setGiras } = girasListForAdmin();
+  useEffect(() => {
+    if (reservaciones.length == 0) return;
+
+    if (currentId != reservaciones[0].giraCurrentId) {
+      setReservaciones([]);
+    }
+  }, [reservaciones]);
 
   const navigate = useNavigate();
 
-  const handleClick = (currentId) =>
-    navigate(`/admin-options/giras-editar/${currentId}`);
+  const handleClick = (reservacion) => {
+    setReservacionSelecionada(reservacion);
+    navigate(
+      `/admin-options/list-giras-for-reservations/${currentId}/${reservacion.reservationId}`,
+    );
+  };
 
   return (
     <>
@@ -57,7 +60,7 @@ const ReservationsOfGira = () => {
           <ReservationItem
             key={reservacion.reservationId}
             id={reservacion.reservationId}
-            date={reservacion.date}
+            date={reservacion.dayMadeReservation}
             hour={reservacion.hourMakeReservation}
             userName={reservacion.userName}
             userNumber={reservacion.userNumber}
@@ -67,18 +70,10 @@ const ReservationsOfGira = () => {
             childrenPrice={reservacion.childrenPrice}
             bebiesNames={reservacion.bebiesNames}
             bebiesPrice={reservacion.bebiesPrice}
-          />
-        ))}
-        {/* {giras.map((gira) => (
-          <ListGiras
-            key={gira.currentId}
-            currentId={gira.currentId}
-            title={gira.title}
-            description={gira.description}
-            price={gira.prices.adult}
+            reservacion={reservacion}
             handleClick={handleClick}
           />
-        ))} */}
+        ))}
       </div>
     </>
   );

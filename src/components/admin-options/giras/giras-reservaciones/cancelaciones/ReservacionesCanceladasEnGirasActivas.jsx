@@ -7,19 +7,19 @@ import { useNavigate } from 'react-router-dom';
 import { girasListForAdmin } from '../../../../../zustand/admin/girasAdmin';
 
 // Firebase
-import { getAllGiras } from '../../../../../firebase/firestoreGiras/giras';
+import { getGirasNoDone } from '../../../../../firebase/firestoreGiras/giras';
 
 // Components
 import Headers from '../../../admin-options-components/Headers';
 import ListGiras from '../../giras-components/giras/ListGiras';
 
-const ListAllReservations = () => {
-  const { allGiras, setAllGiras } = girasListForAdmin();
+const ReservacionesCanceladasEnGirasActivas = () => {
+  const { girasNoDone, setGirasNoDone } = girasListForAdmin();
   useEffect(() => {
-    if (allGiras.length == 0) {
+    if (girasNoDone.length == 0) {
       const f = async () => {
-        const resGiras = await getAllGiras();
-        if (resGiras != false) setAllGiras(resGiras);
+        const resGiras = await getGirasNoDone();
+        if (resGiras != false) setGirasNoDone(resGiras);
       };
       f();
     }
@@ -33,9 +33,12 @@ const ListAllReservations = () => {
 
   return (
     <>
-      <Headers text="Las reservaciones de todas las giras" link={-1} />
+      <Headers
+        text="Reservaciones cancelas de giras activas"
+        link="/admin-options"
+      />
       <div className="my-4">
-        {allGiras.map((gira) => (
+        {girasNoDone.map((gira) => (
           <ListGiras
             key={gira.currentId}
             currentId={gira.currentId}
@@ -50,4 +53,4 @@ const ListAllReservations = () => {
   );
 };
 
-export default ListAllReservations;
+export default ReservacionesCanceladasEnGirasActivas;

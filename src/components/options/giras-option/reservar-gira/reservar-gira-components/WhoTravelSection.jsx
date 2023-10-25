@@ -38,15 +38,15 @@ const WhoTravelSection = ({
   }, []);
 
   return (
-    <div className="bg-light my-3">
+    <div className="bg-light- bg-white shadow my-3">
       <div className="border-bottom p-3">
-        <p className="m-0">Quien Viaja?</p>
+        <p className="m-0 fw-bold fs-4">Quien Viaja?</p>
       </div>
       <div className="p-3">
-        <p>
+        <p className="m-0 fw-medium">
           Recorrido con paradas libres en Dusselford en un autobus de dos pisos
         </p>
-        <p>jueves, 21 sept.</p>
+        <p className="m-0 text-secondary">jueves, 21 sept.</p>
 
         <Inputs
           id="userName"
@@ -94,23 +94,26 @@ const WhoTravelSection = ({
           />
         </div> */}
 
-        <hr />
+        {/* <hr /> */}
 
         {(() => {
           const elements = [];
           for (let i = 1; i <= countPersons; i++) {
             if (i > 1)
               elements.push(
-                <Inputs
-                  key={i}
-                  id={`adulto adulto-${i}`}
-                  head={`adulto ${i}`}
-                  placeholder="Nombre y apellidos"
-                  value={adultosNames[`adulto ${i}`]}
-                  handleChange={(e) =>
-                    handleChangeNamesAdultos(`adulto ${i}`, e.target.value)
-                  }
-                />,
+                <>
+                  <Inputs
+                    key={i}
+                    id={`adulto adulto-${i}`}
+                    head={`adulto ${i}`}
+                    placeholder="Nombre y apellidos"
+                    value={adultosNames[`adulto ${i}`]}
+                    handleChange={(e) =>
+                      handleChangeNamesAdultos(`adulto ${i}`, e.target.value)
+                    }
+                  />
+                  <hr />
+                </>,
               );
           }
           return elements;
@@ -120,16 +123,19 @@ const WhoTravelSection = ({
           const elements = [];
           for (let i = 1; i <= countChildren; i++) {
             elements.push(
-              <Inputs
-                key={i}
-                id={`child child-${i}`}
-                head={`niño ${i}`}
-                placeholder="Nombre y apellidos"
-                value={childrenNames[`child ${i}`]}
-                handleChange={(e) =>
-                  handleChangeNamesChildren(`child ${i}`, e.target.value)
-                }
-              />,
+              <>
+                <Inputs
+                  key={i}
+                  id={`child child-${i}`}
+                  head={`niño ${i}`}
+                  placeholder="Nombre y apellidos"
+                  value={childrenNames[`child ${i}`]}
+                  handleChange={(e) =>
+                    handleChangeNamesChildren(`child ${i}`, e.target.value)
+                  }
+                />
+                <hr />
+              </>,
             );
           }
           return elements;
@@ -139,16 +145,19 @@ const WhoTravelSection = ({
           const elements = [];
           for (let i = 1; i <= countBabies; i++) {
             elements.push(
-              <Inputs
-                key={i}
-                id={`bebe bebe-${i}`}
-                head={`bebe ${i}`}
-                placeholder="Nombre y apellidos"
-                value={bebiesNames[`bebe ${i}`]}
-                handleChange={(e) =>
-                  handleChangeNamesBebies(`bebe ${i}`, e.target.value)
-                }
-              />,
+              <>
+                <Inputs
+                  key={i}
+                  id={`bebe bebe-${i}`}
+                  head={`bebe ${i}`}
+                  placeholder="Nombre y apellidos"
+                  value={bebiesNames[`bebe ${i}`]}
+                  handleChange={(e) =>
+                    handleChangeNamesBebies(`bebe ${i}`, e.target.value)
+                  }
+                />
+                <hr />
+              </>,
             );
           }
           return elements;

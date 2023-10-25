@@ -4,33 +4,27 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Zusttand
-import { useGiras } from '../../../../zustand/giras/giras';
 import { girasListForAdmin } from '../../../../zustand/admin/girasAdmin';
+
+// Firebase
+import { getGirasDone } from '../../../../firebase/firestoreGiras/giras';
 
 // Components
 import Headers from '../../admin-options-components/Headers';
 import ListGiras from '../giras-components/giras/ListGiras';
-import {
-  getAllGiras,
-  getGirasDone,
-  getGirasNoArchivadas,
-} from '../../../../firebase/firestoreGiras/giras';
 
 const ListGirasDoneForReservations = () => {
+  const { girasDone, setGirasDone } = girasListForAdmin();
+
   useEffect(() => {
-    if (giras.length == 0) {
+    if (girasDone.length == 0) {
       const f = async () => {
-        console.log('first');
         const resGiras = await getGirasDone();
-        console.log(resGiras);
-        console.warn('Cargando giras de BD');
-        setGiras(resGiras);
+        if (resGiras != false) setGirasDone(resGiras);
       };
       f();
     }
   }, []);
-
-  const { giras, setGiras } = girasListForAdmin();
 
   const navigate = useNavigate();
 
@@ -42,7 +36,7 @@ const ListGirasDoneForReservations = () => {
     <>
       <Headers text="Reservaciones Giras realizadas" link={-1} />
       <div className="my-4">
-        {giras.map((gira) => (
+        {girasDone.map((gira) => (
           <ListGiras
             key={gira.currentId}
             currentId={gira.currentId}

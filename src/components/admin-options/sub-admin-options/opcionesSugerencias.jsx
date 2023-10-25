@@ -14,7 +14,7 @@ const opcionesSugerencias = () => {
         />
         <BtnOptions
           text="Editar sugerencia"
-          link="/admin-options/editar-sugerencia"
+          link="/admin-options/list-sugerencias"
         />
       </div>
     </>

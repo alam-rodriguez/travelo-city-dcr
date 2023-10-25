@@ -21,6 +21,18 @@ const OpcionesReservacionesGiras = () => {
           text="Todas las reservaciones"
           link="/admin-options/list-all-giras-reservations"
         />
+        <BtnOptions
+          text="Reservaciones canceladas"
+          link="/admin-options/list-reservaciones-canceladas-giras-activas"
+        />
+        <BtnOptions
+          text="Reservaciones canceladas de giras realizadas"
+          link="/admin-options/list-all-giras-reservations"
+        />
+        <BtnOptions
+          text="Reservaciones canceladas de giras archivadas"
+          link="/admin-options/list-all-giras-reservations"
+        />
       </div>
     </>
   );

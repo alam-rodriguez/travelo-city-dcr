@@ -85,7 +85,10 @@ const CrearSugerencia = () => {
 
   return (
     <form onSubmit={createSugerencia}>
-      <HeaderSugerencia link="/admin-options" text="Crear sugerencia" />
+      <HeaderSugerencia
+        link="/admin-options/opciones-sugerencias"
+        text="Crear sugerencia"
+      />
 
       <Input
         id="titulo-sugerencia"

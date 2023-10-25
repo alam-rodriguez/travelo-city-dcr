@@ -129,7 +129,7 @@ export const saveGira = async (currentId) => {
   }
 };
 
-export const archivarGira = async (currentId) => {
+export const archivarGiraFirebase = async (currentId) => {
   try {
     const giraRef = doc(db, 'giras', currentId);
     await updateDoc(giraRef, {
@@ -181,6 +181,24 @@ export const getGirasNoArchivadas = async () => {
     const q = query(
       collection(db, 'giras'),
       where('giraArchivada', '==', false),
+    );
+    const querySnapshot = await getDocs(q);
+    const giras = [];
+    querySnapshot.forEach((doc) => {
+      giras.push(doc.data());
+    });
+    return giras;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const getGirasArchivadas = async () => {
+  try {
+    const q = query(
+      collection(db, 'giras'),
+      where('giraArchivada', '==', true),
     );
     const querySnapshot = await getDocs(q);
     const giras = [];

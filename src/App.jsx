@@ -50,6 +50,13 @@ import opcionesSugerencias from './components/admin-options/sub-admin-options/op
 import RoutesForUser from './routes/RoutesForUser';
 import EstadisticasUsers from './components/admin-options/estadisticas/EstadisticasUsers';
 import TodasLasEstadisticas from './components/admin-options/estadisticas/TodasLasEstadisticas';
+import ListSugerencias from './components/admin-options/sugerencias/ListSugerencias';
+import EditarSugerencia from './components/admin-options/sugerencias/EditarSugerencia';
+import ListTodasLasGiras from './components/admin-options/giras/giras-todas/ListTodasLasGiras';
+import ListGirasActivas from './components/admin-options/giras/giras-activas/ListGirasActivas';
+import ListGirasRealizadas from './components/admin-options/giras/giras-realizadas/ListGirasRealizadas';
+import ViewReservationSelected from './components/admin-options/giras/giras-reservaciones/ViewReservationSelected';
+import ReservacionesCanceladasEnGirasActivas from './components/admin-options/giras/giras-reservaciones/cancelaciones/ReservacionesCanceladasEnGirasActivas';
 // import ManejadorGiras from './components/admin-options/sub-admin-options/OpcionesGiras';
 
 const routesForUser = [{ path: '/', component: Inicio }];
@@ -103,6 +110,23 @@ function App() {
             path="/admin-options/opciones-giras"
             Component={OpcionesGiras}
           />
+          <Route path="/admin-options/create-gira" Component={CreateGira} />
+          <Route
+            path="/admin-options/giras-editar"
+            Component={ListEditarGiras}
+          />
+          <Route
+            path="/admin-options/giras-editar/:currentId"
+            Component={EditGira}
+          />
+          <Route
+            path="/admin-options/giras-relanzar"
+            Component={ListRelanzarGira}
+          />
+          <Route
+            path="/admin-options/giras-relanzar/:currentId"
+            Component={RelanzarGira}
+          />
           <Route
             path="/admin-options/opciones-reservaciones-giras"
             Component={OpcionesReservacionesGiras}
@@ -123,27 +147,13 @@ function App() {
             path="/admin-options/opciones-estadisticas-giras/todas-las-estadisticas"
             Component={TodasLasEstadisticas}
           />
-
-          <Route path="/admin-options/create-gira" Component={CreateGira} />
-          <Route
-            path="/admin-options/giras-editar"
-            Component={ListEditarGiras}
-          />
-          <Route
-            path="/admin-options/giras-editar/:currentId"
-            Component={EditGira}
-          />
-          <Route
-            path="/admin-options/giras-relanzar"
-            Component={ListRelanzarGira}
-          />
-          <Route
-            path="/admin-options/giras-relanzar/:currentId"
-            Component={RelanzarGira}
-          />
           <Route
             path="/admin-options/list-giras-for-reservations"
             Component={ListGirasForReservations}
+          />
+          <Route
+            path="/admin-options/list-reservaciones-canceladas-giras-activas"
+            Component={ReservacionesCanceladasEnGirasActivas}
           />
           <Route
             path="/admin-options/list-giras-done-for-reservations"
@@ -154,6 +164,11 @@ function App() {
             Component={ReservationsOfGira}
           />
           <Route
+            path="/admin-options/list-giras-for-reservations/:currentId/:id"
+            Component={ViewReservationSelected}
+          />
+
+          <Route
             path="/admin-options/list-all-giras-reservations"
             Component={ListAllReservations}
           />
@@ -162,16 +177,32 @@ function App() {
             Component={ListGirasArchivadas}
           />
           <Route
+            path="/admin-options/list-giras-activas"
+            Component={ListGirasActivas}
+          />
+          <Route
+            path="/admin-options/list-giras-realizadas"
+            Component={ListGirasRealizadas}
+          />
+          <Route
             path="/admin-options/list-giras-archivadas/:currentId"
             Component={GiraArchivada}
+          />
+          <Route
+            path="/admin-options/list-all-giras"
+            Component={ListTodasLasGiras}
           />
           <Route
             path="/admin-options/crear-sugerencia"
             Component={CrearSugerencia}
           />
           <Route
-            path="/admin-options/editar-sugerencia"
-            Component={CrearSugerencia}
+            path="/admin-options/list-sugerencias"
+            Component={ListSugerencias}
+          />
+          <Route
+            path="/admin-options/list-sugerencias/:id"
+            Component={EditarSugerencia}
           />
           <Route
             path="/admin-options/list-giras-for-stadisticas"

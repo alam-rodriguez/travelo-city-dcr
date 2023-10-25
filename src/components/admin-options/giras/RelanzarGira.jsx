@@ -455,7 +455,7 @@ const RelanzarGira = () => {
 
   return (
     <>
-      <Headers text="Relanzar gira" link={-1} />
+      <Headers text="Gira seleccionada para relanzar " link={-1} />
       <div className="my-4">
         <form onSubmit={relanzarGira}>
           <Input

@@ -25,11 +25,14 @@ import {
   useInfoPeople,
   useViewSeleccionarPersonas,
 } from '../../../../zustand/giras/giras';
-import { createReservationGira } from '../../../../firebase/firestoreGiras/reservations';
+import { createReservationGira } from '../../../../firebase/firestoreGiras/reservations/reservations';
 import { useAlerts } from '../../../../zustand/alerts/alerts';
 import { signInWithGoogle } from '../../../../firebase/authentication/authWithGoogle';
 import { getUserInfo, setUserInfo } from '../../../../firebase/users/users';
 import { useInfoUser } from '../../../../zustand/user/user';
+import { IoMdCheckmark } from 'react-icons/io';
+import MetodoPagoSeccion from './reservar-gira-components/MetodoPagoSeccion';
+import { uploadImageReservationGira } from '../../../../firebase/firestoreGiras/reservations/reservationsImages';
 
 const ReservarGira = () => {
   // const [logUser, setLogUser] = useState(true);
@@ -108,6 +111,13 @@ const ReservarGira = () => {
     bebiesNames,
     setBebiesNames,
     resetNames,
+    methodOfPay,
+    setMethodOfPay,
+    bankSelected,
+    setBankSelected,
+    banksCountsNumbers,
+    imgTransaccion,
+    setImgTransaccion,
   } = useInfoPeople();
 
   const getDay = () => {
@@ -135,6 +145,11 @@ const ReservarGira = () => {
   const handleClickCompletarReservacion = async (e) => {
     e.preventDefault();
 
+    if (methodOfPay == 'tarjeta' && imgTransaccion.name == undefined) {
+      alert('Debes de agregar una imagen');
+      return;
+    }
+
     const date = getDay();
     const dateDetailed = new Date();
     const dateInMilliseconds = dateDetailed.getTime();
@@ -151,8 +166,11 @@ const ReservarGira = () => {
     const promise = new Promise(async (resolve, reject) => {
       console.log(date);
       // console.log(giraSelected);
+
+      const id = uuid();
+
       const reserve = {
-        reservationId: uuid(),
+        reservationId: id,
         email: email,
         userName: nameAndSurname,
         userNumber: number,
@@ -174,9 +192,23 @@ const ReservarGira = () => {
 
         bebiesNames: bebiesNames,
         bebiesPrice: giraSelected.prices.baby,
+
+        methodOfPay,
+        bankSelected,
+        imageTransactionPath:
+          methodOfPay == 'tarjeta' ? `reservationsGiras/${id}` : null,
+        reservacionPagada: methodOfPay == 'tarjeta' ? true : false,
       };
 
       const res = await createReservationGira(reserve);
+
+      const resImage = true;
+      if (imgTransaccion.name != undefined)
+        resImage = await uploadImageReservationGira(
+          'reservationsGiras',
+          id,
+          imgTransaccion,
+        );
 
       const newInfoUser = {
         email: email,
@@ -191,7 +223,7 @@ const ReservarGira = () => {
         console.log('info actualizada');
       }
       // const res = true;
-      if (res) resolve();
+      if (res && resImage && resUserInfo) resolve();
       else reject();
     });
     promise
@@ -281,6 +313,16 @@ const ReservarGira = () => {
           setBebiesNames={setBebiesNames}
           oldName={oldName}
           oldNumber={oldNumber}
+        />
+
+        <MetodoPagoSeccion
+          methodOfPay={methodOfPay}
+          setMethodOfPay={setMethodOfPay}
+          bankSelected={bankSelected}
+          setBankSelected={setBankSelected}
+          banksCountsNumbers={banksCountsNumbers}
+          imgTransaccion={imgTransaccion}
+          setImgTransaccion={setImgTransaccion}
         />
 
         <ImportantInformationSection />

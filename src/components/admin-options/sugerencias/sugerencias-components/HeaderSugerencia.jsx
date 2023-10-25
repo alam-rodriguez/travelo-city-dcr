@@ -15,7 +15,7 @@ const HeaderSugerencia = ({ link, text }) => {
         className="display-6 color-1"
         onClick={() => navigate(link)}
       />
-      <h3 className="m-0 position-absolute start-50 top-50 translate-middle">
+      <h3 className="m-0 position-absolute start-50 top-50 translate-middle w-75 text-center">
         {text}
       </h3>
     </header>

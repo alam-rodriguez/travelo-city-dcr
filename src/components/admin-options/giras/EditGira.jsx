@@ -26,6 +26,7 @@ import BtnArchivarGira from './giras-components/giras/BtnArchivarGira';
 
 import InputFile from './giras-components/giras/InputFile';
 import {
+  archivarGiraFirebase,
   deleteGira,
   getAllGiras,
   getGiras,
@@ -53,6 +54,20 @@ const EditGira = () => {
   //   useGiras();
 
   const { giras, setGiras } = girasListForAdmin();
+  const { allGiras, setAllGiras } = girasListForAdmin();
+
+  useEffect(() => {
+    if (allGiras.length == 0) {
+      const f = async () => {
+        console.log('first');
+        const resGiras = await getAllGiras();
+        console.log(resGiras);
+        console.warn('Cargando todas las giras de BD');
+        setAllGiras(resGiras);
+      };
+      f();
+    }
+  }, []);
 
   const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
 
@@ -64,6 +79,7 @@ const EditGira = () => {
       if (gira.dateInMilliseconds < dateInMilliseconds) {
         setViewBtnForSaveGira(true);
         alert('Ya esta gira paso');
+        return;
       }
     });
   }, [giras]);
@@ -216,10 +232,12 @@ const EditGira = () => {
   const { currentId: currentIdOfParams } = useParams();
 
   useEffect(() => {
+    if (allGiras.length == 0) return;
     // console.log(currentId);
     console.log(giras);
     console.log(currentId);
-    giras.forEach(async (gira) => {
+    console.log(allGiras);
+    allGiras.forEach(async (gira) => {
       console.log(currentId);
       if (gira.currentId == currentIdOfParams) {
         console.log(gira);
@@ -296,7 +314,7 @@ const EditGira = () => {
         return;
       }
     });
-  }, []);
+  }, [allGiras]);
 
   const editarGira = async (e) => {
     e.preventDefault();
@@ -657,7 +675,7 @@ const EditGira = () => {
     if (!result2.isConfirmed) return;
     waitingAlert();
     const promesa = new Promise(async (resolve, reject) => {
-      const res = await saveGira(currentId);
+      const res = await archivarGiraFirebase(currentId);
 
       if (res) resolve();
       else reject();

@@ -4,22 +4,29 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Zusttand
+import { useGiras } from '../../../../zustand/giras/giras';
 import { girasListForAdmin } from '../../../../zustand/admin/girasAdmin';
-
-// Firebase
-import { getGirasNoDone } from '../../../../firebase/firestoreGiras/giras';
 
 // Components
 import Headers from '../../admin-options-components/Headers';
 import ListGiras from '../giras-components/giras/ListGiras';
+import {
+  getGirasDone,
+  getGirasNoDone,
+} from '../../../../firebase/firestoreGiras/giras';
 
-const ListGirasForReservations = () => {
-  const { girasNoDone, setGirasNoDone } = girasListForAdmin();
+const ListGirasRealizadas = () => {
+  const { girasNoDone, setGirasNoDone, girasDone, setGirasDone } =
+    girasListForAdmin();
+
   useEffect(() => {
-    if (girasNoDone.length == 0) {
+    if (girasDone.length == 0) {
       const f = async () => {
-        const resGiras = await getGirasNoDone();
-        if (resGiras != false) setGirasNoDone(resGiras);
+        console.log('first');
+        const resGiras = await getGirasDone();
+        console.log(resGiras);
+        console.warn('Cargando giras activas de BD');
+        setGirasDone(resGiras);
       };
       f();
     }
@@ -27,15 +34,14 @@ const ListGirasForReservations = () => {
 
   const navigate = useNavigate();
 
-  const handleClick = (currentId) => {
-    navigate(`/admin-options/list-giras-for-reservations/${currentId}`);
-  };
+  const handleClick = (currentId) =>
+    navigate(`/admin-options/giras-editar/${currentId}`);
 
   return (
     <>
-      <Headers text="Reservaciones Giras activas" link="/admin-options" />
+      <Headers text="Giras Realizadas" link={-1} />
       <div className="my-4">
-        {girasNoDone.map((gira) => (
+        {girasDone.map((gira) => (
           <ListGiras
             key={gira.currentId}
             currentId={gira.currentId}
@@ -50,4 +56,4 @@ const ListGirasForReservations = () => {
   );
 };
 
-export default ListGirasForReservations;
+export default ListGirasRealizadas;

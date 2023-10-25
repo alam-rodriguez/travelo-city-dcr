@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 
 export const useSugerencia = create((set) => ({
+  id: '',
+  setId: (id) => set(() => ({ id: id })),
   titulo: '',
   setTitulo: (value) => set(() => ({ titulo: value })),
   subtitulo: '',
@@ -17,6 +19,8 @@ export const useSugerencia = create((set) => ({
         { [number]: { question: '', answer: '' } },
       ],
     })),
+  setQuestionsAndAnswer: (questionsAndAnswer) =>
+    set(() => ({ questionsAndAnswer: questionsAndAnswer })),
 
   // editQuestionsAndAnswer: () =>
   //   set((state) => {
@@ -58,9 +62,16 @@ export const useSugerencia = create((set) => ({
   listIdsGiras: [],
   addIdGira: (newId) =>
     set((state) => ({ listIdsGiras: [...state.listIdsGiras, newId] })),
+  setIdGira: (newIds) => set(() => ({ listIdsGiras: newIds })),
   removeIdGira: (idGira) =>
     set((state) => {
       const newArry = state.listIdsGiras.filter((id) => id != idGira);
       return { listIdsGiras: newArry };
     }),
+
+  girasRecomendadas: [],
+  setGirasRecomendadas: (giras) =>
+    set(() => ({
+      girasRecomendadas: giras,
+    })),
 }));

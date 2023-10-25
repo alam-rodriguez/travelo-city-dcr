@@ -119,6 +119,21 @@ export const useInfoPeople = create((set) => ({
       childrenNames: {},
       bebiesNames: {},
     })),
+
+  methodOfPay: '',
+  setMethodOfPay: (method) => set(() => ({ methodOfPay: method })),
+  bankSelected: 'banreservas',
+  setBankSelected: (bank) => set(() => ({ bankSelected: bank })),
+  banksCountsNumbers: {
+    banreservas: 123456789,
+    popular: 87654321,
+    bhd: 135798642,
+    scotiabank: 12324354678765,
+  },
+  setBanksCountsNumbers: (counts) =>
+    set(() => ({ banksCountsNumbers: counts })),
+  imgTransaccion: {},
+  setImgTransaccion: (img) => set(() => ({ imgTransaccion: img })),
 }));
 
 export const useImages = create((set) => ({
