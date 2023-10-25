@@ -27,13 +27,13 @@ const EstadisticaGira = () => {
   useEffect(() => {
     console.log(id);
     const f = async () => {
-      const countBabies = 0;
-      const countChildren = 0;
-      const countAdults = 0;
-      const priceBaby = 0;
-      const priceChild = 0;
-      const priceAdult = 0;
-      const countReservations = 0;
+      let countBabies = 0;
+      let countChildren = 0;
+      let countAdults = 0;
+      let priceBaby = 0;
+      let priceChild = 0;
+      let priceAdult = 0;
+      let countReservations = 0;
 
       const res = await getEstadisticasByCurrentId(id);
       res.forEach((reservacion) => {
