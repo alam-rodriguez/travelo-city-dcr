@@ -17,15 +17,15 @@ const Comment = ({
       <p className="m-0 fw-medium" style={{ fontSize: 15 }}>
         {name}
       </p>
-      <p className="m-0 text-secondary" style={{ fontSize: 14 }}>
+      {/* <p className="m-0 text-secondary" style={{ fontSize: 14 }}>
         {placeReview}
-      </p>
+      </p> */}
       <p className="m-0 text-secondary" style={{ fontSize: 14 }}>
         {dateReview}
       </p>
-      <p className="m-0 text-secondary" style={{ fontSize: 14 }}>
+      {/* <p className="m-0 text-secondary" style={{ fontSize: 14 }}>
         {countryPerson}
-      </p>
+      </p> */}
       <p className="mb-1" style={{ fontSize: 15 }}>
         {comment}
       </p>

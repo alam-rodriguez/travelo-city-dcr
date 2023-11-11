@@ -11,6 +11,7 @@ const CompletarReservacion = ({
   bebiesNames,
   userLogged,
   registrarUser,
+  setGoToUsePoints,
 }) => {
   // const { personAcountInfo, setNameAndSurname } = useInfoPeople();
 
@@ -26,18 +27,20 @@ const CompletarReservacion = ({
         <button
           className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium"
           onClick={registrarUser}
-          type="submit"
+          type="button"
         >
           Registrar usuario
         </button>
       ) : (
-        <button
-          className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium"
-          // onClick={handleClickCompletarReservacion}
-          type="submit"
-        >
-          Completar reservacion
-        </button>
+        <div className="d-flex flex-column gap-3">
+          <button
+            className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium"
+            onClick={setGoToUsePoints}
+            type="submit"
+          >
+            Completar reservacion
+          </button>
+        </div>
       )}
     </div>
   );

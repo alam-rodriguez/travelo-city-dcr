@@ -3,8 +3,10 @@ import { create } from 'zustand';
 export const useGiras = create((set) => ({
   giras: [],
   setGiras: (giras) => set(() => ({ giras: giras })),
+  viewGiraSelected: false,
   giraSelected: {},
-  setGiraSelected: (newGira) => set((state) => ({ giraSelected: newGira })),
+  setGiraSelected: (newGira) =>
+    set((state) => ({ giraSelected: newGira, viewGiraSelected: true })),
   removeGiraSelected: () => set(() => ({ giraSelected: {} })),
 }));
 
@@ -134,6 +136,9 @@ export const useInfoPeople = create((set) => ({
     set(() => ({ banksCountsNumbers: counts })),
   imgTransaccion: {},
   setImgTransaccion: (img) => set(() => ({ imgTransaccion: img })),
+
+  goToUsePoints: false,
+  setGoToUsePoints: (value) => set(() => ({ goToUsePoints: value })),
 }));
 
 export const useImages = create((set) => ({

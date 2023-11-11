@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // React-router-om
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -50,8 +50,13 @@ const GiraSelected = () => {
   const { currentId } = useParams();
   const navigate = useNavigate();
 
-  const { giras, giraSelected, setGiraSelected, removeGiraSelected } =
-    useGiras();
+  const {
+    giras,
+    giraSelected,
+    viewGiraSelected,
+    setGiraSelected,
+    removeGiraSelected,
+  } = useGiras();
 
   const { viewDescription, setViewDescription } = useViewDescription();
 
@@ -63,30 +68,32 @@ const GiraSelected = () => {
     useInfoPeople();
 
   useEffect(() => {
-    // console.log(giraSelected);
-    // console.log(giras);
-    // console.log(giraId);
-    // giras.forEach((gira) => {
-    //   if (gira.id == giraId) {
-    //     setGiraSelected(gira);
-    //     return;
-    //   }
-    // });
+    console.warn(giraSelected.id);
+    // console.log(!= undefined);
   }, []);
 
-  useEffect(() => {
-    // console.log(giraSelected.id);
-    if (giraSelected.id == undefined) {
-      const f = async () => {
-        console.log(giraSelected.id);
-        console.warn('Buscando gira por Id');
-        const gira = await getGira(currentId);
-        // console.log(gira);
-        setGiraSelected(gira);
-      };
-      f();
-    }
-  }, []);
+  // useEffect(() => {
+
+  //   console.log(giras);
+  //   console.log(giraSelected);
+  //   if (viewGiraSelected == true) return;
+  //   console.log(giraSelected.id);
+  //   if (giraSelected.id != undefined) return;
+
+  //   console.log('sigio');
+  //   console.log(giraSelected.id);
+  //   console.log(giras);
+  //   if (giraSelected.id == undefined) {
+  //     const f = async () => {
+  //       console.log(giraSelected.id);
+  //       console.warn('Buscando gira por Id');
+  //       const gira = await getGira(currentId);
+  //       // console.log(gira);
+  //       setGiraSelected(gira);
+  //     };
+  //     f();
+  //   }
+  // }, []);
 
   const handleScroll = () => {
     const scrollY = window.scrollY;
@@ -102,89 +109,96 @@ const GiraSelected = () => {
     };
   }, []);
 
-  if (giraSelected.id == undefined) return <></>;
+  if (giraSelected.id == undefined) return <div>Cargando...</div>;
 
   return (
-    <div className="scale-up-center">
+    <div className="scale-up-center-" onClick={() => console.log(giraSelected)}>
       <HeaderSelectedGira
-        text={!viewDescription ? giraSelected.title : giraSelected.description}
+        text={
+          !viewDescription
+            ? giraSelected.title ?? ''
+            : giraSelected.description ?? ''
+        }
         minLengthToShow={27}
         action={() => {
           navigate(-1);
-          removeGiraSelected();
+          // removeGiraSelected();
         }}
       />
 
       <ImagesViwer
-        giraId={giraSelected.id}
-        coverImageId={giraSelected.coverImageId}
-        imagesIds={giraSelected.idsImages}
+        giraId={giraSelected.id ?? 0}
+        coverImageId={giraSelected.coverImageId ?? null}
+        imagesIds={giraSelected.idsImages ?? []}
       />
 
-      <GiraInfo1
-        giraDescription={giraSelected.description}
-        giraPrice={giraSelected.prices.adult}
-      />
+      {/* <GiraInfo1
+        giraDescription={giraSelected.description ?? ''}
+        giraPrice={giraSelected.prices.adult ?? 0}
+      /> */}
 
       <hr />
 
       <GiraInfo2
-        giraOpinions={giraSelected.votes}
-        giraRate={giraSelected.rate}
+        giraId={giraSelected.id ?? 0}
+        giraOpinions={giraSelected.votes ?? 0}
+        giraRate={giraSelected.rate ?? 0}
       />
 
       <hr />
 
       <GiraInfo3
-        canCancelFree={giraSelected.canCancelFree}
-        duration={giraSelected.duration}
-        HasVoucherMovil={giraSelected.HasVoucherMovil}
-        instandConformation={giraSelected.instandConformation}
+        canCancelFree={giraSelected.canCancelFree ?? true}
+        duration={giraSelected.duration ?? 0}
+        HasVoucherMovil={giraSelected.HasVoucherMovil ?? true}
+        instandConformation={giraSelected.instandConformation ?? true}
       />
 
       <hr />
 
-      <AboutActivity aboutActivity={giraSelected.aboutActivity} />
+      <AboutActivity aboutActivity={giraSelected.aboutActivity ?? ''} />
 
-      <GeneralData generalData={giraSelected.generalData} />
+      <GeneralData generalData={giraSelected.generalData ?? []} />
 
-      <Map GiraUrl={giraSelected.locationUrl} />
+      <Map GiraUrl={giraSelected.locationUrl ?? ''} />
 
-      <ActivityUbication giraUbication={giraSelected.location} />
+      <ActivityUbication giraUbication={giraSelected.location ?? ''} />
 
-      <MeetingPoint giraMeetingPoint={giraSelected.meetingPoint} />
+      <MeetingPoint giraMeetingPoint={giraSelected.meetingPoint ?? ''} />
 
-      <Accordings
-        giraIncluye={giraSelected.includes}
-        giraNoIncluye={giraSelected.noIncludes}
-        giraUtilInformation={giraSelected.utilInformation}
-      />
+      {/* <Accordings
+        giraIncluye={giraSelected.includes ?? []}
+        giraNoIncluye={giraSelected.noIncludes ?? []}
+        giraUtilInformation={giraSelected.utilInformation ?? []}
+      /> */}
 
       <CartForReserve
-        giraDuration={giraSelected.giraDuration}
-        priceAdulto={giraSelected.prices.adult}
-        priceChild={giraSelected.prices.child}
-        priceBebe={giraSelected.prices.baby}
-        fecha={giraSelected.date}
-        giraFecha={giraSelected.giraFecha}
-        hora={`${giraSelected.hourInformation.hour}:${giraSelected.hourInformation.minute} ${giraSelected.hourInformation.amORpm}`}
-        canCancelFree={giraSelected.canCancelFree}
-        freeCancellationLimit={giraSelected.freeCancellationLimit}
-        dateLimitForCancel={giraSelected.dateLimitForCancel}
-        giraSelected={giraSelected}
+        giraDuration={giraSelected.giraDuration ?? 0}
+        priceAdulto={giraSelected.prices.adult ?? 0}
+        priceChild={giraSelected.prices.child ?? 0}
+        priceBebe={giraSelected.prices.baby ?? 0}
+        fecha={giraSelected.date ?? ''}
+        giraFecha={giraSelected.giraFecha ?? ''}
+        hora={`${giraSelected.hourInformation.hour ?? 0}:${
+          giraSelected.hourInformation.minute ?? 0
+        } ${giraSelected.hourInformation.amORpm ?? 'a.m'}`}
+        canCancelFree={giraSelected.canCancelFree ?? true}
+        freeCancellationLimit={giraSelected.freeCancellationLimit ?? 0}
+        dateLimitForCancel={giraSelected.dateLimitForCancel ?? ''}
+        giraSelected={giraSelected ?? {}}
       />
 
       <BtnSeleccionarEntradas />
 
       <SeleccionarPersonas
-        viewSeleccionarPersonas={viewSeleccionarPersonas}
-        priceAdulto={giraSelected.prices.adult}
-        priceChild={giraSelected.prices.child}
-        priceBebe={giraSelected.prices.baby}
-        price={giraSelected.price}
-        canGoAdulto={giraSelected.canGo.adults}
-        canGoChildren={giraSelected.canGo.children}
-        canGoBebes={giraSelected.canGo.babies}
+        viewSeleccionarPersonas={viewSeleccionarPersonas ?? false}
+        priceAdulto={giraSelected.prices.adult ?? 0}
+        priceChild={giraSelected.prices.child ?? 0}
+        priceBebe={giraSelected.prices.baby ?? 0}
+        price={giraSelected.price ?? 0}
+        canGoAdulto={giraSelected.canGo.adults ?? true}
+        canGoChildren={giraSelected.canGo.children ?? true}
+        canGoBebes={giraSelected.canGo.babies ?? true}
         deteleLastAdultoName={deteleLastAdultoName}
         deteleLastChildName={deteleLastChildName}
         deteleLastBebeName={deteleLastBebeName}

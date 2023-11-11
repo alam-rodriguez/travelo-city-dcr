@@ -57,6 +57,12 @@ import ListGirasActivas from './components/admin-options/giras/giras-activas/Lis
 import ListGirasRealizadas from './components/admin-options/giras/giras-realizadas/ListGirasRealizadas';
 import ViewReservationSelected from './components/admin-options/giras/giras-reservaciones/ViewReservationSelected';
 import ReservacionesCanceladasEnGirasActivas from './components/admin-options/giras/giras-reservaciones/cancelaciones/ReservacionesCanceladasEnGirasActivas';
+import OpcionesApp from './components/admin-options/sub-admin-options/OpcionesApp';
+// import PointsOptions from './components/admin-options/app-options/PointsOptions';
+// import BadgesOptions from './components/admin-options/app-options/BadgesOptions';
+import BadgesAndPointsOptions from './components/admin-options/app-options/BadgesOptions';
+import AddCommentGira from './components/comments/giras-comments/AddCommentGira';
+// import ChangeAppName from './components/admin-options/app-options/ChangeAppName';
 // import ManejadorGiras from './components/admin-options/sub-admin-options/OpcionesGiras';
 
 const routesForUser = [{ path: '/', component: Inicio }];
@@ -66,9 +72,13 @@ function App() {
   const { giras, setGiras } = useGiras();
 
   const iniciarSesion = async () => {
+    // console.log(userLogged);
     if (userLogged) return;
+    // console.log('first');
 
     const infoUser = await signInAutomatically();
+    console.log('first');
+    console.log(infoUser);
     if (infoUser != false) {
       setEmail(infoUser.email);
       setId(infoUser.id);
@@ -102,10 +112,26 @@ function App() {
           <Route path="/mis-viajes" Component={MisViajes} />
           <Route path="/giras" Component={GirasPage} />
           <Route path="/giras/:currentId" Component={GiraSelected} />
+          <Route path="giras/:giraId/comments" Component={CommentsGira} />
+          <Route path="giras/:giraId/add-comments" Component={AddCommentGira} />
+
           <Route path="/giras/reservar-gira" Component={ReservarGira} />
           <Route path="/sugerencia/:id" Component={Sugerencia} />
           {/* Components de admin */}
           <Route path="/admin-options" Component={AdminOptions} />
+          <Route path="/admin-options/opciones-app" Component={OpcionesApp} />
+          {/* <Route
+            path="/admin-options/opciones-app/change-name-app"
+            Component={ChangeAppName}
+          /> */}
+          {/* <Route
+            path="/admin-options/opciones-app/opciones-puntos"
+            Component={PointsOptions}
+          /> */}
+          <Route
+            path="/admin-options/opciones-app/opciones-insignias-y-puntos"
+            Component={BadgesAndPointsOptions}
+          />
           <Route
             path="/admin-options/opciones-giras"
             Component={OpcionesGiras}
@@ -167,7 +193,6 @@ function App() {
             path="/admin-options/list-giras-for-reservations/:currentId/:id"
             Component={ViewReservationSelected}
           />
-
           <Route
             path="/admin-options/list-all-giras-reservations"
             Component={ListAllReservations}

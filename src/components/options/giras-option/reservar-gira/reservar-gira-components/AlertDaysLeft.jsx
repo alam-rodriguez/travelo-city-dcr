@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Icons
+// Icon
 import { TbClockHour5 } from 'react-icons/tb';
 
 const AlertDaysLeft = ({ daysLeft }) => {
@@ -8,8 +8,10 @@ const AlertDaysLeft = ({ daysLeft }) => {
     <div className="d-flex bg-white p-3 my-3 shadow text-danger">
       <TbClockHour5 className="fs-3" />
       <p className="m-0 fw-medium">
-        Tu viaje cominza en {daysLeft} dias. Reserva ahora, mientras hay
-        disponibilidad.
+        {daysLeft > 0
+          ? `Tu viaje cominza en ${daysLeft} dias. Reserva ahora, mientras hay
+        disponibilidad.`
+          : 'El viaje ya es paso.'}
       </p>
     </div>
   );

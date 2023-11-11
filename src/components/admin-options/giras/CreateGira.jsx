@@ -26,6 +26,8 @@ import {
 } from '../../../firebase/firestoreGiras/imagenesGira';
 import InputSelectOneImage from './giras-components/giras/InputSelectOneImage';
 import Swal from 'sweetalert2';
+import { getBadgesAndPointsOptions } from '../../../firebase/admin-option/app-options/pointsSettings';
+import { useInfoApp } from '../../../zustand/admin/app/app';
 
 const CreateGira = () => {
   const {
@@ -55,6 +57,13 @@ const CreateGira = () => {
 
     priceBaby,
     setPriceBaby,
+
+    priceAdultInPoint,
+    setPriceAdultInPoint,
+    priceChildInPoint,
+    setPriceChildInPoint,
+    priceBabyInPoint,
+    setPriceBabyInPoint,
 
     meetingPoint,
     setMeetingPoint,
@@ -145,9 +154,35 @@ const CreateGira = () => {
 
     showGira,
     setShowGira,
+
+    activePoints,
+    setActivePoints,
+    activeDiscountWithPoints,
+    setActiveDiscountWithPoints,
+    activeBadges,
+    setActiveBadges,
+
+    badgesForThisGira,
+    setBadgesForThisGira,
+    editBadgesForThisGira,
+    editBadgesForThisGiraDescuentos,
   } = useCreateOrEditGira();
 
   const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
+
+  const { hasInfo, setSettingsBadgesAndPoints, costo, badges } = useInfoApp();
+  useEffect(() => {
+    if (hasInfo) return;
+    const f = async () => {
+      const res = await getBadgesAndPointsOptions();
+      if (res != false) {
+        setSettingsBadgesAndPoints(res);
+        setBadgesForThisGira(res.badges);
+      }
+      console.log(res);
+    };
+    f();
+  }, []);
 
   // '¿Quieres crear esta gira?',
   // '¿Estas seguro de que quieres crear esta gira? tus usuarios la veran, asi que asegurate de llenar toda la informacion necesaria.',
@@ -211,6 +246,13 @@ const CreateGira = () => {
   // }
 
   const crearGira = async (e) => {
+    // console.log({
+    //   adultInPoint: priceAdultInPoint,
+    //   childInPoint: priceChildInPoint,
+    //   babyInPoint: priceBabyInPoint,
+    // });
+
+    // return;
     e.preventDefault();
 
     const fecha = new Date().getTime();
@@ -280,6 +322,9 @@ const CreateGira = () => {
           adult: priceAdult,
           child: priceChild,
           baby: priceBaby,
+          adultInPoint: priceAdultInPoint,
+          childInPoint: priceChildInPoint,
+          babyInPoint: priceBabyInPoint,
         },
         aboutActivity: aboutActivity,
         canGo: {
@@ -316,6 +361,15 @@ const CreateGira = () => {
         coverImageId: coverImageId,
         idsImages: idsImages,
         showGira: showGira,
+        pointsAndBadgesSettings: {
+          activePoints,
+          activeDiscountWithPoints,
+          priceAdultInPoint,
+          priceChildInPoint,
+          priceBabyInPoint,
+          activeBadges,
+          badgesForThisGira,
+        },
       };
 
       const resCreateGira = await createGiraFirestore(newGira);
@@ -621,6 +675,89 @@ const CreateGira = () => {
             onClickToDelete={deleteImige}
             required={true}
           />
+
+          <hr />
+          <p>Seccion de puntos y insignias</p>
+          <Switch
+            id="active-points"
+            text="Activar generador de puntos y utilizar puntos"
+            checked={activePoints}
+            handleChange={setActivePoints}
+          />
+          {activePoints ? (
+            <>
+              <Input
+                id="costo-points-adult"
+                label="Costo en puntos para ir a Gira adulto"
+                value={priceAdultInPoint}
+                placeholder={`Recomendacion: ${200 * priceAdult}`}
+                handleChange={setPriceAdultInPoint}
+                type="number"
+              />
+              <Input
+                id="costo-points-child"
+                label="Costo en puntos para ir a Gira adulto"
+                value={priceChildInPoint}
+                placeholder={`Recomendacion: ${200 * priceChild}`}
+                handleChange={setPriceChildInPoint}
+                type="number"
+              />
+              <Input
+                id="costo-points-baby"
+                label="Costo en puntos para ir a Gira adulto"
+                value={priceBabyInPoint}
+                placeholder={`Recomendacion: ${200 * priceBaby}`}
+                handleChange={setPriceBabyInPoint}
+                type="number"
+              />
+
+              <Switch
+                id="active-discount-with-points"
+                text="Permitir generar descuentos con puntos"
+                checked={activeDiscountWithPoints}
+                handleChange={setActiveDiscountWithPoints}
+              />
+            </>
+          ) : (
+            <></>
+          )}
+
+          <Switch
+            id="active-badges"
+            text="Activar descuentos por insignias"
+            checked={activeBadges}
+            handleChange={setActiveBadges}
+          />
+          {activeBadges ? (
+            badgesForThisGira.map((badge, i) => (
+              <div className="border-bottom border-secondary pb-3 mb-3" key={i}>
+                <div className="d-flex align-items-center gap-3">
+                  <label
+                    className="m-0 fw-medium"
+                    htmlFor={`insignia-name-${i}`}
+                  >
+                    Insignia: <span className="fw-bold">{badge.badge}</span> |
+                    Porcentaje de descuento:
+                  </label>
+                  <input
+                    id={`insignia-name-${i}`}
+                    className="bg-transparent text-black border rounded-3 p-1 w-25"
+                    placeholder="Porcentaje de descuesto"
+                    value={badge.discountRate}
+                    onChange={(e) =>
+                      editBadgesForThisGiraDescuentos(Number(e.target.value), i)
+                    }
+                    type="number"
+                  />
+                </div>
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+
+          <hr />
+
           <Switch
             id="view-gira"
             text="Mostrar gira"
@@ -628,6 +765,7 @@ const CreateGira = () => {
             handleChange={setShowGira}
             fs="fs-4"
           />
+
           <BtnCreateGira />
         </div>
       </form>

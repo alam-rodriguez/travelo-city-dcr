@@ -9,12 +9,16 @@ const ReservationItem = ({
   hour,
   userName,
   userNumber,
+  userEmail,
+  stateReservation,
   adultsNames,
   adultPrice,
   childrenNames,
   childrenPrice,
   bebiesNames,
   bebiesPrice,
+  pointsUsed,
+  total,
   reservacion,
   handleClick,
 }) => {
@@ -26,8 +30,8 @@ const ReservationItem = ({
       <ReservacionP head="Fecha:" value={`${date} | ${hour}`} />
       <ReservacionP head="Nombre:" value={userName} />
       <ReservacionP head="Numero:" value={userNumber} />
-      {/* <ReservacionP head="Precio adulto:" value={adultPrice} /> */}
-      <ReservacionP head="Estado de reservacion:" value="confirmado" />
+      <ReservacionP head="Email:" value={userEmail} />
+      <ReservacionP head="Estado de reservacion:" value={stateReservation} />
 
       {Object.keys(adultsNames).length > 0 ||
       Object.keys(childrenNames).length > 0 ||
@@ -89,6 +93,14 @@ const ReservationItem = ({
       ) : (
         <></>
       )}
+      <hr />
+      {pointsUsed > 0 ? (
+        <ReservacionP head="Puntos utilizados:" value={pointsUsed} />
+      ) : (
+        <></>
+      )}
+
+      <ReservacionP head="Total:" value={total} />
     </div>
   );
 };

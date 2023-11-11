@@ -30,6 +30,7 @@ const ReservationsOfGira = () => {
       const res = await getReservationGira(currentId);
       if (res == false) return;
       res.sort((a, b) => b.dateInMilliseconds - a.dateInMilliseconds);
+      console.warn(res);
       setReservaciones(res);
     };
     f();
@@ -64,6 +65,8 @@ const ReservationsOfGira = () => {
             hour={reservacion.hourMakeReservation}
             userName={reservacion.userName}
             userNumber={reservacion.userNumber}
+            userEmail={reservacion.email}
+            stateReservation={reservacion.state}
             adultsNames={reservacion.adultsNames}
             adultPrice={reservacion.adultPrice}
             childrenNames={reservacion.childrenNames}
@@ -71,6 +74,8 @@ const ReservationsOfGira = () => {
             bebiesNames={reservacion.bebiesNames}
             bebiesPrice={reservacion.bebiesPrice}
             reservacion={reservacion}
+            pointsUsed={reservacion.pointsUsed}
+            total={reservacion.total - reservacion.discountInMoney}
             handleClick={handleClick}
           />
         ))}

@@ -16,16 +16,37 @@ import { useReservacionesGiras } from '../../../../zustand/admin/giras/giras-res
 import ReservacionItem from './giras-reservaciones-components/ReservacionP';
 import ReservacionP from './giras-reservaciones-components/ReservacionP';
 import ReservationItem from './giras-reservaciones-components/ReservationItem';
+import { useAlerts } from '../../../../zustand/alerts/alerts';
+import { updateReservation } from '../../../../firebase/firestoreGiras/reservations/reservations';
+import { getImage } from '../../../../firebase/firestoreGiras/imagenesGira';
 
 const ViewReservationSelected = () => {
+  const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
+
   const { currentId, id: idReservationSeleted } = useParams();
 
   const { reservacionSelecionada } = useReservacionesGiras();
 
+  const { reservacionesImages, addReservacionImage } = useReservacionesGiras();
   useEffect(() => {
     console.log(currentId);
     console.log(idReservationSeleted);
     console.log(reservacionSelecionada);
+    console.log(reservacionSelecionada.imageTransactionPath);
+    if (
+      reservacionSelecionada.imageTransactionPath == null ||
+      reservacionesImages[reservacionSelecionada.reservationId] != undefined
+    )
+      return;
+    console.log('buscando imagen');
+    const f = async () => {
+      const imgLink = await getImage(
+        reservacionSelecionada.imageTransactionPath,
+      );
+      addReservacionImage(reservacionSelecionada.reservationId, imgLink);
+      console.log(imgLink);
+    };
+    f();
   }, []);
 
   // useEffect(() => {
@@ -53,12 +74,65 @@ const ViewReservationSelected = () => {
   // const handleClick = (id) =>
   // navigate(`/admin-options/list-giras-for-reservations/${currentId}/${id}`);
 
-  const handleClickCancelarReservacion = () => {
-    console.log('Confirmacion cancelada');
+  const handleClickCancelarReservacion = async () => {
+    const res = await ask({
+      title: 'Cancelar reservacion',
+      text: 'Estas seguro de que quieres cancelar la reservacion, esto solo debe hacerse si el usuario a cancelado la reservacion.',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    });
+    if (!res.isConfirmed) return;
+    const reservationUpdated = {
+      reservationId: reservacionSelecionada.reservationId,
+      reservacionPagada: false,
+      state:
+        reservacionSelecionada.pointsUsed > 0
+          ? 'Adelanto realizado con Puntos'
+          : 'Pendiente',
+    };
+    waitingAlert('Cancelando reservacion...');
+    const resReser = await updateReservation(reservationUpdated);
+    if (resReser)
+      successAlert(
+        'Reservacion actualizada',
+        'La reservacion fue cancelada correctamente.',
+      );
+    else
+      errorAlert(
+        'Error',
+        'Ha ocurrido un error al intentar cancelar la reservacion, por favor revisa tu conexion a internet.',
+      );
   };
 
-  const handleClickConfirmarReservacion = () => {
-    console.log('Confirmacion confirmada');
+  const handleClickConfirmarReservacion = async () => {
+    const res = await ask({
+      title: 'Confirmar reservacion',
+      text: 'Estas seguro de que quieres confirmar la reservacion, esto solo debe hacerse si realmente el usuario ha pagado la reservacion.',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    });
+    if (!res.isConfirmed) return;
+    const reservationUpdated = {
+      reservationId: reservacionSelecionada.reservationId,
+      reservacionPagada: true,
+      state:
+        reservacionSelecionada.pointsUsed > 0
+          ? 'Pagada con puntos y dinero'
+          : 'Pagada',
+    };
+
+    waitingAlert('Confirmando reservacion...');
+    const resReser = await updateReservation(reservationUpdated);
+    if (resReser)
+      successAlert(
+        'Reservacion actualizada',
+        'La reservacion fue cancelada correctamente.',
+      );
+    else
+      errorAlert(
+        'Error',
+        'Ha ocurrido un error al intentar cancelar la reservacion, por favor revisa tu conexion a internet.',
+      );
   };
 
   return (
@@ -73,6 +147,10 @@ const ViewReservationSelected = () => {
           value={reservacionSelecionada.dayMadeReservation}
         />
         <ReservacionP
+          head="Fecha escrita:"
+          value={reservacionSelecionada.date}
+        />
+        <ReservacionP
           head="Hora:"
           value={reservacionSelecionada.hourMakeReservation}
         />
@@ -81,12 +159,32 @@ const ViewReservationSelected = () => {
           head="Numero:"
           value={reservacionSelecionada.userNumber}
         />
+        <ReservacionP head="Email:" value={reservacionSelecionada.email} />
+        <ReservacionP
+          head="Metodo de pago:"
+          value={reservacionSelecionada.methodOfPay}
+        />
+        {reservacionSelecionada.methodOfPay == 'tarjeta' ? (
+          <ReservacionP
+            head="Banco utilizado:"
+            value={reservacionSelecionada.bankSelected}
+          />
+        ) : (
+          <></>
+        )}
+
+        <ReservacionP
+          head="Pago completado:"
+          value={reservacionSelecionada.reservacionPagada ? 'Si' : 'No'}
+        />
         <ReservacionP
           head="Precio adulto:"
           value={reservacionSelecionada.adultPrice}
         />
-        <ReservacionP head="Estado de reservacion:" value="confirmado" />
-
+        <ReservacionP
+          head="Estado de reservacion:"
+          value={reservacionSelecionada.state}
+        />
         {Object.keys(reservacionSelecionada.adultsNames).length > 0 ||
         Object.keys(reservacionSelecionada.childrenNames).length > 0 ||
         Object.keys(reservacionSelecionada.bebiesNames).length > 0 ? (
@@ -94,7 +192,6 @@ const ViewReservationSelected = () => {
         ) : (
           <></>
         )}
-
         {Object.keys(reservacionSelecionada.adultsNames).length > 0 ? (
           <>
             <ReservacionP
@@ -117,7 +214,6 @@ const ViewReservationSelected = () => {
         ) : (
           <></>
         )}
-
         {Object.keys(reservacionSelecionada.childrenNames).length > 0 ? (
           <>
             <ReservacionP
@@ -162,8 +258,50 @@ const ViewReservationSelected = () => {
         ) : (
           <></>
         )}
-
-        <div className="position-fixed start-0 bottom-0 mb-5 w-100 d-flex justify-content-evenly">
+        <hr />
+        {reservacionSelecionada.pointsUsed > 0 ? (
+          <ReservacionP
+            head="Puntos usados:"
+            value={reservacionSelecionada.pointsUsed}
+          />
+        ) : (
+          <></>
+        )}
+        <ReservacionP
+          head="Total:"
+          value={
+            reservacionSelecionada.total -
+            reservacionSelecionada.discountInMoney
+          }
+        />
+        {reservacionSelecionada.imageTransactionPath != null ? (
+          <div className=" ">
+            <img
+              src={reservacionesImages[reservacionSelecionada.reservationId]}
+              className="w-100 object-fit-contain border border-success border-4"
+              // style={{ height: '300px' }}
+              alt=""
+            />
+          </div>
+        ) : (
+          <></>
+        )}
+        <div className="mt-5">
+          <p className="mb-1 text-center fw-medium fs-5">
+            Informacion de gira:
+          </p>
+          <p className="m-0 fw-medium">
+            Titulo de Gira:{' '}
+            <span className="fw-bold">{reservacionSelecionada.title}</span>
+          </p>
+          <p className="m-0 fw-medium">
+            Descripcion Gira:{' '}
+            <span className="fw-bold">
+              {reservacionSelecionada.description}
+            </span>
+          </p>
+        </div>
+        <div className="position-fixed- start-0- -bottom-0 mt-4 w-100 d-flex justify-content-evenly">
           <button
             className="bg-danger border-0 p-2 rounded-3 fw-medium"
             onClick={handleClickCancelarReservacion}

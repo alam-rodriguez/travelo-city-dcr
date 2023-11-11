@@ -37,6 +37,35 @@ export const useCreateOrEditGira = create((set) => ({
   priceBaby: '',
   setPriceBaby: (number) => set(() => ({ priceBaby: Number(number) })),
 
+  priceAdultInPoint: '',
+  setPriceAdultInPoint: (discount) =>
+    set(() => ({ priceAdultInPoint: Number(discount) })),
+
+  priceChildInPoint: '',
+  setPriceChildInPoint: (discount) =>
+    set(() => ({ priceChildInPoint: Number(discount) })),
+
+  priceBabyInPoint: '',
+  setPriceBabyInPoint: (discount) =>
+    set(() => ({ priceBabyInPoint: Number(discount) })),
+
+  badgesForThisGira: [],
+  setBadgesForThisGira: (badges) => set(() => ({ badgesForThisGira: badges })),
+  editBadgesForThisGiraDescuentos: (porcentaje, index) =>
+    set((state) => {
+      const newArray = [...state.badgesForThisGira];
+      newArray[index].discountRate = porcentaje;
+      return { badgesForThisGira: newArray };
+    }),
+
+  activePoints: false,
+  setActivePoints: (checked) => set(() => ({ activePoints: checked })),
+  activeDiscountWithPoints: false,
+  setActiveDiscountWithPoints: (checked) =>
+    set(() => ({ activeDiscountWithPoints: checked })),
+  activeBadges: false,
+  setActiveBadges: (checked) => set(() => ({ activeBadges: checked })),
+
   aboutActivity: '',
   setAboutActivity: (value) => set(() => ({ aboutActivity: value })),
 

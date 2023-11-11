@@ -21,11 +21,16 @@ const ImagesViwer = ({ giraId, coverImageId, imagesIds }) => {
         className="img-div d-flex- overflow-x-scroll- gap-1- bg-danger- w-100- slider "
         style={{ marginTop: 70, height: 240 }}
       >
-        <ImageView
-          giraId={giraId}
-          imageId={coverImageId}
-          imgPath={`giras/${giraId}/${coverImageId}`}
-        />
+        {coverImageId != null ? (
+          <ImageView
+            giraId={giraId}
+            imageId={coverImageId}
+            imgPath={`giras/${giraId}/${coverImageId}`}
+          />
+        ) : (
+          <></>
+        )}
+
         {imagesIds.map((imageId) => (
           <ImageView
             key={imageId}

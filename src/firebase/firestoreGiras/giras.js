@@ -57,6 +57,7 @@ export const createGiraFirestore = async (newGira) => {
       hasVotes: false,
       rate: 0,
       votes: 0,
+      pointsAndBadgesSettings: newGira.pointsAndBadgesSettings,
     });
     return true;
   } catch (e) {

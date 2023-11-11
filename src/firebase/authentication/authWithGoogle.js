@@ -26,10 +26,13 @@ export const signInAutomatically = () => {
         const email = user.email;
         const id = user.uid;
 
+        // return { email, id };
         resolve({ email, id });
       } else {
         // El usuario no está autenticado
         // reject(new Error('El usuario no está autenticado.'));
+        // return false;
+        console.log(user);
         reject(false);
       }
       // Detener el observador

@@ -5,6 +5,7 @@ import {
   getDocs,
   query,
   setDoc,
+  updateDoc,
   where,
 } from 'firebase/firestore';
 
@@ -35,6 +36,16 @@ export const createReservationGira = async (reservation) => {
       bankSelected: reservation.bankSelected,
       imageTransactionPath: reservation.imageTransactionPath,
       reservacionPagada: reservation.reservacionPagada,
+
+      usePoints: reservation.usePoints,
+      discountPercentWithPoints: reservation.discountPercentWithPoints,
+      discountPercentWithBadge: reservation.discountPercentWithBadge,
+      pointsUsed: reservation.pointsUsed,
+
+      reservacionPagada: reservation.reservacionPagada,
+      total: reservation.total,
+      discountInMoney: reservation.discountInMoney,
+      state: reservation.state,
     });
     return true;
   } catch (e) {
@@ -58,6 +69,21 @@ export const getReservationGira = async (id) => {
   } catch (e) {
     console.log(e);
     console.warn('error');
+    return false;
+  }
+};
+
+export const updateReservation = async (reservationUpdated) => {
+  try {
+    const docRef = doc(
+      db,
+      'reservationsGiras',
+      reservationUpdated.reservationId,
+    );
+    await updateDoc(docRef, reservationUpdated);
+    return true;
+  } catch (e) {
+    console.log(e);
     return false;
   }
 };

@@ -9,6 +9,10 @@ const AdminOptions = () => {
 
       <div className="d-flex gap-4 my-5 flex-wrap justify-content-between">
         <BtnOptions
+          text="Opciones de aplicacion"
+          link="/admin-options/opciones-app"
+        />
+        <BtnOptions
           text="Opciones para giras"
           link="/admin-options/opciones-giras"
         />

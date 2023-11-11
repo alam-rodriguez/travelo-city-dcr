@@ -62,6 +62,7 @@ const GiraItem = ({
   const { setGiraSelected } = useGiras();
 
   const handleClickGira = () => {
+    console.log(gira);
     setGiraSelected(gira);
     navigate(`/giras/${currentId}`);
   };

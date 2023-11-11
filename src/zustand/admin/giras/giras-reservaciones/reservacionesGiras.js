@@ -8,4 +8,9 @@ export const useReservacionesGiras = create((set) => ({
   reservaciones: [],
   setReservaciones: (reservaciones) =>
     set(() => ({ reservaciones: reservaciones })),
+  reservacionesImages: {},
+  addReservacionImage: (id, imgLink) =>
+    set((state) => ({
+      reservacionesImages: { ...state.reservacionesImages, [id]: imgLink },
+    })),
 }));
