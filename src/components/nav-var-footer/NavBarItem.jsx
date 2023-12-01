@@ -11,7 +11,7 @@ const NavBarItem = ({ icon, text, link }) => {
       style={{ width: '20%' }}
     >
       {icon}
-      <p className="m-0 mt-1" style={{ fontSize: 12 }}>
+      <p className="m-0 mt-1" style={{ fontSize: 10 }}>
         {text}
       </p>
     </NavLink>
