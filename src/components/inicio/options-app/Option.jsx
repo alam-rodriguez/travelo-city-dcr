@@ -11,7 +11,8 @@ const Option = ({ icon, text, link }) => {
   return (
     <div
       className="d-flex flex-column justify-content-center align-items-center border rounded-4 p-4"
-      style={{ width: '30%' }}
+      // style={{ width: '30%' }}
+      style={{ width: '60%' }}
       onClick={handleClickOptiona}
     >
       {icon}

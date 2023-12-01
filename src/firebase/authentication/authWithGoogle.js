@@ -2,6 +2,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   onAuthStateChanged,
+  signOut,
 } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig';
 
@@ -25,7 +26,7 @@ export const signInAutomatically = () => {
         // El usuario está autenticado, puedes acceder a sus propiedades, como el correo electrónico
         const email = user.email;
         const id = user.uid;
-
+        console.log(user);
         // return { email, id };
         resolve({ email, id });
       } else {
@@ -39,4 +40,15 @@ export const signInAutomatically = () => {
       unsubscribe();
     });
   });
+};
+
+export const signOutFirebase = async () => {
+  console.log('hola');
+  try {
+    await signOut(auth);
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 };

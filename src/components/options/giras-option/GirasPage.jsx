@@ -17,13 +17,17 @@ const GirasPage = () => {
 
   const { images, addImage } = useImages();
 
-  const { userSawGiras, setTrueUserSawGiras } = useInfoUser();
+  const { isAdmin, userSawGiras, setTrueUserSawGiras, type } = useInfoUser();
 
   useEffect(() => {
+    console.log(giras);
+    if (!isAdmin) return;
     const dateInMilliseconds = new Date().getTime();
     giras.map((gira) => {
-      if (gira.dateInMilliseconds < dateInMilliseconds)
-        alert('Ya esta gira paso');
+      if (gira.dateInMilliseconds < dateInMilliseconds) {
+        console.log(gira.dateInMilliseconds);
+        alert('Ya esta gira paso yyyyyy');
+      }
     });
   }, [giras]);
 
@@ -49,15 +53,11 @@ const GirasPage = () => {
     <div className="mb-3">
       <GirasHeader images={images} />
 
-      {giras.length > 0 ? (
-        <p className="text-center" style={{ fontSize: 13, marginTop: 95 }}>
-          {giras.length} giras de TraveloCity
-        </p>
-      ) : (
-        <p className="text-center" style={{ fontSize: 13, marginTop: 95 }}>
-          Cargando giras...
-        </p>
-      )}
+      <p className="text-center" style={{ fontSize: 13, paddingTop: 95 }}>
+        {giras.length > 0
+          ? `${giras.length} giras de TraveloCity`
+          : 'Cargando giras...'}
+      </p>
 
       <section className="d-flex flex-wrap justify-content-between">
         {giras.map((gira) => (
@@ -80,7 +80,7 @@ const GirasPage = () => {
         ))}
       </section>
 
-      <AdminBtns />
+      {type == 'admin' ? <AdminBtns /> : <></>}
     </div>
   );
 };

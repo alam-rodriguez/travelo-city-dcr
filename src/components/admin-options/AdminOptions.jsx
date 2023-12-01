@@ -25,6 +25,10 @@ const AdminOptions = () => {
           link="/admin-options/opciones-sugerencias"
         />
         <BtnOptions
+          text="Opciones para comentarios de giras"
+          link="/admin-options/opciones-comentarios-giras"
+        />
+        <BtnOptions
           text="Opciones para estadisticas"
           link="/admin-options/opciones-estadisticas-giras"
         />

@@ -33,7 +33,7 @@ const ItemList = ({ id, giraId, place, country, imgId, imgPath, gira }) => {
   return (
     <div
       className="border rounded-4 overflow-hidden w-100"
-      // style={{ minWidth: 330 }}
+      style={{ minWidth: '100%' }}
       onClick={handleClickItem}
     >
       {/* <img src={item.coverImageId} className="w-100" /> */}

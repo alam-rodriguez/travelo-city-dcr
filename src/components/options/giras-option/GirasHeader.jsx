@@ -6,9 +6,12 @@ import { BiSearch } from 'react-icons/bi';
 
 // React-router-dom
 import { useNavigate } from 'react-router-dom';
+import { useInfoApp } from '../../../zustand/admin/app/app';
 
 const GirasHeader = () => {
   const navigate = useNavigate();
+
+  const { nameAppShort } = useInfoApp();
 
   const handleClickBack = () => navigate('/');
 
@@ -18,7 +21,13 @@ const GirasHeader = () => {
         className="display-6 color-1"
         onClick={handleClickBack}
       />
-      <h3 className="m-0">Giras con TraveloCity</h3>
+      {/* <h3 className="m-0">Giras con TraveloCity</h3> */}
+      {nameAppShort != '' ? (
+        <h3 className="m-0">Giras con {nameAppShort}</h3>
+      ) : (
+        <></>
+      )}
+
       <BiSearch className="display-6 color-1" />
     </header>
   );

@@ -15,7 +15,7 @@ import InputFile from './giras-components/giras/InputFile';
 import BtnCreateGira from './giras-components/giras/BtnCreateGira';
 
 // React-Router-dom
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // Zustand
 import {
@@ -33,9 +33,13 @@ import InputSelectOneImage from './giras-components/giras/InputSelectOneImage';
 import InputFileToDeleteImage from './giras-components/giras/InputFileToDeleteImage';
 import { createGiraFirestore } from '../../../firebase/firestoreGiras/giras';
 import { useAlerts } from '../../../zustand/alerts/alerts';
+import { getBadgesAndPointsOptions } from '../../../firebase/admin-option/app-options/pointsSettings';
+import { useInfoApp } from '../../../zustand/admin/app/app';
 
 const RelanzarGira = () => {
   const { giras, setGiras } = girasListForAdmin();
+
+  const navigate = useNavigate();
 
   const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
 
@@ -72,6 +76,13 @@ const RelanzarGira = () => {
 
     priceBaby,
     setPriceBaby,
+
+    priceAdultInPoint,
+    setPriceAdultInPoint,
+    priceChildInPoint,
+    setPriceChildInPoint,
+    priceBabyInPoint,
+    setPriceBabyInPoint,
 
     meetingPoint,
     setMeetingPoint,
@@ -180,11 +191,40 @@ const RelanzarGira = () => {
 
     showGira,
     setShowGira,
+
+    activePoints,
+    setActivePoints,
+    activeDiscountWithPoints,
+    setActiveDiscountWithPoints,
+    activeBadges,
+    setActiveBadges,
+
+    badgesForThisGira,
+    setBadgesForThisGira,
+    editBadgesForThisGira,
+    editBadgesForThisGiraDescuentos,
   } = useCreateOrEditGira();
+
+  const { hasInfo, setSettingsBadgesAndPoints, costo, badges, valuePoint } =
+    useInfoApp();
+  useEffect(() => {
+    if (hasInfo) return;
+    const f = async () => {
+      const res = await getBadgesAndPointsOptions();
+      if (res != false) {
+        setSettingsBadgesAndPoints(res);
+        setBadgesForThisGira(res.badges);
+      }
+      console.log(res);
+    };
+    f();
+  }, []);
 
   const { currentId: currentIdValue } = useParams();
 
   useEffect(() => {
+    if (!hasInfo) return;
+    console.log('first');
     // console.log(currentIdValue);
     // console.log(giras);
     giras.forEach(async (gira) => {
@@ -279,6 +319,21 @@ const RelanzarGira = () => {
 
         setShowGira(gira.showGira);
 
+        console.log(gira.pointsAndBadgesSettings);
+
+        setActivePoints(gira.pointsAndBadgesSettings.activePoints);
+        setActiveDiscountWithPoints(
+          gira.pointsAndBadgesSettings.activeDiscountWithPoints,
+        );
+        setActiveBadges(gira.pointsAndBadgesSettings.activeBadges);
+        if (gira.pointsAndBadgesSettings.activeBadges)
+          setBadgesForThisGira(gira.pointsAndBadgesSettings.badgesForThisGira);
+        else setBadgesForThisGira(badges);
+
+        setPriceAdultInPoint(gira.pointsAndBadgesSettings.priceAdultInPoint);
+        setPriceChildInPoint(gira.pointsAndBadgesSettings.priceChildInPoint);
+        setPriceBabyInPoint(gira.pointsAndBadgesSettings.priceBabyInPoint);
+
         const imgLink = await getImage(`giras/${gira.id}/${gira.coverImageId}`);
         setCoverImage(imgLink);
 
@@ -305,7 +360,7 @@ const RelanzarGira = () => {
         return;
       }
     });
-  }, []);
+  }, [hasInfo]);
 
   const relanzarGira = async (e) => {
     e.preventDefault();
@@ -323,9 +378,9 @@ const RelanzarGira = () => {
     }
 
     const result = await ask({
-      title: '¿Quieres crear esta gira?',
-      text: '¿Estas seguro de que quieres crear esta gira? tus usuarios la veran, asi que asegurate de llenar toda la informacion necesaria.',
-      confirmButtonText: 'Crear Gira',
+      title: '¿Quieres relanzar esta gira?',
+      text: '¿Estas seguro de que quieres relanzar esta gira esta gira? tus usuarios la veran, asi que asegurate de llenar toda la informacion necesaria.',
+      confirmButtonText: 'Relanzar Gira',
     });
 
     if (!result.isConfirmed) return;
@@ -425,6 +480,15 @@ const RelanzarGira = () => {
         idsImages: idsImagesGira,
         images: images,
         showGira: showGira,
+        pointsAndBadgesSettings: {
+          activePoints,
+          activeDiscountWithPoints,
+          priceAdultInPoint,
+          priceChildInPoint,
+          priceBabyInPoint,
+          activeBadges,
+          badgesForThisGira,
+        },
       };
       console.log(newGira);
 
@@ -441,14 +505,15 @@ const RelanzarGira = () => {
     promise
       .then(() => {
         successAlert(
-          'Gira editada correctamente',
-          'Toda la informacion de la gira y todas las imagenes han sido editadas de manera exitosa',
+          'Gira relanzada correctamente',
+          'Toda la gira ha sido relanzada exitosamente, tus usuarios ya la pueden ver.',
         );
+        navigate('/giras');
       })
       .catch(() => {
         errorAlert(
           'Error',
-          'Ha ocurrido un error al intentar editar la gira, intentelo de nuevo',
+          'Ha ocurrido un error al intentar relanzar la gira, intentelo de nuevo',
         );
       });
   };
@@ -725,6 +790,89 @@ const RelanzarGira = () => {
             // pathsImagesOfGira={pathsImagesOfGira}
             // addIdImageToDelete={addIdImageToDelete}
           />
+
+          <hr />
+          <p>Seccion de puntos y insignias</p>
+          <Switch
+            id="active-points"
+            text="Activar generador de puntos y utilizar puntos"
+            checked={activePoints}
+            handleChange={setActivePoints}
+          />
+          {activePoints ? (
+            <>
+              <Input
+                id="costo-points-adult"
+                label="Costo en puntos para ir a Gira adulto"
+                value={priceAdultInPoint}
+                placeholder={`Recomendacion: ${valuePoint * priceAdult}`}
+                handleChange={setPriceAdultInPoint}
+                type="number"
+              />
+              <Input
+                id="costo-points-child"
+                label="Costo en puntos para ir a Gira niño"
+                value={priceChildInPoint}
+                placeholder={`Recomendacion: ${valuePoint * priceChild}`}
+                handleChange={setPriceChildInPoint}
+                type="number"
+              />
+              <Input
+                id="costo-points-baby"
+                label="Costo en puntos para ir a Gira bebe"
+                value={priceBabyInPoint}
+                placeholder={`Recomendacion: ${valuePoint * priceBaby}`}
+                handleChange={setPriceBabyInPoint}
+                type="number"
+              />
+
+              <Switch
+                id="active-discount-with-points"
+                text="Permitir generar descuentos con puntos"
+                checked={activeDiscountWithPoints}
+                handleChange={setActiveDiscountWithPoints}
+              />
+            </>
+          ) : (
+            <></>
+          )}
+
+          <Switch
+            id="active-badges"
+            text="Activar descuentos por insignias"
+            checked={activeBadges}
+            handleChange={setActiveBadges}
+          />
+          {activeBadges ? (
+            badgesForThisGira.map((badge, i) => (
+              <div className="border-bottom border-secondary pb-3 mb-3" key={i}>
+                <div className="d-flex align-items-center gap-3">
+                  <label
+                    className="m-0 fw-medium"
+                    htmlFor={`insignia-name-${i}`}
+                  >
+                    Insignia: <span className="fw-bold">{badge.badge}</span> |
+                    Porcentaje de descuento:
+                  </label>
+                  <input
+                    id={`insignia-name-${i}`}
+                    className="bg-transparent text-black border rounded-3 p-1 w-25"
+                    placeholder="Porcentaje de descuesto"
+                    value={badge.discountRate}
+                    onChange={(e) =>
+                      editBadgesForThisGiraDescuentos(Number(e.target.value), i)
+                    }
+                    type="number"
+                  />
+                </div>
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+
+          <hr />
+
           <Switch
             id="view-gira"
             text="Mostrar gira"
@@ -732,7 +880,7 @@ const RelanzarGira = () => {
             handleChange={setShowGira}
             fs="fs-4"
           />
-          <BtnCreateGira />
+          <BtnCreateGira text="Relanzar gira" />
         </form>
       </div>
     </>

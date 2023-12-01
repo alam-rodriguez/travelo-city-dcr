@@ -14,15 +14,15 @@ import Option from './Option';
 const OptionsApp = () => {
   return (
     <section className="mt-4 d-flex gap-3 justify-content-evenly justify-content-center flex-wrap">
-      <Option
+      {/* <Option
         icon={<BsFillBuildingsFill className="fs-3" />}
         text="Hospedaje"
-      />
-      <Option icon={<GiCommercialAirplane className="fs-3" />} text="Vuelos" />
-      <Option icon={<BiSolidCar className="fs-3" />} text="Autos" />
+      /> */}
+      {/* <Option icon={<GiCommercialAirplane className="fs-3" />} text="Vuelos" /> */}
+      {/* <Option icon={<BiSolidCar className="fs-3" />} text="Autos" /> */}
       <Option icon={<FaTicket className="fs-3" />} text="Giras" link="/giras" />
-      <Option icon={<RiShipFill className="fs-3" />} text="Cruceros" />
-      <Option icon={<BiSolidShoppingBags className="fs-3" />} text="Paquetes" />
+      {/* <Option icon={<RiShipFill className="fs-3" />} text="Cruceros" /> */}
+      {/* <Option icon={<BiSolidShoppingBags className="fs-3" />} text="Paquetes" /> */}
     </section>
   );
 };

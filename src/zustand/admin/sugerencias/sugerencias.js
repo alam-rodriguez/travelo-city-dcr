@@ -9,6 +9,14 @@ export const useSugerencia = create((set) => ({
   setSubtitulo: (value) => set(() => ({ subtitulo: value })),
   sugerencia: '',
   setSugerencia: (value) => set(() => ({ sugerencia: value })),
+  position: 1,
+  decrementPosition: () =>
+    set((state) => {
+      if (state.position > 1) return { position: state.position - 1 };
+      return {};
+    }),
+  incrementPosition: () => set((state) => ({ position: state.position + 1 })),
+  setPosition: (position) => set(() => ({ position: position })),
   imageFile: {},
   setImageFile: (imageFile) => set(() => ({ imageFile: imageFile })),
   questionsAndAnswer: [],

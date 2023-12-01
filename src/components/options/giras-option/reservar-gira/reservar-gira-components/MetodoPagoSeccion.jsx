@@ -4,8 +4,11 @@ import { RiImageAddFill } from 'react-icons/ri';
 
 const MetodoPagoSeccion = ({
   total,
+  totalWithDiscount,
   methodOfPay,
   setMethodOfPay,
+  methodOfPayWhenUsePoints,
+  setMethodOfPayWhenUsePoints,
   bankSelected,
   setBankSelected,
   banksCountsNumbers,
@@ -27,6 +30,9 @@ const MetodoPagoSeccion = ({
   const handleClickSelecImage = () => inputAddImage.current.click();
 
   const handleChangeImage = (e) => setImgTransaccion(e.target.files[0]);
+
+  const handleChangePayMethodWhenUsePoints = (e) =>
+    setMethodOfPayWhenUsePoints(e.target.value);
 
   return (
     <div className="bg-white shadow my-3 p-3">
@@ -64,6 +70,11 @@ const MetodoPagoSeccion = ({
           )}
           <option value="efectivo">Voy a pagar en efectivo</option>
           <option value="tarjeta">Voy a pagar con targeta de credito</option>
+          {discount > 0 ? (
+            <option value="points">Voy a utilizar mis puntos para pagar</option>
+          ) : (
+            <></>
+          )}
         </select>
       </div>
 
@@ -90,6 +101,88 @@ const MetodoPagoSeccion = ({
             </span>
           </p>
           <p className="m-0 fw-medium">
+            Total a pagar: <span className="fw-bold">{total}</span>
+          </p>
+        </>
+      ) : methodOfPay == 'efectivo' ? (
+        <p className="m-0 fw-medium">
+          Total a pagar: <span className="fw-bold">{total}</span>
+        </p>
+      ) : methodOfPay == 'points' && totalWithDiscount > 0 ? (
+        <>
+          <div className="my-3">
+            <p className="mb-1 fw-medium">
+              Como quieres pagar la cantidad restante ?
+            </p>
+            <select
+              className="bg-transparent w-100 border rounded-3 text-black rounded-1 p-2"
+              onChange={handleChangePayMethodWhenUsePoints}
+            >
+              <option value="efectivo">En efectivo</option>
+              <option value="tarjeta">Con tarjeta</option>
+            </select>
+
+            {methodOfPayWhenUsePoints == 'tarjeta' ? (
+              <>
+                <p className="mb-1 fw-medium">
+                  Selecciona en banco que vas a utilizar
+                </p>
+                <select
+                  className="bg-transparent w-100 border rounded-3 text-black rounded-1 p-2"
+                  onChange={handleChangeBank}
+                >
+                  <option value="banreservas">Banco BANRESERVAS</option>
+                  <option value="popular">Banco POPULAR</option>
+                  <option value="bhd">Banco BHD</option>npm run
+                  <option value="scotiabank">Banco SCOTIABANK</option>
+                </select>
+                <p className="m-0 fw-medium">
+                  Numero de cuenta:{' '}
+                  <span className="fw-bold text-decoration-underline color-1">
+                    {banksCountsNumbers[bankSelected]}
+                  </span>
+                </p>
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
+
+          <p className="m-0 fw-medium">
+            Total a pagar: <span className="fw-bold">{totalWithDiscount}</span>
+          </p>
+        </>
+      ) : methodOfPay == 'points' && totalWithDiscount == 0 ? (
+        <>
+          <p className="m-0 fw-medium">No tienes que pagar nada</p>
+        </>
+      ) : (
+        <></>
+      )}
+
+      {/* {methodOfPay == 'tarjeta' ? (
+        <>
+          <div className="my-3">
+            <p className="mb-1 fw-medium">
+              Selecciona en banco que vas a utilizar
+            </p>
+            <select
+              className="bg-transparent w-100 border rounded-3 text-black rounded-1 p-2"
+              onChange={handleChangeBank}
+            >
+              <option value="banreservas">Banco BANRESERVAS</option>
+              <option value="popular">Banco POPULAR</option>
+              <option value="bhd">Banco BHD</option>
+              <option value="scotiabank">Banco SCOTIABANK</option>
+            </select>
+          </div>
+          <p className="m-0 fw-medium">
+            Numero de cuenta:{' '}
+            <span className="fw-bold text-decoration-underline color-1">
+              {banksCountsNumbers[bankSelected]Quieres }
+            </span>
+          </p>
+          <p className="m-0 fw-medium">
             Total a pagar:{' '}
             <span className="fw-bold">
               {total > 0 ? total : 'No tienes que pagar'}
@@ -103,7 +196,7 @@ const MetodoPagoSeccion = ({
             {total > 0 ? total : 'No tienes que pagar'}
           </span>
         </p>
-      )}
+      )} */}
 
       <hr />
 
@@ -131,7 +224,10 @@ const MetodoPagoSeccion = ({
         ) : (
           <></>
         )} */}
-      {methodOfPay == 'tarjeta' ? (
+      {methodOfPay == 'tarjeta' ||
+      (methodOfPay == 'points' &&
+        totalWithDiscount > 0 &&
+        methodOfPayWhenUsePoints == 'tarjeta') ? (
         <div
           className="d-flex flex-column justify-content-center align-items-center p-1 my-3"
           style={{ height: 250, border: 'dashed 3px black' }}
@@ -160,7 +256,8 @@ const MetodoPagoSeccion = ({
       ) : (
         <></>
       )}
-      {methodOfPay == 'tarjeta' ? (
+      {methodOfPay == 'tarjeta' ||
+      (methodOfPay == 'points' && methodOfPayWhenUsePoints == 'tarjeta') ? (
         <p className="m-0 text-secondary" style={{ fontSize: 12 }}>
           Esta imagen solo se utilizara para comprobar que realizaste tu pedido,
           por favor asegurese de poner una imagen validad, de lo contrario sera

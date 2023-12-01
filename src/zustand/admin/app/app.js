@@ -3,6 +3,14 @@ import { create } from 'zustand';
 export const useInfoApp = create((set) => ({
   hasInfo: false,
 
+  nameAppShort: '',
+  nameAppLarge: '',
+  setNamesApp: (names) =>
+    set(() => ({
+      nameAppShort: names.nombreCorto,
+      nameAppLarge: names.nombreLargo,
+    })),
+
   activePoints: true,
   setActivePoints: (active) => set(() => ({ activePoints: active })),
   costo: 0,
@@ -49,5 +57,13 @@ export const useInfoApp = create((set) => ({
       valuePoint: settings.valuePoint,
       activeBadges: settings.activeBadges,
       badges: settings.badges,
+    })),
+
+  adminsEmails: [],
+  semiAdminsEmails: [],
+  setEmailsAdmins: (emails) =>
+    set(() => ({
+      adminsEmails: emails.admins,
+      semiAdminsEmails: emails.semiAdmins,
     })),
 }));

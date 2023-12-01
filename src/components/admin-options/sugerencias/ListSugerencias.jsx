@@ -21,7 +21,10 @@ const ListSugerencias = () => {
     console.log('Buscando sugerencias');
     const f = async () => {
       const res = await getSugerencias();
-      if (res != false) setSugerencias(res);
+      if (res != false) {
+        res.sort((a, b) => a.position - b.position);
+        setSugerencias(res);
+      }
     };
     f();
   }, []);

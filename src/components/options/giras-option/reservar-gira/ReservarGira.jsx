@@ -14,7 +14,11 @@ import { useInfoUser } from '../../../../zustand/user/user';
 // Firebase
 import { createReservationGira } from '../../../../firebase/firestoreGiras/reservations/reservations';
 import { signInWithGoogle } from '../../../../firebase/authentication/authWithGoogle';
-import { getUserInfo, setUserInfo } from '../../../../firebase/users/users';
+import {
+  getUserInfo,
+  setUserInfo,
+  updateUserInfo,
+} from '../../../../firebase/users/users';
 import { uploadImageReservationGira } from '../../../../firebase/firestoreGiras/reservations/reservationsImages';
 
 // Components
@@ -29,9 +33,18 @@ import MetodoPagoSeccion from './reservar-gira-components/MetodoPagoSeccion';
 import { getBadgesAndPointsOptions } from '../../../../firebase/admin-option/app-options/pointsSettings';
 import { useInfoApp } from '../../../../zustand/admin/app/app';
 import MetodoPagarConPuntos from './reservar-gira-components/MetodoPagarConPuntos';
+import { useNavigate } from 'react-router-dom';
+import ReservationDone from './reservar-gira-components/ReservationDone';
 
 const ReservarGira = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (giraSelected.id == undefined) {
+      navigate('/giras');
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
     // const points =
     //   50 *
     //   (countPersons * giraSelected.prices.adult +
@@ -144,7 +157,10 @@ const ReservarGira = () => {
 
   const [daysLeft, setDaysLeft] = useState(0);
 
-  useEffect(() => calcDiscount(), [pointsEarned]);
+  useEffect(() => {
+    if (!haveUserInfo) return;
+    calcDiscount();
+  }, [pointsEarned, pointsSpent]);
   // useEffect(
   //   () => alert(`Puesdes ahorrarte ${discountInMoney} pesos en esta gira`),
   //   [discountInMoney],
@@ -162,8 +178,11 @@ const ReservarGira = () => {
 
     const fechaActual = new Date();
     const fechaEspecifica = new Date(giraSelected.dateLimitForCancelDetaild);
+    console.log(fechaEspecifica);
+    console.log(giraSelected.dateInMilliseconds);
     const diferenciaEnMilisegundos = fechaEspecifica - fechaActual;
     const diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
+    console.log(diferenciaEnDias);
     setDaysLeft(Math.floor(diferenciaEnDias));
     console.log(`La diferencia es de ${diferenciaEnDias} días.`);
   }, []);
@@ -185,6 +204,8 @@ const ReservarGira = () => {
     resetNames,
     methodOfPay,
     setMethodOfPay,
+    methodOfPayWhenUsePoints,
+    setMethodOfPayWhenUsePoints,
     bankSelected,
     setBankSelected,
     banksCountsNumbers,
@@ -226,8 +247,11 @@ const ReservarGira = () => {
       countBabies * giraSelected.pointsAndBadgesSettings.priceBabyInPoint;
 
     const PointsRes = pointsEarned - pointsSpent;
-    console.log(PointsRes);
-    if (giraSelected.pointsAndBadgesSettings.activeDiscountWithPoints) {
+    // console.log(pointsEarned);
+    // console.log(pointsSpent);
+    // console.log(PointsRes);
+    console.log(giraSelected.pointsAndBadgesSettings);
+    if (!giraSelected.pointsAndBadgesSettings.activeDiscountWithPoints) {
       if (PointsRes >= pointsNeeded) {
         console.log('first');
         descuento = 100;
@@ -306,6 +330,11 @@ const ReservarGira = () => {
     // setDiscount();
   };
 
+  // const [sugerenciaId, setSugerenciaId] = useState();
+  const [reservationId, setReservationId] = useState();
+
+  const [reservationIsDone, setReservationIsDone] = useState(false);
+
   const handleClickCompletarReservacion = async (e) => {
     e.preventDefault();
 
@@ -334,21 +363,59 @@ const ReservarGira = () => {
     const dateInMilliseconds = dateDetailed.getTime();
     const hour = getHour();
 
-    const result = await ask({
-      title: '¿Quieres reservar esta gira?',
-      text: '¿Estas seguro de que quieres hacer esta reservar? si aceptas le avisaremos a nuestros administradores y te contactaremos para comfirmar tu reservacion.',
-      confirmButtonText: 'Recervar',
-    });
+    const result =
+      methodOfPay == 'efectivo'
+        ? await ask({
+            title: '¿Quieres reservar esta gira?',
+            text: '¿Estas seguro de que quieres hacer esta reservar? si aceptas le avisaremos a nuestros administradores y te contactaremos para comfirmar tu reservacion.',
+            confirmButtonText: 'Recervar',
+          })
+        : methodOfPay == 'tarjeta'
+        ? await ask({
+            title: '¿Quieres reservar esta gira?',
+            text: '¿Estas seguro de que quieres hacer esta reservar? si aceptas le enviaremos la imagen a los administradores para que comprueven que realmente realizaste el pago.',
+            confirmButtonText: 'Recervar',
+          })
+        : methodOfPay == 'points'
+        ? await ask({
+            title: '¿Quieres reservar esta gira?',
+            text: '¿Estas seguro de que quieres hacer esta reservar? Esta reservacion la realizaras con algunos de tus puntos, y si luego quieres cancelar la reservacion no recuperaras tus puntos.',
+            confirmButtonText: 'Recervar',
+          })
+        : null;
+
+    console.log(result.isConfirmed);
     if (!result.isConfirmed) return;
-    waitingAlert();
+    waitingAlert(
+      methodOfPay == 'tarjeta' ||
+        (methodOfPay == 'points' && methodOfPayWhenUsePoints == 'tarjeta')
+        ? 'Enviando reservacion y imagen de recibo...'
+        : 'Enviando reservacion...',
+    );
 
     const promise = new Promise(async (resolve, reject) => {
       console.log(date);
       // console.log(giraSelected);
 
       const idReservation = uuid();
+      setReservationId(idReservation);
 
       console.log(badgeUser);
+
+      console.log(activePoints);
+
+      const totalGira = goToUsePoints
+        ? countPersons * giraSelected.prices.adult +
+          countChildren * giraSelected.prices.child +
+          countBabies * giraSelected.prices.baby -
+          discountInMoney
+        : countPersons * giraSelected.prices.adult +
+          countChildren * giraSelected.prices.child +
+          countBabies * giraSelected.prices.baby;
+
+      const pointsEarnedForThisGira = activePoints ? totalGira * costPoints : 0;
+
+      console.log(giraSelected);
 
       const reserve = {
         reservationId: idReservation,
@@ -364,6 +431,12 @@ const ReservarGira = () => {
         description: giraSelected.description,
         date: giraSelected.date,
         dateDetaild: giraSelected.dateDetaild,
+        GiraDateInMilliseconds: giraSelected.dateInMilliseconds,
+        giraDateLimitForCancelInMilliseconds:
+          giraSelected.dateLimitForCancelInMilliseconds,
+        horaGira: `${giraSelected.hourInformation.hour ?? 0}:${
+          giraSelected.hourInformation.minute ?? 0
+        } ${giraSelected.hourInformation.amORpm}`,
 
         adultsNames: adultosNames,
         adultPrice: giraSelected.prices.adult,
@@ -377,33 +450,41 @@ const ReservarGira = () => {
         methodOfPay,
         bankSelected,
 
-        usePoints: activePoints ? goToUsePoints : false,
+        usePoints: methodOfPay == 'points' ? goToUsePoints : false,
         discountPercentWithPoints: activePoints ? discountPercentWithPoints : 0,
         discountPercentWithBadge: activeBadges ? discountPercentWithBadge : 0,
-        pointsUsed: activePoints ? pointsHasToSpent : 0,
+        pointsUsed: methodOfPay == 'points' ? pointsHasToSpent : 0,
 
         imageTransactionPath:
-          methodOfPay == 'tarjeta'
+          methodOfPay == 'tarjeta' ||
+          (methodOfPay == 'points' && methodOfPayWhenUsePoints == 'tarjeta')
             ? `reservationsGiras/${idReservation}`
             : null,
-        reservacionPagada: methodOfPay == 'tarjeta' ? true : false,
+        reservacionPagada:
+          methodOfPay == 'tarjeta' ||
+          (methodOfPay == 'points' && methodOfPayWhenUsePoints == 'tarjeta') ||
+          (methodOfPay == 'points' && discountInMoney >= total)
+            ? true
+            : false,
         total: total,
         discountInMoney: goToUsePoints ? discountInMoney : 0,
         state:
+          methodOfPayWhenUsePoints == 'tarjeta' &&
           discountPercentWithBadge + discountPercentWithPoints >= 100 &&
           goToUsePoints
             ? 'Pagado con puntos'
             : discountPercentWithBadge + discountPercentWithPoints > 0 &&
               goToUsePoints &&
-              methodOfPay == 'tarjeta'
+              methodOfPayWhenUsePoints == 'tarjeta'
             ? 'Pagado con puntos y tarjeta'
             : discountPercentWithBadge + discountPercentWithPoints > 0 &&
               goToUsePoints &&
-              methodOfPay == 'efectivo'
+              methodOfPayWhenUsePoints == 'efectivo'
             ? 'Adelanto realizado con Puntos'
             : methodOfPay == 'tarjeta'
             ? 'Pago con tarjeta'
             : 'Pendiente',
+
         // discountPercentWithBadge + discountPercentWithPoints >= 100
         //   ? 'Pagado con puntos'
         //   : methodOfPay == 'tarjeta'
@@ -411,6 +492,9 @@ const ReservarGira = () => {
         //   : goToUsePoints && methodOfPay == 'tarjeta'
         //   ? 'Pagado con puntos y tarjeta'
         //   : 'Pendiente',
+
+        pointsEarned: pointsEarnedForThisGira,
+        isConfirmByAdmin: false,
       };
       console.log(discountPercentWithPoints);
 
@@ -424,20 +508,10 @@ const ReservarGira = () => {
           imgTransaccion,
         );
 
-      const totalGira = goToUsePoints
-        ? countPersons * giraSelected.prices.adult +
-          countChildren * giraSelected.prices.child +
-          countBabies * giraSelected.prices.baby -
-          discountInMoney
-        : countPersons * giraSelected.prices.adult +
-          countChildren * giraSelected.prices.child +
-          countBabies * giraSelected.prices.baby;
-
       // const pointsforGira = totalGira * 50;
 
       const badge = {};
 
-      const pointsEarnedForThisGira = activePoints ? totalGira * costPoints : 0;
       if (activePoints) {
         // pointsEarnedForThisGira = totalGira * valuePoint;
         const pointsForAdult =
@@ -452,6 +526,8 @@ const ReservarGira = () => {
           countBabies * pointsForBaby;
       }
 
+      console.log(pointsEarnedForThisGira);
+
       const newInfoUser = {
         email: email,
         id: id,
@@ -461,16 +537,17 @@ const ReservarGira = () => {
         pointsEarned: activePoints
           ? pointsEarned + pointsEarnedForThisGira
           : pointsEarned,
-        pointsSpent: goToUsePoints
-          ? pointsSpent + pointsHasToSpent
-          : pointsSpent,
+        pointsSpent:
+          methodOfPay == 'points'
+            ? pointsSpent + pointsHasToSpent
+            : pointsSpent,
         // badge: calcBadge(moneySpent + totalGira),
       };
       const gg = calcBadge(newInfoUser.moneySpent, badges);
       console.log(gg);
       console.log(newInfoUser);
 
-      const resUserInfo = await setUserInfo(newInfoUser);
+      const resUserInfo = await updateUserInfo(newInfoUser);
 
       if (resUserInfo) {
         console.log('info actualizada');
@@ -480,11 +557,12 @@ const ReservarGira = () => {
       else reject();
     });
     promise
-      .then(() => {
-        successAlert(
+      .then(async () => {
+        await successAlert(
           'Reservacion realizada exitosamente',
           'Tu reservacion fue creada y enviada a nuestros administradores, te estaremos contactando para confirmar tu reservacion.',
         );
+        setReservationIsDone(true);
       })
       .catch(() => {
         errorAlert(
@@ -501,8 +579,11 @@ const ReservarGira = () => {
       email: infoUser.email,
       id: infoUser.id,
       moneySpent: 0,
+      name: '',
+      number: 0,
       pointsEarned: 0,
       pointsSpent: 0,
+      type: 'customer',
     });
 
     if (infoUser != false) {
@@ -527,6 +608,20 @@ const ReservarGira = () => {
     console.log(discountPercentWithPoints);
   }, [discountPercentWithBadge, discountPercentWithPoints]);
 
+  if (reservationIsDone)
+    return (
+      <ReservationDone
+        tituloGira={giraSelected.title}
+        reservationId={reservationId}
+        fechaGira={giraSelected.date}
+        horaGira={`${giraSelected.hourInformation.hour}:${giraSelected.hourInformation.minute} ${giraSelected.hourInformation.amORpm}`}
+        timeGira={giraSelected.duration}
+        traverlers={countPersons + countChildren + countBabies}
+        lugarEncuentro={giraSelected.meetingPoint}
+      />
+    );
+
+  if (giraSelected.id == undefined) return <></>;
   return (
     <>
       <HeaderReserveGira resetNames={resetNames} />
@@ -564,7 +659,7 @@ const ReservarGira = () => {
           <span className="fw-bold">dolares estadounidenses.</span>
         </p>
 
-        <AlertDaysLeft daysLeft={daysLeft} />
+        <AlertDaysLeft dateInMilliseconds={giraSelected.dateInMilliseconds} />
 
         <WhoTravelSection
           countPersons={countPersons}
@@ -588,11 +683,18 @@ const ReservarGira = () => {
           total={
             countPersons * giraSelected.prices.adult +
             countChildren * giraSelected.prices.child +
+            countBabies * giraSelected.prices.baby
+          }
+          totalWithDiscount={
+            countPersons * giraSelected.prices.adult +
+            countChildren * giraSelected.prices.child +
             countBabies * giraSelected.prices.baby -
             discountInMoney
           }
           methodOfPay={methodOfPay}
           setMethodOfPay={setMethodOfPay}
+          methodOfPayWhenUsePoints={methodOfPayWhenUsePoints}
+          setMethodOfPayWhenUsePoints={setMethodOfPayWhenUsePoints}
           bankSelected={bankSelected}
           setBankSelected={setBankSelected}
           banksCountsNumbers={banksCountsNumbers}
@@ -603,19 +705,24 @@ const ReservarGira = () => {
 
         <ImportantInformationSection />
 
-        <CompletarReservacion
-          nameAndSurname={nameAndSurname}
-          number={number}
-          adultosNames={adultosNames}
-          childrenNames={childrenNames}
-          bebiesNames={bebiesNames}
-          userLogged={userLogged}
-          registrarUser={registrarUser}
-          setGoToUsePoints={() => setGoToUsePoints(false)}
-        />
+        {methodOfPay != 'points' ? (
+          <CompletarReservacion
+            nameAndSurname={nameAndSurname}
+            number={number}
+            adultosNames={adultosNames}
+            childrenNames={childrenNames}
+            bebiesNames={bebiesNames}
+            userLogged={userLogged}
+            registrarUser={registrarUser}
+            setGoToUsePoints={() => setGoToUsePoints(false)}
+          />
+        ) : (
+          <></>
+        )}
 
-        {discountPercentWithBadge + discountPercentWithPoints > 0 &&
-        (activePoints || activeBadges) ? (
+        {/* {discountPercentWithBadge + discountPercentWithPoints > 0 &&
+        (activePoints || activeBadges) ? ( */}
+        {methodOfPay == 'points' ? (
           <MetodoPagarConPuntos
             points={pointsEarned - pointsSpent}
             goToUsePoints={goToUsePoints}

@@ -28,8 +28,11 @@ import InputSelectOneImage from './giras-components/giras/InputSelectOneImage';
 import Swal from 'sweetalert2';
 import { getBadgesAndPointsOptions } from '../../../firebase/admin-option/app-options/pointsSettings';
 import { useInfoApp } from '../../../zustand/admin/app/app';
+import { useNavigate } from 'react-router-dom';
 
 const CreateGira = () => {
+  const navigate = useNavigate();
+
   const {
     title,
     setTitle,
@@ -170,7 +173,8 @@ const CreateGira = () => {
 
   const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
 
-  const { hasInfo, setSettingsBadgesAndPoints, costo, badges } = useInfoApp();
+  const { hasInfo, setSettingsBadgesAndPoints, costo, badges, valuePoint } =
+    useInfoApp();
   useEffect(() => {
     if (hasInfo) return;
     const f = async () => {
@@ -392,11 +396,13 @@ const CreateGira = () => {
     });
     promiseCreateGira
       .then((res) => {
-        if (res != 'cancelado')
+        if (res != 'cancelado') {
           successAlert(
             'Gira creada exitosamente',
             'Toda la informacion de la gira y todas las imagenes han sido publicadas de manera exitosa',
           );
+          navigate('/giras');
+        }
       })
       .catch(() => {
         errorAlert(
@@ -690,23 +696,23 @@ const CreateGira = () => {
                 id="costo-points-adult"
                 label="Costo en puntos para ir a Gira adulto"
                 value={priceAdultInPoint}
-                placeholder={`Recomendacion: ${200 * priceAdult}`}
+                placeholder={`Recomendacion: ${valuePoint * priceAdult}`}
                 handleChange={setPriceAdultInPoint}
                 type="number"
               />
               <Input
                 id="costo-points-child"
-                label="Costo en puntos para ir a Gira adulto"
+                label="Costo en puntos para ir a Gira niño"
                 value={priceChildInPoint}
-                placeholder={`Recomendacion: ${200 * priceChild}`}
+                placeholder={`Recomendacion: ${valuePoint * priceChild}`}
                 handleChange={setPriceChildInPoint}
                 type="number"
               />
               <Input
                 id="costo-points-baby"
-                label="Costo en puntos para ir a Gira adulto"
+                label="Costo en puntos para ir a Gira bebe"
                 value={priceBabyInPoint}
-                placeholder={`Recomendacion: ${200 * priceBaby}`}
+                placeholder={`Recomendacion: ${valuePoint * priceBaby}`}
                 handleChange={setPriceBabyInPoint}
                 type="number"
               />

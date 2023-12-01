@@ -15,7 +15,7 @@ const HeaderReserveGira = ({ resetNames }) => {
   };
 
   return (
-    <header className="d-flex border-bottom border-secondary justify-content-between align-items-center position-fixed start-0 w-100 py-4 bg-white">
+    <header className="d-flex border-bottom border-secondary justify-content-between align-items-center position-fixed start-0 w-100 py-4 bg-white z-1">
       <MdArrowBackIosNew
         className="display-6 color-1"
         onClick={handleClickBack}

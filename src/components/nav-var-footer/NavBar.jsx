@@ -18,7 +18,7 @@ const NavBar = () => {
   if (
     location.pathname != '/' &&
     location.pathname != '/buscar' &&
-    location.pathname != '/mis-viajes' &&
+    location.pathname != '/mis-giras' &&
     location.pathname != '/notificaciones' &&
     location.pathname != '/perfil'
   ) {
@@ -39,14 +39,14 @@ const NavBar = () => {
       />
       <NavBarItem
         icon={<FaSuitcase className="fs-2" />}
-        text="Mis viajes"
-        link="/mis-viajes"
+        text="Mis giras"
+        link="/mis-giras"
       />
-      <NavBarItem
+      {/* <NavBarItem
         icon={<IoMdNotifications className="fs-2" />}
         text="Notificaciones"
         link="/notificaciones"
-      />
+      /> */}
       <NavBarItem
         icon={<MdAccountCircle className="fs-2" />}
         text="Cuenta"

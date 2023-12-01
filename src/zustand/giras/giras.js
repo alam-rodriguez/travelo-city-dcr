@@ -124,6 +124,9 @@ export const useInfoPeople = create((set) => ({
 
   methodOfPay: '',
   setMethodOfPay: (method) => set(() => ({ methodOfPay: method })),
+  methodOfPayWhenUsePoints: 'efectivo',
+  setMethodOfPayWhenUsePoints: (method) =>
+    set(() => ({ methodOfPayWhenUsePoints: method })),
   bankSelected: 'banreservas',
   setBankSelected: (bank) => set(() => ({ bankSelected: bank })),
   banksCountsNumbers: {

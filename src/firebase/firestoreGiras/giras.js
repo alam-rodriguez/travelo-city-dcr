@@ -104,11 +104,13 @@ export const updateGira = async (currentId, giraUpdated) => {
       coverImageId: giraUpdated.coverImageId,
 
       showGira: giraUpdated.showGira,
+      pointsAndBadgesSettings: giraUpdated.pointsAndBadgesSettings,
 
       // hasVotes: false,
       // rate: 0,
       // votes: 0,
     });
+    console.log(giraUpdated.pointsAndBadgesSettings);
     return true;
   } catch (e) {
     console.log(e);

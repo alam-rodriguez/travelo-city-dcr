@@ -45,6 +45,7 @@ const InputDate = ({
     //   mes: mesNumber,
     //   year: year,
     // });
+    console.log(fechaDate.getTime());
     setfechaEnMilisegundos(fechaDate.getTime());
     setFechaDetallada(fecha);
     console.log(`${diaEnLetras} ${dianumber} de ${mes} del ${year}`);

@@ -256,6 +256,9 @@ export const useCreateOrEditGira = create((set) => ({
 
   showGira: true,
   setShowGira: (checked) => set(() => ({ showGira: checked })),
+
+  pasoFechaGira: false,
+  setPasoFechaGira: (pasoFecha) => set(() => ({ pasoFechaGira: pasoFecha })),
 }));
 
 export const girasListForAdmin = create((set) => ({

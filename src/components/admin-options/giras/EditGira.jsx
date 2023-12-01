@@ -46,8 +46,12 @@ import InputSelectOneImage from './giras-components/giras/InputSelectOneImage';
 import { useAlerts } from '../../../zustand/alerts/alerts';
 import BtnDeleteGira from './giras-components/giras/BtnDeleteGira';
 import BtnSaveGira from './giras-components/giras/BtnSaveGira';
+import { useInfoApp } from '../../../zustand/admin/app/app';
+import { getBadgesAndPointsOptions } from '../../../firebase/admin-option/app-options/pointsSettings';
 
 const EditGira = () => {
+  const navigate = useNavigate();
+
   const { images: imagesGiras } = useImages();
 
   // const { giras, setGiras, giraSelected, setGiraSelected, removeGiraSelected } =
@@ -77,6 +81,7 @@ const EditGira = () => {
     const dateInMilliseconds = new Date().getTime();
     giras.map((gira) => {
       if (gira.dateInMilliseconds < dateInMilliseconds) {
+        console.log(gira.dateInMilliseconds);
         setViewBtnForSaveGira(true);
         alert('Ya esta gira paso');
         return;
@@ -117,6 +122,13 @@ const EditGira = () => {
 
     priceBaby,
     setPriceBaby,
+
+    priceAdultInPoint,
+    setPriceAdultInPoint,
+    priceChildInPoint,
+    setPriceChildInPoint,
+    priceBabyInPoint,
+    setPriceBabyInPoint,
 
     meetingPoint,
     setMeetingPoint,
@@ -225,14 +237,54 @@ const EditGira = () => {
 
     showGira,
     setShowGira,
+
+    activePoints,
+    setActivePoints,
+    activeDiscountWithPoints,
+    setActiveDiscountWithPoints,
+    activeBadges,
+    setActiveBadges,
+
+    badgesForThisGira,
+    setBadgesForThisGira,
+    editBadgesForThisGira,
+    editBadgesForThisGiraDescuentos,
+
+    pasoFechaGira,
+    setPasoFechaGira,
   } = useCreateOrEditGira();
+
+  const { hasInfo, setSettingsBadgesAndPoints, costo, badges, valuePoint } =
+    useInfoApp();
+  // useEffect(() => {
+  //   if ((!hasInfo && activeBadges) || id == '') return;
+  //   console.log(activeBadges);
+  //   console.log(id);
+  //   setBadgesForThisGira(badges);
+  // }, [hasInfo, activeBadges, id]);
+
+  // useEffect(() => {
+  //   console.log(badges);
+  //   if (hasInfo) return;
+  //   const f = async () => {
+  //     const res = await getBadgesAndPointsOptions();
+  //     if (res != false) {
+  //       setSettingsBadgesAndPoints(res);
+  //       console.log(res.badges);
+  //       setBadgesForThisGira(res.badges);
+  //     }
+  //     console.log(res);
+  //   };
+  //   f();
+  // }, []);
 
   // const navigate = useNavigate();
 
   const { currentId: currentIdOfParams } = useParams();
 
   useEffect(() => {
-    if (allGiras.length == 0) return;
+    if (allGiras.length == 0 || !hasInfo) return;
+    console.log('first');
     // console.log(currentId);
     console.log(giras);
     console.log(currentId);
@@ -288,8 +340,32 @@ const EditGira = () => {
 
         setShowGira(gira.showGira);
 
+        console.log(gira);
+
+        setActivePoints(gira.pointsAndBadgesSettings.activePoints);
+        setActiveDiscountWithPoints(
+          gira.pointsAndBadgesSettings.activeDiscountWithPoints,
+        );
+        setActiveBadges(gira.pointsAndBadgesSettings.activeBadges);
+        console.log(gira.pointsAndBadgesSettings.badgesForThisGira);
+        console.log(badges);
+        if (gira.pointsAndBadgesSettings.activeBadges)
+          setBadgesForThisGira(gira.pointsAndBadgesSettings.badgesForThisGira);
+        else setBadgesForThisGira(badges);
+
+        setPriceAdultInPoint(gira.pointsAndBadgesSettings.priceAdultInPoint);
+        setPriceChildInPoint(gira.pointsAndBadgesSettings.priceChildInPoint);
+        setPriceBabyInPoint(gira.pointsAndBadgesSettings.priceBabyInPoint);
+
         const imgLink = await getImage(`giras/${gira.id}/${gira.coverImageId}`);
         setCoverImage(imgLink);
+
+        const dateInMilliseconds = new Date().getTime();
+        if (gira.dateInMilliseconds < dateInMilliseconds)
+          setPasoFechaGira(true);
+        else setPasoFechaGira(false);
+
+        // setGiraIsDone();
 
         let imagesLinks = [];
 
@@ -314,7 +390,7 @@ const EditGira = () => {
         return;
       }
     });
-  }, [allGiras]);
+  }, [allGiras, hasInfo]);
 
   const editarGira = async (e) => {
     e.preventDefault();
@@ -332,8 +408,8 @@ const EditGira = () => {
     }
 
     const result = await ask({
-      title: '¿Quieres crear esta gira?',
-      text: '¿Estas seguro de que quieres crear esta gira? tus usuarios la veran, asi que asegurate de llenar toda la informacion necesaria.',
+      title: '¿Quieres editar esta gira?',
+      text: '¿Estas seguro de que quieres editar esta gira? tus usuarios veran los cambios, asi que asegurate de que la nueva informacion sea correcta, cambiar valores como la fecha pueden ser peligroso.',
       confirmButtonText: 'Crear Gira',
     });
 
@@ -448,8 +524,19 @@ const EditGira = () => {
           newCoverImageId != undefined ? newCoverImageId : coverImageId,
         idsImages: imagesOfThisCurrentId,
         showGira: showGira,
+        pointsAndBadgesSettings: {
+          activePoints,
+          activeDiscountWithPoints,
+          priceAdultInPoint,
+          priceChildInPoint,
+          priceBabyInPoint,
+          activeBadges,
+          badgesForThisGira,
+        },
       };
       console.log(newGira);
+
+      console.log(badgesForThisGira);
 
       //? PASO 8: Aqui edito categoria
       const resUpdateGira = await updateGira(currentId, newGira);
@@ -509,11 +596,12 @@ const EditGira = () => {
     });
 
     promesa
-      .then(() => {
-        successAlert(
+      .then(async () => {
+        await successAlert(
           'Gira editada correctamente',
           'Toda la informacion de la gira y todas las imagenes han sido editadas de manera exitosa',
         );
+        navigate(-1);
       })
       .catch(() => {
         errorAlert(
@@ -541,7 +629,7 @@ const EditGira = () => {
     if (!result2.isConfirmed) return;
 
     const promesa = new Promise(async (resolve, reject) => {
-      waitingAlert();
+      waitingAlert('Eliminando gira...');
 
       //? PASO 1: EliminarGira de base de datos
       const resDeleteGira = await deleteGira(currentId);
@@ -593,24 +681,46 @@ const EditGira = () => {
       console.log(idsImagesToDelete);
       // })
 
+      console.log(resDeleteGira);
+      console.log(girasOfId);
+      console.log(resIdsOfFile);
+      console.log(resImagesDeleted);
+      if (girasOfId != false) {
+        console.log('Esta bien');
+      }
+      if (resIdsOfFile != false) {
+        console.log('Esta bien');
+      }
+
       if (
         resDeleteGira &&
-        girasOfId != false &&
-        resIdsOfFile != false &&
+        typeof girasOfId == 'object' &&
+        typeof resIdsOfFile == 'object' &&
         resImagesDeleted
       ) {
         resolve();
       } else {
         reject();
       }
+      // if (
+      //   resDeleteGira &&
+      //   girasOfId != false &&
+      //   resIdsOfFile != false &&
+      //   resImagesDeleted
+      // ) {
+      //   resolve();
+      // } else {
+      //   reject();
+      // }
     });
 
     promesa
-      .then(() => {
-        successAlert(
+      .then(async () => {
+        await successAlert(
           'Gira eliminada correctamente',
           'Toda la informacion de la gira y todas las imagenes han sido eliminadas de manera exitosa',
         );
+        navigate(-1);
       })
       .catch(() => {
         errorAlert(
@@ -966,6 +1076,86 @@ const EditGira = () => {
           // pathsImagesOfGira={pathsImagesOfGira}
           // addIdImageToDelete={addIdImageToDelete}
         />
+
+        <hr />
+        <p>Seccion de puntos y insignias</p>
+        <Switch
+          id="active-points"
+          text="Activar generador de puntos y utilizar puntos"
+          checked={activePoints}
+          handleChange={setActivePoints}
+        />
+        {activePoints ? (
+          <>
+            <Input
+              id="costo-points-adult"
+              label="Costo en puntos para ir a Gira adulto"
+              value={priceAdultInPoint}
+              placeholder={`Recomendacion: ${valuePoint * priceAdult}`}
+              handleChange={setPriceAdultInPoint}
+              type="number"
+            />
+            <Input
+              id="costo-points-child"
+              label="Costo en puntos para ir a Gira niño"
+              value={priceChildInPoint}
+              placeholder={`Recomendacion: ${valuePoint * priceChild}`}
+              handleChange={setPriceChildInPoint}
+              type="number"
+            />
+            <Input
+              id="costo-points-baby"
+              label="Costo en puntos para ir a Gira bebe"
+              value={priceBabyInPoint}
+              placeholder={`Recomendacion: ${valuePoint * priceBaby}`}
+              handleChange={setPriceBabyInPoint}
+              type="number"
+            />
+
+            <Switch
+              id="active-discount-with-points"
+              text="Permitir generar descuentos con puntos"
+              checked={activeDiscountWithPoints}
+              handleChange={setActiveDiscountWithPoints}
+            />
+          </>
+        ) : (
+          <></>
+        )}
+
+        <Switch
+          id="active-badges"
+          text="Activar descuentos por insignias"
+          checked={activeBadges}
+          handleChange={setActiveBadges}
+        />
+        {activeBadges ? (
+          badgesForThisGira.map((badge, i) => (
+            <div className="border-bottom border-secondary pb-3 mb-3" key={i}>
+              <div className="d-flex align-items-center gap-3">
+                <label className="m-0 fw-medium" htmlFor={`insignia-name-${i}`}>
+                  Insignia: <span className="fw-bold">{badge.badge}</span> |
+                  Porcentaje de descuento:
+                </label>
+                <input
+                  id={`insignia-name-${i}`}
+                  className="bg-transparent text-black border rounded-3 p-1 w-25"
+                  placeholder="Porcentaje de descuesto"
+                  value={badge.discountRate}
+                  onChange={(e) =>
+                    editBadgesForThisGiraDescuentos(Number(e.target.value), i)
+                  }
+                  type="number"
+                />
+              </div>
+            </div>
+          ))
+        ) : (
+          <></>
+        )}
+
+        <hr />
+
         <Switch
           id="view-gira"
           text="Mostrar gira"
@@ -975,11 +1165,17 @@ const EditGira = () => {
         />
         <div className="d-flex gap-4">
           <BtnDeleteGira action={eliminarGira} />
-          <BtnCreateGira />
+          <BtnCreateGira text="Actualizar gira" />
         </div>
 
-        <BtnSaveGira action={guardarGira} />
-        <BtnArchivarGira action={archivarGira} />
+        {pasoFechaGira ? (
+          <>
+            <BtnSaveGira action={guardarGira} />
+            <BtnArchivarGira action={archivarGira} />
+          </>
+        ) : (
+          <></>
+        )}
       </form>
     </>
   );

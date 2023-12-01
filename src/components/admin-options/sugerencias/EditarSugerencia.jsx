@@ -16,14 +16,19 @@ import TextArea from '../admin-options-components/insputs/TextArea';
 // Zustand
 import { useSugerencia } from '../../../zustand/admin/sugerencias/sugerencias';
 import InputWithIndex from '../admin-options-components/insputs/InputWithIndex';
-import { getGirasNoDone } from '../../../firebase/firestoreGiras/giras';
+import {
+  getAllGiras,
+  getGirasNoDone,
+} from '../../../firebase/firestoreGiras/giras';
 import {
   createSugerenciaFirestore,
+  deleteSugerencia,
   getSugerencia,
   getSugerencias,
   updateSugerenciaFirestore,
 } from '../../../firebase/sugerencias/sugerencias';
 import {
+  deleteImageSugerencia,
   getImageSugerencia,
   uploadImageSugerencia,
 } from '../../../firebase/sugerencias/imagenesSugerencias';
@@ -32,6 +37,8 @@ import {
   useSugerenciaSelected,
   useSugerencias,
 } from '../../../zustand/sugerencias/sugerencias';
+import { FaTrashAlt } from 'react-icons/fa';
+import { useAlerts } from '../../../zustand/alerts/alerts';
 
 const EditarSugerencia = () => {
   const { id: idOfParams } = useParams();
@@ -52,6 +59,7 @@ const EditarSugerencia = () => {
     console.log('Buscando sugerencias');
     const f = async () => {
       const res = await getSugerencias();
+      console.log(res);
       if (res != false) setSugerencias(res);
     };
     f();
@@ -70,6 +78,10 @@ const EditarSugerencia = () => {
     setSubtitulo,
     sugerencia,
     setSugerencia,
+    position,
+    incrementPosition,
+    decrementPosition,
+    setPosition,
     imageFile,
     setImageFile,
     questionsAndAnswer,
@@ -87,48 +99,35 @@ const EditarSugerencia = () => {
     setGirasRecomendadas,
   } = useSugerencia();
 
-  const updateSugerencia = async (e) => {
-    e.preventDefault();
-
-    let resImage = true;
-
-    if (imageFile.name != undefined) {
-      resImage = await uploadImageSugerencia('sugerencias', id, imageFile);
-    }
-    // const id = uuidv4();
-    const sugerenciaActualizada = {
-      titulo,
-      subtitulo,
-      info: sugerencia,
-      idsGiras: listIdsGiras,
-      questionsAndAnswer,
-    };
-
-    console.log(sugerenciaActualizada);
-
-    const res = await updateSugerenciaFirestore(id, sugerenciaActualizada);
-
-    // const resImage = await uploadImageSugerencia('sugerencias', id, imageFile);
-
-    if (res && resImage) console.log('Sugerencia actualizada');
-
-    // console.log(titulo);
-    // console.log(subtitulo);
-    // console.log(sugerencia);
-    // console.log(imageFile);
-    // console.log(listIdsGiras);
-    // console.log(questionsAndAnswer);
-  };
+  const { ask, successAlert, errorAlert, waitingAlert, warningAlert } =
+    useAlerts();
 
   const [giras, setGiras] = useState([]);
 
   useEffect(() => {
-    const f = async () => {
-      const res = await getGirasNoDone();
-      setGiras(res);
-      console.log(res);
-    };
-    f();
+    console.log(giras);
+    // if (giras.length == 0) return;
+    console.log('f');
+    let existe = false;
+    console.log(sugerencias);
+    sugerencias.forEach((sugerencia) => {
+      if (sugerencia.id == idOfParams) {
+        console.log(sugerencia);
+        setInfo(sugerencia);
+        existe = true;
+        return;
+      }
+    });
+    console.log(existe);
+    if (!existe) {
+      const f = async () => {
+        console.log('Buscando info en BD');
+        const sugerencia = await getSugerencia(idOfParams);
+        console.log(sugerencia);
+        setInfo(sugerencia);
+      };
+      f();
+    }
   }, []);
 
   const setInfo = async (sugerencia) => {
@@ -137,9 +136,13 @@ const EditarSugerencia = () => {
     setTitulo(sugerencia.titulo);
     setSubtitulo(sugerencia.subtitulo);
     setSugerencia(sugerencia.info);
+    setPosition(sugerencia.position);
+    console.log(sugerencia.idsGiras);
     setIdGira(sugerencia.idsGiras);
     setQuestionsAndAnswer(sugerencia.questionsAndAnswer);
     console.log(sugerencia.questionsAndAnswer);
+
+    listIdsGiras;
 
     const girasOfSugerencia = [];
     giras.forEach((gira) => {
@@ -154,25 +157,88 @@ const EditarSugerencia = () => {
     }
   };
 
-  useEffect(() => {
-    if (giras.length == 0) return;
-    let existe = false;
-    sugerencias.forEach((sugerencia) => {
-      if (sugerencia.id == idOfParams) {
-        setInfo(sugerencia);
-        existe = true;
-        return;
-      }
+  const updateSugerencia = async (e) => {
+    e.preventDefault();
+
+    const want = await ask({
+      title: 'Quieres actualizar la sugerencia?',
+      text: 'Estas seguro de que quieres actualizar la gira realmente, tus usuarios veran los cambios.',
+      confirmButtonText: 'Actualizar sugerencia',
     });
-    if (!existe) {
-      const f = async () => {
-        console.log('Buscando info en BD');
-        const sugerencia = await getSugerencia(idOfParams);
-        setInfo(sugerencia);
-      };
-      f();
+    if (!want.isConfirmed) return;
+    waitingAlert('Actualizando Sugerencia...');
+
+    let resImage = true;
+    if (imageFile.name != undefined) {
+      resImage = await uploadImageSugerencia('sugerencias', id, imageFile);
     }
-  }, [giras]);
+    // const id = uuidv4();
+    const sugerenciaActualizada = {
+      titulo,
+      subtitulo,
+      info: sugerencia,
+      position,
+      idsGiras: listIdsGiras,
+      questionsAndAnswer,
+    };
+
+    console.log(sugerenciaActualizada);
+
+    const res = await updateSugerenciaFirestore(id, sugerenciaActualizada);
+
+    // const resImage = await uploadImageSugerencia('sugerencias', id, imageFile);
+
+    if (res && resImage)
+      successAlert(
+        'Sugerencia actualizada',
+        'La sugerencia ha sido actualizada correctamente.',
+      );
+    else
+      errorAlert(
+        'Ha ocurrido un error',
+        'Ha ocurrido un error al intentar actualizar la sugerencia.',
+      );
+    //  console.log('Sugerencia actualizada');
+
+    // console.log(titulo);
+    // console.log(subtitulo);
+    // console.log(sugerencia);
+    // console.log(imageFile);
+    // console.log(listIdsGiras);
+    // console.log(questionsAndAnswer);
+  };
+
+  useEffect(() => {
+    console.log(listIdsGiras);
+    // if (listIdsGiras.length == 0) return;
+    if (id == '') return;
+
+    console.log(listIdsGiras);
+    const f = async () => {
+      console.log(listIdsGiras);
+      // const res = await getGirasNoDone();
+      const res = await getAllGiras();
+      const girasToRender = [];
+      console.log(listIdsGiras);
+      res.forEach((gira) => {
+        if (gira.showGira || listIdsGiras.includes(gira.currentId))
+          girasToRender.push(gira);
+        console.log(gira);
+      });
+
+      console.log(girasToRender.length);
+      setGiras(girasToRender);
+    };
+    f();
+  }, [id]);
+
+  const handleClickDeleteSugerencia = async () => {
+    console.log(id);
+    const res = await deleteSugerencia(id);
+    const resImage = await deleteImageSugerencia(`sugerencias/${id}`);
+    if (res && resImage) alert('Sugerencia borrada');
+    console.log('hola');
+  };
 
   return (
     <form onSubmit={updateSugerencia}>
@@ -205,6 +271,15 @@ const EditarSugerencia = () => {
         placeholder="Sugerencia que quieres compartir"
         handleChange={setSugerencia}
       />
+
+      <div className="d-flex justify-content-between align-items-center">
+        <GrSubtractCircle className="display-2" onClick={decrementPosition} />
+        <p className="m-0 display-3 fw-bold">{position}</p>
+        <MdOutlineAddCircleOutline
+          className="display-1"
+          onClick={incrementPosition}
+        />
+      </div>
 
       <input
         type="file"
@@ -277,6 +352,10 @@ const EditarSugerencia = () => {
       <MdOutlineAddCircleOutline
         className="display-1"
         onClick={() => addQuestionsAndAnswer(questionsAndAnswer.length)}
+      />
+      <FaTrashAlt
+        className="text-danger display-3 ms-4"
+        onClick={handleClickDeleteSugerencia}
       />
       {/* </div> */}
     </form>

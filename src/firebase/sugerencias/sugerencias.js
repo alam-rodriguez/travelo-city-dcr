@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -50,6 +51,16 @@ export const getSugerencia = async (id) => {
 
     if (docSnap.exists()) return docSnap.data();
     else return {};
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const deleteSugerencia = async (id) => {
+  try {
+    await deleteDoc(doc(db, 'sugerencias', id));
+    return true;
   } catch (e) {
     console.log(e);
     return false;

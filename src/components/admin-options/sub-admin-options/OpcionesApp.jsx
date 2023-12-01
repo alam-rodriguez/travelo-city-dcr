@@ -8,14 +8,14 @@ const OpcionesApp = () => {
       <Headers text="Opciones de la aplicacion" link="/admin-options" />
 
       <div className="d-flex gap-4 my-5 flex-wrap justify-content-between">
-        {/* <BtnOptions
+        <BtnOptions
           text="Cambiar nombre de la app"
           link="/admin-options/opciones-app/change-name-app"
-        /> */}
-        <BtnOptions
+        />
+        {/* <BtnOptions
           text="Opciones de puntos"
           link="/admin-options/opciones-app/opciones-puntos"
-        />
+        /> */}
         <BtnOptions
           text="Configuracion de puntos y insignias"
           link="/admin-options/opciones-app/opciones-insignias-y-puntos"

@@ -68,32 +68,21 @@ const GiraSelected = () => {
     useInfoPeople();
 
   useEffect(() => {
-    console.warn(giraSelected.id);
-    // console.log(!= undefined);
+    console.log(giraSelected.dateInMilliseconds);
+    if (giraSelected.id != undefined) return;
+    // console.log(giraSelected.hourInformation.amORpm);
+
+    console.log('sigio');
+    if (giraSelected.id == undefined) {
+      const f = async () => {
+        console.log(giraSelected.id);
+        console.warn('Buscando gira por Id');
+        const gira = await getGira(currentId);
+        setGiraSelected(gira);
+      };
+      f();
+    }
   }, []);
-
-  // useEffect(() => {
-
-  //   console.log(giras);
-  //   console.log(giraSelected);
-  //   if (viewGiraSelected == true) return;
-  //   console.log(giraSelected.id);
-  //   if (giraSelected.id != undefined) return;
-
-  //   console.log('sigio');
-  //   console.log(giraSelected.id);
-  //   console.log(giras);
-  //   if (giraSelected.id == undefined) {
-  //     const f = async () => {
-  //       console.log(giraSelected.id);
-  //       console.warn('Buscando gira por Id');
-  //       const gira = await getGira(currentId);
-  //       // console.log(gira);
-  //       setGiraSelected(gira);
-  //     };
-  //     f();
-  //   }
-  // }, []);
 
   const handleScroll = () => {
     const scrollY = window.scrollY;
@@ -120,10 +109,7 @@ const GiraSelected = () => {
             : giraSelected.description ?? ''
         }
         minLengthToShow={27}
-        action={() => {
-          navigate(-1);
-          // removeGiraSelected();
-        }}
+        action={() => navigate('/giras')}
       />
 
       <ImagesViwer
@@ -132,15 +118,16 @@ const GiraSelected = () => {
         imagesIds={giraSelected.idsImages ?? []}
       />
 
-      {/* <GiraInfo1
+      <GiraInfo1
         giraDescription={giraSelected.description ?? ''}
         giraPrice={giraSelected.prices.adult ?? 0}
-      /> */}
+      />
 
       <hr />
 
       <GiraInfo2
         giraId={giraSelected.id ?? 0}
+        giraCurrentId={giraSelected.currentId}
         giraOpinions={giraSelected.votes ?? 0}
         giraRate={giraSelected.rate ?? 0}
       />
@@ -160,17 +147,17 @@ const GiraSelected = () => {
 
       <GeneralData generalData={giraSelected.generalData ?? []} />
 
-      <Map GiraUrl={giraSelected.locationUrl ?? ''} />
+      <Map GiraUrl={giraSelected.locationUrl} />
 
       <ActivityUbication giraUbication={giraSelected.location ?? ''} />
 
       <MeetingPoint giraMeetingPoint={giraSelected.meetingPoint ?? ''} />
 
-      {/* <Accordings
+      <Accordings
         giraIncluye={giraSelected.includes ?? []}
         giraNoIncluye={giraSelected.noIncludes ?? []}
         giraUtilInformation={giraSelected.utilInformation ?? []}
-      /> */}
+      />
 
       <CartForReserve
         giraDuration={giraSelected.giraDuration ?? 0}

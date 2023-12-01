@@ -1,9 +1,20 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
 
 export const setUserInfo = async (userInfo) => {
   try {
     await setDoc(doc(db, 'users', userInfo.id), userInfo);
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const updateUserInfo = async (userInfo) => {
+  try {
+    const docRef = doc(db, 'users', userInfo.id);
+    await updateDoc(docRef, userInfo);
     return true;
   } catch (e) {
     console.log(e);

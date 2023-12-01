@@ -4,7 +4,7 @@ const Input = ({
   id,
   label,
   type = 'text',
-  i,
+  // i,
   value,
   placeholder,
   minLength = 3,

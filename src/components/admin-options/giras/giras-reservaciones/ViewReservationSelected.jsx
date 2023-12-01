@@ -89,6 +89,35 @@ const ViewReservationSelected = () => {
         reservacionSelecionada.pointsUsed > 0
           ? 'Adelanto realizado con Puntos'
           : 'Pendiente',
+      isConfirmByAdmin: false,
+    };
+    waitingAlert('Cancelando reservacion...');
+    const resReser = await updateReservation(reservationUpdated);
+    if (resReser)
+      successAlert(
+        'Reservacion actualizada',
+        'La reservacion fue cancelada correctamente.',
+      );
+    else
+      errorAlert(
+        'Error',
+        'Ha ocurrido un error al intentar cancelar la reservacion, por favor revisa tu conexion a internet.',
+      );
+  };
+
+  const handleClickNoVaPagarReservacion = async () => {
+    const res = await ask({
+      title: 'Cancelar reservacion',
+      text: 'Estas seguro de que quieres cancelar la reservacion, esto solo debe hacerse si el usuario a cancelado la reservacion.',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    });
+    if (!res.isConfirmed) return;
+    const reservationUpdated = {
+      reservationId: reservacionSelecionada.reservationId,
+      reservacionPagada: false,
+      state: 'Cancelada',
+      isConfirmByAdmin: false,
     };
     waitingAlert('Cancelando reservacion...');
     const resReser = await updateReservation(reservationUpdated);
@@ -119,6 +148,8 @@ const ViewReservationSelected = () => {
         reservacionSelecionada.pointsUsed > 0
           ? 'Pagada con puntos y dinero'
           : 'Pagada',
+
+      isConfirmByAdmin: true,
     };
 
     waitingAlert('Confirmando reservacion...');
@@ -168,6 +199,14 @@ const ViewReservationSelected = () => {
           <ReservacionP
             head="Banco utilizado:"
             value={reservacionSelecionada.bankSelected}
+          />
+        ) : (
+          <></>
+        )}
+        {reservacionSelecionada.pointsEarned > 0 ? (
+          <ReservacionP
+            head="Puntos ganados:"
+            value={reservacionSelecionada.pointsEarned}
           />
         ) : (
           <></>
@@ -301,18 +340,27 @@ const ViewReservationSelected = () => {
             </span>
           </p>
         </div>
-        <div className="position-fixed- start-0- -bottom-0 mt-4 w-100 d-flex justify-content-evenly">
-          <button
-            className="bg-danger border-0 p-2 rounded-3 fw-medium"
-            onClick={handleClickCancelarReservacion}
-          >
-            Cancelar reservacion
-          </button>
+
+        <div className="d-flex justify-content-center mt-4">
           <button
             className="bg-color border-0 p-2 rounded-3 fw-medium"
             onClick={handleClickConfirmarReservacion}
           >
             Confirmar reservacion
+          </button>
+        </div>
+        <div className="position-fixed- start-0- -bottom-0 mt-4 w-100 d-flex justify-content-evenly">
+          <button
+            className="bg-danger border-0 p-2 rounded-3 fw-medium"
+            onClick={handleClickNoVaPagarReservacion}
+          >
+            Cancelar reservacion
+          </button>
+          <button
+            className="bg-danger border-0 p-2 rounded-3 fw-medium"
+            onClick={handleClickCancelarReservacion}
+          >
+            Marcar como pendiente
           </button>
         </div>
       </div>

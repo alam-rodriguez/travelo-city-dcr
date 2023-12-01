@@ -12,13 +12,14 @@ import HeaderSugerencia from './sugerencias-components/HeaderSugerencia';
 import Input from '../admin-options-components/insputs/Input';
 import Check from '../admin-options-components/insputs/Check';
 import TextArea from '../admin-options-components/insputs/TextArea';
+import InputWithIndex from '../admin-options-components/insputs/InputWithIndex';
 
 // Zustand
 import { useSugerencia } from '../../../zustand/admin/sugerencias/sugerencias';
-import InputWithIndex from '../admin-options-components/insputs/InputWithIndex';
 import { getGirasNoDone } from '../../../firebase/firestoreGiras/giras';
 import { createSugerenciaFirestore } from '../../../firebase/sugerencias/sugerencias';
 import { uploadImageSugerencia } from '../../../firebase/sugerencias/imagenesSugerencias';
+import { useAlerts } from '../../../zustand/alerts/alerts';
 
 const CrearSugerencia = () => {
   const {
@@ -28,6 +29,9 @@ const CrearSugerencia = () => {
     setSubtitulo,
     sugerencia,
     setSugerencia,
+    position,
+    incrementPosition,
+    decrementPosition,
     imageFile,
     setImageFile,
     questionsAndAnswer,
@@ -40,19 +44,41 @@ const CrearSugerencia = () => {
     removeIdGira,
   } = useSugerencia();
 
+  const { ask, successAlert, errorAlert, waitingAlert, warningAlert } =
+    useAlerts();
+
   const createSugerencia = async (e) => {
     e.preventDefault();
 
     if (imageFile.name == undefined) {
-      console.log('Debes de seleccinar una imagen');
+      warningAlert(
+        'imagen necesaria',
+        'Debes de poner una imagen obligatoriamente',
+      );
+
       return;
     }
+
+    const want = await ask({
+      title: 'Quieres crear esta sugerencia?',
+      text: 'Estas seguro de que quieres crear esta sugerencia ?, todas las personas la veran.',
+      // icon = 'question',
+      // confirmButtonColor = '#0008FF',
+      confirmButtonText: 'Crear sugerencia',
+      // cancelButtonText = 'Cancelar',
+    });
+
+    if (!want.isConfirmed) return;
+
+    waitingAlert('Subiendo sugerencia...');
+
     const id = uuidv4();
     const newSugerencia = {
       id: id,
       titulo,
       subtitulo,
       info: sugerencia,
+      position: position,
       imagePath: `sugerencias/${id}`,
       idsGiras: listIdsGiras,
       questionsAndAnswer,
@@ -62,7 +88,18 @@ const CrearSugerencia = () => {
 
     const resImage = await uploadImageSugerencia('sugerencias', id, imageFile);
 
-    if (res && resImage) console.log('Sugerencia creada');
+    if (res && resImage)
+      successAlert(
+        'Sugerencia creada con exito',
+        'La sugerencia se ha creado correctamente, todos tus usuarios la pueden ver.',
+      );
+    else
+      errorAlert(
+        'Error',
+        'Ha ocurrido un error al intentar crear la sugerencia.',
+      );
+
+    console.log('Sugerencia creada');
 
     // console.log(titulo);
     // console.log(subtitulo);
@@ -115,6 +152,15 @@ const CrearSugerencia = () => {
         handleChange={setSugerencia}
       />
 
+      <div className="d-flex justify-content-between align-items-center">
+        <GrSubtractCircle className="display-2" onClick={decrementPosition} />
+        <p className="m-0 display-3 fw-bold">{position}</p>
+        <MdOutlineAddCircleOutline
+          className="display-1"
+          onClick={incrementPosition}
+        />
+      </div>
+
       <input
         type="file"
         name=""
@@ -136,6 +182,7 @@ const CrearSugerencia = () => {
         {giras.map((gira) => (
           <Check
             key={gira.currentId}
+            checked={listIdsGiras.includes(gira.currentId) ? true : false}
             id={gira.currentId}
             info={`Titulo: ${gira.title} | fecha: ${gira.date}`}
             addGira={addIdGira}

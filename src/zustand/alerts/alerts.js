@@ -39,6 +39,13 @@ export const useAlerts = create((set) => ({
       confirmButtonColor: '#CB0000',
     }),
 
+  warningAlert: (title, text) =>
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: 'warning',
+    }),
+
   waitingAlert: (text = 'Creando gira y subiendo imagenes...') => {
     const html = `
       <div class="heigth-spinners">

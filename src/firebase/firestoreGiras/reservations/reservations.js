@@ -2,6 +2,7 @@ import { db } from '../../config/firebaseConfig';
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   setDoc,
@@ -26,6 +27,9 @@ export const createReservationGira = async (reservation) => {
       description: reservation.description,
       date: reservation.date,
       dateDetaild: reservation.dateDetaild,
+      GiraDateInMilliseconds: reservation.GiraDateInMilliseconds,
+      giraDateLimitForCancelInMilliseconds:
+        reservation.giraDateLimitForCancelInMilliseconds,
       adultsNames: reservation.adultsNames,
       childrenNames: reservation.childrenNames,
       childrenPrice: reservation.childrenPrice,
@@ -41,11 +45,14 @@ export const createReservationGira = async (reservation) => {
       discountPercentWithPoints: reservation.discountPercentWithPoints,
       discountPercentWithBadge: reservation.discountPercentWithBadge,
       pointsUsed: reservation.pointsUsed,
+      pointsEarned: reservation.pointsEarned,
 
       reservacionPagada: reservation.reservacionPagada,
       total: reservation.total,
       discountInMoney: reservation.discountInMoney,
+      horaGira: reservation.horaGira,
       state: reservation.state,
+      isConfirmByAdmin: reservation.isConfirmByAdmin,
     });
     return true;
   } catch (e) {
@@ -82,6 +89,37 @@ export const updateReservation = async (reservationUpdated) => {
     );
     await updateDoc(docRef, reservationUpdated);
     return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const getReservationsByEmail = async (email) => {
+  try {
+    const q = query(
+      collection(db, 'reservationsGiras'),
+      where('email', '==', email),
+    );
+    const querySnapshot = await getDocs(q);
+    const reservations = [];
+    querySnapshot.forEach((doc) => {
+      reservations.push(doc.data());
+    });
+    return reservations;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const getReservationsById = async (id) => {
+  try {
+    const docRef = doc(db, 'reservationsGiras', id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) return docSnap.data();
+    console.log('No se ha encontrado la reservacion');
+    return false;
   } catch (e) {
     console.log(e);
     return false;
