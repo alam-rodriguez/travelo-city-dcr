@@ -13,6 +13,7 @@ import SelectCountsForPersons from './SelectCountsForPersons';
 import { useState } from 'react';
 
 const SeleccionarPersonas = ({
+  title,
   viewSeleccionarPersonas,
   priceAdulto,
   priceChild,
@@ -64,7 +65,7 @@ const SeleccionarPersonas = ({
       >
         <HeaderSeleccionarPersonas />
         <div className="p-3">
-          <p className="m-0 fw-bold fs-5">Visita a la cerveceria en ingles</p>
+          <p className="m-0 fw-bold fs-5">{title}</p>
           {canGoAdulto ? (
             <SelectCountsForPersons
               text="Adulto"

@@ -46,6 +46,13 @@ export const useAlerts = create((set) => ({
       icon: 'warning',
     }),
 
+  infoAlert: (title, text) =>
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: 'info',
+    }),
+
   waitingAlert: (text = 'Creando gira y subiendo imagenes...') => {
     const html = `
       <div class="heigth-spinners">

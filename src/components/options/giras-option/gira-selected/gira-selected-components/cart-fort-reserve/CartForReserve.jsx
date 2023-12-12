@@ -28,6 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import PriceView from './PriceView';
 
 const CartForReserve = ({
+  title,
   priceAdulto,
   priceChild,
   priceBebe,
@@ -89,9 +90,9 @@ const CartForReserve = ({
     <div
       ref={miRef}
       id="CartForReserve"
-      className="border p-3 rounded-4 my-5 mx-2"
+      className="border p-3 rounded-4 my-5 mx-2 bg-white"
     >
-      <p className="fw-bold fs-5">Visita a la cerveceria en Español</p>
+      <p className="fw-bold fs-5">{title}</p>
 
       <Info icon={<FaRegHourglassHalf />} text={giraSelected.duration} />
 

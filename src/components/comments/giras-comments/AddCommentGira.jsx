@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom';
 import { useGirasComments } from '../../../zustand/comments/commentsGiras';
 import { useAlerts } from '../../../zustand/alerts/alerts';
 import Swal from 'sweetalert2';
+import { getReservationsByEmail } from '../../../firebase/firestoreGiras/reservations/reservations';
 
 const AddCommentGira = () => {
   const { giraId, giraCurrentId } = useParams();
@@ -30,6 +31,53 @@ const AddCommentGira = () => {
 
   const { ask, successAlert, errorAlert, waitingAlert, warningAlert } =
     useAlerts();
+
+  const {
+    userLogged,
+    haveUserInfo,
+    id,
+    setId,
+    email,
+    setEmail,
+    name,
+    setName: setNameUser,
+    setNameAndSurname,
+    setNumber: setNumberUser,
+    name: oldName,
+    number: oldNumber,
+    moneySpent,
+    setMoneySpent,
+    pointsEarned,
+    setPointsEarned,
+    pointsSpent,
+    setPointsSpent,
+    badge: badgeUser,
+    setBadge,
+    userAllReservations,
+    setReservations,
+  } = useInfoUser();
+
+  // useEffect(() => {
+  //   if (email == '' || userAllReservations.length > 0) return;
+  //   const f = async () => {
+  //     console.log(email);
+  //     const res = await getReservationsByEmail(email);
+  //     setReservations(res);
+  //     console.log(res);
+  //   };
+  //   f();
+  // }, [email]);
+
+  // const [canComment, setCanComment] = useState('Cheking');
+  // useEffect(() => {
+  //   userAllReservations.forEach((reservation) => {
+  //     if (reservation.giraId == giraId) {
+  //       setCanComment(true);
+  //       console.log('Puede comenta');
+  //       return;
+  //     }
+  //   });
+  // }, [userAllReservations]);
 
   useEffect(() => {
     if (girasComments[giraId] != undefined) return;
@@ -66,29 +114,6 @@ const AddCommentGira = () => {
     };
     f();
   }, []);
-
-  const {
-    userLogged,
-    haveUserInfo,
-    id,
-    setId,
-    email,
-    setEmail,
-    name,
-    setName: setNameUser,
-    setNameAndSurname,
-    setNumber: setNumberUser,
-    name: oldName,
-    number: oldNumber,
-    moneySpent,
-    setMoneySpent,
-    pointsEarned,
-    setPointsEarned,
-    pointsSpent,
-    setPointsSpent,
-    badge: badgeUser,
-    setBadge,
-  } = useInfoUser();
 
   const calcBadge = (num, badges) => {
     console.log(badges);

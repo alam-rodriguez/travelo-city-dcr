@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Icons
 import { HiOutlineHeart } from 'react-icons/hi';
@@ -27,6 +27,8 @@ const GiraItem = ({
   votes,
   canCancel,
   price,
+  fechaDateInMilliseconds,
+  userType,
   gira,
 }) => {
   const navigate = useNavigate();
@@ -54,6 +56,15 @@ const GiraItem = ({
     f();
   }, []);
 
+  const [giraIsDone, setGiraIsDone] = useState(false);
+
+  useEffect(() => {
+    const fechaActualInMilliseconds = new Date().getTime();
+    if (fechaActualInMilliseconds > fechaDateInMilliseconds)
+      setGiraIsDone(true);
+    console.log(fechaDateInMilliseconds);
+  }, []);
+
   // useEffect(() => {
   //   // if (images[giraId] != undefined) console.log(images[giraId][imgId]);
   //   // console.log(console.log(images[giraId] ?? [imgId]));
@@ -73,14 +84,18 @@ const GiraItem = ({
     <div
       className={`${
         !userSawGiras ? 'scale-up-center' : ''
-      } rounded-4 overflow-hidden border position-relative my-2 shadow overflow-y-scroll`}
+      } rounded-4 overflow-hidden border position-relative my-2 shadow overflow-y-scroll ${
+        giraIsDone && (userType == 'admin' || userType == 'semi-admin')
+          ? 'bg-danger-subtle'
+          : ''
+      }`}
       style={{ width: '48%', height: 390 }}
       onClick={handleClickGira}
     >
       {images[giraId] != undefined && images[giraId][imgId] != undefined ? (
         <img
           src={images[giraId][imgId]}
-          className="w-100 object-fit-cover"
+          className="w-100 object-fit-cover "
           style={{ height: '37%' }}
         />
       ) : (
@@ -103,21 +118,17 @@ const GiraItem = ({
           <TbClockHour5 />
           <p className="m-0">{duration}</p>
         </div>
-        {hasVotes ? (
+        {votes > 0 ? (
           <p className="mb-5" style={{ fontSize: 13 }}>
             <span className="fw-bold">{rate}/5</span> ({votes})
           </p>
-        ) : (
-          <></>
-        )}
+        ) : null}
         <div className="position-absolute" style={{ bottom: 15 }}>
           {canCancel ? (
             <p className="m-0 text-success fw-medium" style={{ fontSize: 11 }}>
               Cancelacion gratuita disponible
             </p>
-          ) : (
-            <></>
-          )}
+          ) : null}
           <p className="m-0 fw-bold fs-1">${price}</p>
           <p className="m-0" style={{ fontSize: 12 }}>
             por adulto

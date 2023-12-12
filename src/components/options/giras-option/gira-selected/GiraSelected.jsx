@@ -45,6 +45,7 @@ import MeetingPoint from './gira-selected-components/MeetingPoint';
 import Accordings from './gira-selected-components/Accordings';
 import BtnSeleccionarEntradas from './gira-selected-components/BtnSeleccionarEntradas';
 import { getGira } from '../../../../firebase/firestoreGiras/giras';
+import GiraSelectedCharging from './GiraSelectedCharging';
 
 const GiraSelected = () => {
   const { currentId } = useParams();
@@ -98,7 +99,8 @@ const GiraSelected = () => {
     };
   }, []);
 
-  if (giraSelected.id == undefined) return <div>Cargando...</div>;
+  if (giraSelected.id == undefined) return <GiraSelectedCharging />;
+  // if (giraSelected.id == undefined) return <></>;
 
   return (
     <div className="scale-up-center-" onClick={() => console.log(giraSelected)}>
@@ -160,6 +162,7 @@ const GiraSelected = () => {
       />
 
       <CartForReserve
+        title={giraSelected.title}
         giraDuration={giraSelected.giraDuration ?? 0}
         priceAdulto={giraSelected.prices.adult ?? 0}
         priceChild={giraSelected.prices.child ?? 0}
@@ -178,6 +181,7 @@ const GiraSelected = () => {
       <BtnSeleccionarEntradas />
 
       <SeleccionarPersonas
+        title={giraSelected.title}
         viewSeleccionarPersonas={viewSeleccionarPersonas ?? false}
         priceAdulto={giraSelected.prices.adult ?? 0}
         priceChild={giraSelected.prices.child ?? 0}

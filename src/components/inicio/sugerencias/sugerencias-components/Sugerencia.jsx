@@ -17,6 +17,7 @@ import {
 import { useGiras } from '../../../../zustand/giras/giras';
 import { getSugerencia } from '../../../../firebase/sugerencias/sugerencias';
 import { getImageSugerencia } from '../../../../firebase/sugerencias/imagenesSugerencias';
+import SugerenciaCharging from './SugerenciaCharging';
 
 const Sugerencia = () => {
   const { id: idOfParams } = useParams();
@@ -79,6 +80,8 @@ const Sugerencia = () => {
     }
   }, [giras]);
 
+  if (id == '') return <SugerenciaCharging />;
+
   return (
     <div>
       <HeaderSugerencia />
@@ -111,9 +114,7 @@ const Sugerencia = () => {
         ))}
       </div>
 
-      <p className="mb-4 mt-5 fw-bold fs-2">
-        How to get the best flight deals Today
-      </p>
+      <p className="mb-4 mt-5 fw-bold fs-2">Preguntas y respuesas:</p>
 
       {questionsAndAnswer.map((questionAndAnswer, i) => (
         <QuestionAndAnswer

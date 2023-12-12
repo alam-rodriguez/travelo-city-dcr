@@ -10,6 +10,7 @@ import { useInfoUser } from '../../../zustand/user/user';
 import { getReservationsByEmail } from '../../../firebase/firestoreGiras/reservations/reservations';
 import { useGiras } from '../../../zustand/giras/giras';
 import { getGira } from '../../../firebase/firestoreGiras/giras';
+import CommentCharging from '../comments-components/CommentCharging';
 
 const CommentsGira = () => {
   const navigate = useNavigate();
@@ -57,13 +58,16 @@ const CommentsGira = () => {
       const res = await getCommentsByGira(giraId);
       console.log(giraId);
       console.log(res);
-      if (res != false)
+      if (res == false || res.length == 0) navigate(`/giras/${giraCurrentId}`);
+      if (res != false) {
         addGirasComments(
           giraId,
           res.sort(
             (a, b) => b.dateCommentInMilliseconds - a.dateCommentInMilliseconds,
           ),
         );
+        console.log(res.length);
+      }
     };
     f();
   }, [girasComments]);
@@ -78,6 +82,7 @@ const CommentsGira = () => {
     setId,
     name,
     email,
+    type,
     setEmail,
     setName,
     setNumber,
@@ -205,7 +210,10 @@ const CommentsGira = () => {
             />
           ))
         ) : (
-          <></>
+          <>
+            <CommentCharging />
+            <CommentCharging />
+          </>
         )}
         {/* <Comment
           rate={4.8}
@@ -220,7 +228,7 @@ const CommentsGira = () => {
           dateActivity="Set 13, 2023"
         /> */}
 
-        {canComment ? (
+        {canComment || type == 'admin' || type == 'semi-admin' ? (
           <div className="d-flex justify-content-center mt-5">
             <button
               className="bg-color border-0 rounded-3 p-2 fs-6 fw-medium"

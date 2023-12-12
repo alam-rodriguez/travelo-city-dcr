@@ -4,6 +4,8 @@ import { useInfoPeople } from '../../../../../zustand/giras/giras';
 import Inputs from './Inputs';
 
 const WhoTravelSection = ({
+  descripcion,
+  date,
   countPersons,
   nameAndSurname,
   setNameAndSurname,
@@ -43,10 +45,8 @@ const WhoTravelSection = ({
         <p className="m-0 fw-bold fs-4">Quien Viaja?</p>
       </div>
       <div className="p-3">
-        <p className="m-0 fw-medium">
-          Recorrido con paradas libres en Dusselford en un autobus de dos pisos
-        </p>
-        <p className="m-0 text-secondary">jueves, 21 sept.</p>
+        <p className="m-0 fw-medium">{descripcion}</p>
+        <p className="m-0 text-secondary">{date}</p>
 
         <Inputs
           id="userName"

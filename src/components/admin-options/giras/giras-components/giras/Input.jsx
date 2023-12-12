@@ -7,6 +7,7 @@ const Input = ({
   value,
   placeholder,
   minLength = 3,
+  maxLength = 1000000,
   handleChange,
 }) => {
   return (
@@ -18,6 +19,7 @@ const Input = ({
         className="w-100 bg-transparent border border-secondary text-black rounded-3 p-2"
         required
         minLength={minLength}
+        maxLength={maxLength}
         type={type}
         value={value}
         placeholder={placeholder}

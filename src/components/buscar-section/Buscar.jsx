@@ -10,7 +10,7 @@ import { IoMdSearch } from 'react-icons/io';
 const Buscar = () => {
   return (
     <div>
-      <h4 className="text-center border-bottom pb-3">Buscar</h4>
+      <h4 className="text-center border-bottom py-3">Buscar</h4>
 
       <OptionsApp />
 

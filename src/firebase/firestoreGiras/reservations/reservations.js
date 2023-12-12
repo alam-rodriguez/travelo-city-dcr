@@ -14,6 +14,7 @@ export const createReservationGira = async (reservation) => {
   try {
     await setDoc(doc(db, 'reservationsGiras', reservation.reservationId), {
       reservationId: reservation.reservationId,
+      userId: reservation.userId,
       email: reservation.email,
       userName: reservation.userName,
       userNumber: reservation.userNumber,
@@ -37,6 +38,7 @@ export const createReservationGira = async (reservation) => {
       bebiesPrice: reservation.bebiesPrice,
 
       methodOfPay: reservation.methodOfPay,
+      methodOfPayWhenUsePoints: reservation.methodOfPayWhenUsePoints,
       bankSelected: reservation.bankSelected,
       imageTransactionPath: reservation.imageTransactionPath,
       reservacionPagada: reservation.reservacionPagada,
@@ -52,6 +54,7 @@ export const createReservationGira = async (reservation) => {
       discountInMoney: reservation.discountInMoney,
       horaGira: reservation.horaGira,
       state: reservation.state,
+      isPutInStatistics: reservation.isPutInStatistics,
       isConfirmByAdmin: reservation.isConfirmByAdmin,
     });
     return true;

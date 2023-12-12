@@ -105,6 +105,29 @@ function App() {
     setType,
   } = useInfoUser();
 
+  const iniciarSesion = async () => {
+    if (userLogged) return;
+
+    try {
+      const infoUser = await signInAutomatically();
+
+      setEmail(infoUser.email);
+      setId(infoUser.id);
+      setType('customer');
+    } catch (e) {
+      console.log(e);
+      setType('anonymous');
+    }
+    // console.log('first');
+    // console.log(infoUser);
+    // console.warn('-----------------');
+    //  else {
+    //   console.log('first');
+
+    // }
+    // console.warn('-----------------');
+  };
+
   const {
     hasInfo,
     setSettingsBadgesAndPoints,
@@ -129,6 +152,7 @@ function App() {
 
   useEffect(() => {
     // const ff = async () => {
+    console.log('first');
     iniciarSesion();
     getInfoAppFunc();
     // };
@@ -143,17 +167,6 @@ function App() {
       f();
     }
   }, []);
-
-  const iniciarSesion = async () => {
-    if (userLogged) return;
-    const infoUser = await signInAutomatically();
-    console.log('first');
-    console.log(infoUser);
-    if (infoUser != false) {
-      setEmail(infoUser.email);
-      setId(infoUser.id);
-    }
-  };
 
   useEffect(() => {
     if (!hasInfo) return;
@@ -189,8 +202,11 @@ function App() {
   // }, [id]);
 
   return (
-    <div className="App bg-light min-vh-100">
-      <main className="container pb-5 ">
+    <div className="App bg-light">
+      <main
+        className="container pb-5- pt-5- pb-4 bg-light"
+        style={{ marginTop: 0 }}
+      >
         <Routes>
           {/* <RoutesForUser routess={routesForUser} /> */}
           {/* <RoutesForUser /> */}
@@ -204,6 +220,7 @@ function App() {
           <Route path="/mis-giras/:reservationId" Component={MiGiraDetailed} />
           <Route path="/giras" Component={GirasPage} />
           <Route path="/giras/:currentId" Component={GiraSelected} />
+          <Route path="/giras/reservar-gira" Component={ReservarGira} />
           <Route
             path="giras/:giraId/:giraCurrentId/comments"
             Component={CommentsGira}
@@ -216,7 +233,6 @@ function App() {
             path="giras/:giraId/:giraCurrentId/comments/edit-comments"
             Component={EditCommentGira}
           />
-          <Route path="/giras/reservar-gira" Component={ReservarGira} />
           <Route path="/sugerencia/:id" Component={Sugerencia} />
           <Route path="/perfil" Component={Perfil} />
           <Route path="/perfil/rewards" Component={ActividadDeRecompensas} />
@@ -358,6 +374,7 @@ function App() {
             path="/signIn-like-semi-admin"
             Component={SignInLikeSemiAdmin}
           />
+
           {/* Components de admin */}
         </Routes>
         {type == 'admin' ? <AdminIcon /> : <></>}

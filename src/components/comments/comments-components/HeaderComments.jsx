@@ -15,7 +15,7 @@ const HeaderComments = ({ setRecienteOrderBy = Function(), link = -1 }) => {
   };
 
   return (
-    <header className="position-fixed bg-white w-100 d-flex align-items-center gap-3 py-3">
+    <header className="position-fixed bg-white- w-100 d-flex align-items-center gap-3 py-3">
       <AiOutlineClose className="fs-4 color-1" onClick={back} />
       <p className="m-0 fw-medium">Opiniones</p>
     </header>

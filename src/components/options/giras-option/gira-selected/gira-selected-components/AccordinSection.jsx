@@ -6,7 +6,7 @@ const AccordinSection = ({ id, title, icon, content }) => {
       <div className="accordion-item border-0">
         <h2 className="accordion-header">
           <button
-            className="accordion-button bg-white px-0 "
+            className="accordion-button bg-white- bg-light px-0 "
             type="button"
             data-bs-toggle="collapse"
             data-bs-target={`#collapse-${id}`}
@@ -18,7 +18,7 @@ const AccordinSection = ({ id, title, icon, content }) => {
         </h2>
         <div
           id={`collapse-${id}`}
-          className="accordion-collapse collapse show-"
+          className="accordion-collapse collapse show- overflow-scroll bg-light"
           data-bs-parent={`#accordion-${id}`}
         >
           <div className="accordion-body px-0">

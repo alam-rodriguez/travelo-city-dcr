@@ -64,6 +64,14 @@ export const useViewSeleccionarPersonas = create((set) => ({
   incrementCountBabies: () =>
     set((state) => ({ countBabies: state.countBabies + 1 })),
   resetBebies: () => set(() => ({ countBabies: 0 })),
+
+  resetSeleccionarPersonas: () =>
+    set(() => ({
+      viewDescription: false,
+      countPersons: 1,
+      countChildren: 0,
+      countBabies: 0,
+    })),
 }));
 
 export const useInfoPeople = create((set) => ({
@@ -142,6 +150,20 @@ export const useInfoPeople = create((set) => ({
 
   goToUsePoints: false,
   setGoToUsePoints: (value) => set(() => ({ goToUsePoints: value })),
+
+  reset: () =>
+    set(() => ({
+      nameAndSurname: '',
+      number: '',
+      adultosNames: {},
+      childrenNames: {},
+      bebiesNames: {},
+      methodOfPay: '',
+      methodOfPayWhenUsePoints: 'efectivo',
+      bankSelected: 'banreservas',
+      imgTransaccion: {},
+      goToUsePoints: false,
+    })),
 }));
 
 export const useImages = create((set) => ({

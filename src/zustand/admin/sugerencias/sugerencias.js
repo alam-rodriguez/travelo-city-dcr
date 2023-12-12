@@ -19,7 +19,7 @@ export const useSugerencia = create((set) => ({
   setPosition: (position) => set(() => ({ position: position })),
   imageFile: {},
   setImageFile: (imageFile) => set(() => ({ imageFile: imageFile })),
-  questionsAndAnswer: [],
+  questionsAndAnswer: [{ 1: { question: '', answer: '' } }],
   addQuestionsAndAnswer: (number) =>
     set((state) => ({
       questionsAndAnswer: [

@@ -77,6 +77,9 @@ const RelanzarGira = () => {
     priceBaby,
     setPriceBaby,
 
+    priceInPoint,
+    setPriceInPoint,
+
     priceAdultInPoint,
     setPriceAdultInPoint,
     priceChildInPoint,
@@ -330,9 +333,10 @@ const RelanzarGira = () => {
           setBadgesForThisGira(gira.pointsAndBadgesSettings.badgesForThisGira);
         else setBadgesForThisGira(badges);
 
-        setPriceAdultInPoint(gira.pointsAndBadgesSettings.priceAdultInPoint);
-        setPriceChildInPoint(gira.pointsAndBadgesSettings.priceChildInPoint);
-        setPriceBabyInPoint(gira.pointsAndBadgesSettings.priceBabyInPoint);
+        setPriceInPoint(gira.pointsAndBadgesSettings.priceInPoint);
+        // setPriceAdultInPoint(gira.pointsAndBadgesSettings.priceAdultInPoint);
+        // setPriceChildInPoint(gira.pointsAndBadgesSettings.priceChildInPoint);
+        // setPriceBabyInPoint(gira.pointsAndBadgesSettings.priceBabyInPoint);
 
         const imgLink = await getImage(`giras/${gira.id}/${gira.coverImageId}`);
         setCoverImage(imgLink);
@@ -483,9 +487,10 @@ const RelanzarGira = () => {
         pointsAndBadgesSettings: {
           activePoints,
           activeDiscountWithPoints,
-          priceAdultInPoint,
-          priceChildInPoint,
-          priceBabyInPoint,
+          priceInPoint,
+          // priceAdultInPoint,
+          // priceChildInPoint,
+          // priceBabyInPoint,
           activeBadges,
           badgesForThisGira,
         },
@@ -801,7 +806,7 @@ const RelanzarGira = () => {
           />
           {activePoints ? (
             <>
-              <Input
+              {/* <Input
                 id="costo-points-adult"
                 label="Costo en puntos para ir a Gira adulto"
                 value={priceAdultInPoint}
@@ -823,6 +828,15 @@ const RelanzarGira = () => {
                 value={priceBabyInPoint}
                 placeholder={`Recomendacion: ${valuePoint * priceBaby}`}
                 handleChange={setPriceBabyInPoint}
+                type="number"
+              /> */}
+
+              <Input
+                id="costo-points"
+                label="Valor de peso en puntos"
+                value={priceInPoint}
+                placeholder={`Recomendacion: ${valuePoint}`}
+                handleChange={setPriceInPoint}
                 type="number"
               />
 

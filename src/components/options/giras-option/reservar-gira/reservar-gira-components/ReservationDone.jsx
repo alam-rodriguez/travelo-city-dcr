@@ -44,7 +44,7 @@ const ReservationDone = ({
             <p className="m-0 fw-bold fs-6">{fechaGira}</p>
             <p className="m-0 fw-medium">{timeGira}</p>
             <p className="m-0 text-secondary" style={{ fontSize: 13 }}>
-              {traverlers} viajeros
+              {traverlers == 1 ? `1 Viajero` : `${traverlers} viajeros`}
             </p>
           </div>
           <div className="w-50">

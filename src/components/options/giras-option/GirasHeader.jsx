@@ -21,7 +21,7 @@ const GirasHeader = () => {
         className="display-6 color-1"
         onClick={handleClickBack}
       />
-      {/* <h3 className="m-0">Giras con TraveloCity</h3> */}
+
       {nameAppShort != '' ? (
         <h3 className="m-0">Giras con {nameAppShort}</h3>
       ) : (

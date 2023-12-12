@@ -37,6 +37,10 @@ export const useCreateOrEditGira = create((set) => ({
   priceBaby: '',
   setPriceBaby: (number) => set(() => ({ priceBaby: Number(number) })),
 
+  priceInPoint: '',
+  setPriceInPoint: (discount) =>
+    set(() => ({ priceInPoint: Number(discount) })),
+
   priceAdultInPoint: '',
   setPriceAdultInPoint: (discount) =>
     set(() => ({ priceAdultInPoint: Number(discount) })),

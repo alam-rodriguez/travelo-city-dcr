@@ -123,6 +123,9 @@ const EditGira = () => {
     priceBaby,
     setPriceBaby,
 
+    priceInPoint,
+    setPriceInPoint,
+
     priceAdultInPoint,
     setPriceAdultInPoint,
     priceChildInPoint,
@@ -283,6 +286,7 @@ const EditGira = () => {
   const { currentId: currentIdOfParams } = useParams();
 
   useEffect(() => {
+    // console.log(valuePoint);
     if (allGiras.length == 0 || !hasInfo) return;
     console.log('first');
     // console.log(currentId);
@@ -353,9 +357,11 @@ const EditGira = () => {
           setBadgesForThisGira(gira.pointsAndBadgesSettings.badgesForThisGira);
         else setBadgesForThisGira(badges);
 
-        setPriceAdultInPoint(gira.pointsAndBadgesSettings.priceAdultInPoint);
-        setPriceChildInPoint(gira.pointsAndBadgesSettings.priceChildInPoint);
-        setPriceBabyInPoint(gira.pointsAndBadgesSettings.priceBabyInPoint);
+        console.log('first');
+        setPriceInPoint(gira.pointsAndBadgesSettings.priceInPoint);
+        // setPriceAdultInPoint(gira.pointsAndBadgesSettings.priceAdultInPoint);
+        // setPriceChildInPoint(gira.pointsAndBadgesSettings.priceChildInPoint);
+        // setPriceBabyInPoint(gira.pointsAndBadgesSettings.priceBabyInPoint);
 
         const imgLink = await getImage(`giras/${gira.id}/${gira.coverImageId}`);
         setCoverImage(imgLink);
@@ -527,9 +533,10 @@ const EditGira = () => {
         pointsAndBadgesSettings: {
           activePoints,
           activeDiscountWithPoints,
-          priceAdultInPoint,
-          priceChildInPoint,
-          priceBabyInPoint,
+          priceInPoint,
+          // priceAdultInPoint,
+          // priceChildInPoint,
+          // priceBabyInPoint,
           activeBadges,
           badgesForThisGira,
         },
@@ -1087,7 +1094,7 @@ const EditGira = () => {
         />
         {activePoints ? (
           <>
-            <Input
+            {/* <Input
               id="costo-points-adult"
               label="Costo en puntos para ir a Gira adulto"
               value={priceAdultInPoint}
@@ -1109,6 +1116,15 @@ const EditGira = () => {
               value={priceBabyInPoint}
               placeholder={`Recomendacion: ${valuePoint * priceBaby}`}
               handleChange={setPriceBabyInPoint}
+              type="number"
+            /> */}
+
+            <Input
+              id="costo-points"
+              label="Valor de peso en puntos"
+              value={priceInPoint}
+              placeholder={`Recomendacion: ${valuePoint}`}
+              handleChange={setPriceInPoint}
               type="number"
             />
 

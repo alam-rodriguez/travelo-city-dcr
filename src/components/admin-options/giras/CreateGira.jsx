@@ -61,6 +61,9 @@ const CreateGira = () => {
     priceBaby,
     setPriceBaby,
 
+    priceInPoint,
+    setPriceInPoint,
+
     priceAdultInPoint,
     setPriceAdultInPoint,
     priceChildInPoint,
@@ -175,18 +178,24 @@ const CreateGira = () => {
 
   const { hasInfo, setSettingsBadgesAndPoints, costo, badges, valuePoint } =
     useInfoApp();
+
   useEffect(() => {
-    if (hasInfo) return;
-    const f = async () => {
-      const res = await getBadgesAndPointsOptions();
-      if (res != false) {
-        setSettingsBadgesAndPoints(res);
-        setBadgesForThisGira(res.badges);
-      }
-      console.log(res);
-    };
-    f();
+    setBadgesForThisGira(badges);
   }, []);
+  // useEffect(() => {
+  //   console.log(badgesForThisGira);
+  //   if (hasInfo) return;
+  //   const f = async () => {
+  //     const res = await getBadgesAndPointsOptions();
+  //     if (res != false) {
+  //       setSettingsBadgesAndPoints(res);
+  //       setBadgesForThisGira(res.badges);
+  //       console.log(res);
+  //     }
+  //     console.log(res);
+  //   };
+  //   f();
+  // }, [badgesForThisGira]);
 
   // '¿Quieres crear esta gira?',
   // '¿Estas seguro de que quieres crear esta gira? tus usuarios la veran, asi que asegurate de llenar toda la informacion necesaria.',
@@ -326,9 +335,9 @@ const CreateGira = () => {
           adult: priceAdult,
           child: priceChild,
           baby: priceBaby,
-          adultInPoint: priceAdultInPoint,
-          childInPoint: priceChildInPoint,
-          babyInPoint: priceBabyInPoint,
+          // adultInPoint: priceAdultInPoint,
+          // childInPoint: priceChildInPoint,
+          // babyInPoint: priceBabyInPoint,
         },
         aboutActivity: aboutActivity,
         canGo: {
@@ -368,9 +377,10 @@ const CreateGira = () => {
         pointsAndBadgesSettings: {
           activePoints,
           activeDiscountWithPoints,
-          priceAdultInPoint,
-          priceChildInPoint,
-          priceBabyInPoint,
+          priceInPoint,
+          // priceAdultInPoint,
+          // priceChildInPoint,
+          // priceBabyInPoint,
           activeBadges,
           badgesForThisGira,
         },
@@ -420,6 +430,7 @@ const CreateGira = () => {
           <Input
             id="titulo"
             label="Titulo"
+            maxLength={50}
             value={title}
             placeholder="Titulo gira"
             handleChange={setTitle}
@@ -464,6 +475,7 @@ const CreateGira = () => {
             id="punto-encuentro"
             label="Punto de Encuentro"
             value={meetingPoint}
+            maxLength={50}
             placeholder="punto de encuentro"
             handleChange={setMeetingPoint}
           />
@@ -690,9 +702,7 @@ const CreateGira = () => {
             checked={activePoints}
             handleChange={setActivePoints}
           />
-          {activePoints ? (
-            <>
-              <Input
+          {/* <Input
                 id="costo-points-adult"
                 label="Costo en puntos para ir a Gira adulto"
                 value={priceAdultInPoint}
@@ -714,6 +724,16 @@ const CreateGira = () => {
                 value={priceBabyInPoint}
                 placeholder={`Recomendacion: ${valuePoint * priceBaby}`}
                 handleChange={setPriceBabyInPoint}
+                type="number"
+              /> */}
+          {activePoints ? (
+            <>
+              <Input
+                id="costo-points"
+                label="Valor de peso en puntos"
+                value={priceInPoint}
+                placeholder={`Recomendacion: ${valuePoint}`}
+                handleChange={setPriceInPoint}
                 type="number"
               />
 

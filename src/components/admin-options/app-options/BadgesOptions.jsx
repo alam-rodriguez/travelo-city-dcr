@@ -17,8 +17,12 @@ import { useInfoApp } from '../../../zustand/admin/app/app';
 import Headers from '../../admin-options/admin-options-components/Headers';
 import Input from '../admin-options-components/insputs/Input';
 import BtnAction from '../admin-options-components/insputs/BtnAction';
+import { useAlerts } from '../../../zustand/alerts/alerts';
 
 const BadgesAndPointsOptions = () => {
+  const { ask, successAlert, errorAlert, waitingAlert, warningAlert } =
+    useAlerts();
+
   useEffect(() => {
     console.log(badges);
     if (hasInfo) return;
@@ -56,6 +60,14 @@ const BadgesAndPointsOptions = () => {
   } = useInfoApp();
 
   const saveSettings = async () => {
+    const want = await ask({
+      title: 'Guardar cambios',
+      text: 'Quieres guardar los cambio ?',
+      confirmButtonText: 'Guardar cambios',
+    });
+    if (!want.isConfirmed) return;
+    waitingAlert('Guardando cambios en base de datos...');
+
     const badgesAndPointsOptions = {
       costPoint: costo,
       valuePoint,
@@ -66,7 +78,16 @@ const BadgesAndPointsOptions = () => {
     console.log(badgesAndPointsOptions);
 
     const res = await setBadgesAndPointsOptions(badgesAndPointsOptions);
-    if (res) console.log('Configuracion guardada');
+    if (res)
+      successAlert(
+        'Configuracion guardada',
+        'Configuracion guardada en base de datos correctamente',
+      );
+    else
+      errorAlert(
+        'Error',
+        'Ha ocurrido un error al intentar guardar los cambios, intentalo de nuevo.',
+      );
   };
 
   return (

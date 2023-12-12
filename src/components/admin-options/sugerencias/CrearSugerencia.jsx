@@ -195,7 +195,7 @@ const CrearSugerencia = () => {
         <div key={i}>
           <InputWithIndex
             id="subtitulo-sugerencia"
-            label="Sugerencia 1"
+            label={`Sugerencia ${i + 1}`}
             i={i}
             value={questionAndAnswer.question}
             placeholder="subtitulo de la sugerencia"

@@ -25,6 +25,9 @@ import MetodoPagoSeccion from '../../options/giras-option/reservar-gira/reservar
 import { useInfoPeople } from '../../../zustand/giras/giras';
 import ChangeImage from './components/ChangeImage';
 import { uploadImageReservationGira } from '../../../firebase/firestoreGiras/reservations/reservationsImages';
+import MiGiraDetailedCharging from './MiGiraDetailedCharging';
+import { getUserInfo, updateUserInfo } from '../../../firebase/users/users';
+import { useInfoApp } from '../../../zustand/admin/app/app';
 // import ReservacionItem from './giras-reservaciones-components/ReservacionP';
 
 // import ReservationItem from './giras-reservaciones-components/ReservationItem';
@@ -33,14 +36,74 @@ import { uploadImageReservationGira } from '../../../firebase/firestoreGiras/res
 // import { getImage } from '../../../../firebase/firestoreGiras/imagenesGira';
 
 const MiGiraDetailed = () => {
+  const navigate = useNavigate();
+
+  const { badges } = useInfoApp();
+
   const {
     reservationSelected: reservacionSelecionada,
     setReservationSelected,
     reservationsImages,
     addReservationImage,
+    haveUserInfo,
+    id,
+    email,
+    badge,
+    // calcBadge,
+    moneySpent,
+    setEmail,
+    setName,
+    setNumber: setNumberBd,
+    pointsEarned,
+    pointsSpent,
+    setMoneySpent,
+    setPointsEarned,
+    setPointsSpent,
+    deleteReservationImage,
   } = useInfoUser();
 
-  const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
+  // useEffect(() => {
+  //   console.log(reservacionSelecionada.email);
+  //   console.log(email);
+  //   if (!haveUserInfo) return;
+  //   // console.warn(email);
+  //   // console.log(reservacionSelecionada.email);
+  //   if (reservacionSelecionada.email == undefined || email == '') return;
+  //   if (email != reservacionSelecionada.email) navigate('/mis-giras');
+  // }, [email, reservacionSelecionada]);
+
+  useEffect(() => {
+    if (haveUserInfo || id == '' || reservacionSelecionada.email == undefined)
+      return;
+
+    const f = async () => {
+      console.log('obteniendo user de BD');
+
+      const res = await getUserInfo(id);
+      console.log(res);
+      if (res != false) {
+        setName(res.name);
+        setEmail(res.email);
+        setNumberBd(res.number);
+        setMoneySpent(res.moneySpent);
+        setPointsEarned(res.pointsEarned);
+        setPointsSpent(res.pointsSpent);
+        // console.log(reservacionSelecionada);
+        // if (res.email != reservacionSelecionada.email) navigate('/mis-giras');
+      }
+      console.warn(res);
+    };
+    f();
+  }, [id]);
+
+  const {
+    ask,
+    successAlert,
+    errorAlert,
+    waitingAlert,
+    infoAlert,
+    warningAlert,
+  } = useAlerts();
 
   const { reservationId } = useParams();
 
@@ -58,18 +121,20 @@ const MiGiraDetailed = () => {
     else setCanCancel(false);
   };
 
-  const getReservation = async () => {
-    const res = await getReservationsById(reservationId);
-    if (res != false) {
-      console.log(res);
-      setCanCancelFunc(res.giraDateLimitForCancelInMilliseconds);
-      setReservationSelected(res);
-    }
-  };
+  useEffect(() => {
+    if (reservacionSelecionada.reservationId != undefined) return;
+    const getReservation = async () => {
+      const res = await getReservationsById(reservationId);
+      if (res != false) {
+        console.log(res);
+        setCanCancelFunc(res.giraDateLimitForCancelInMilliseconds);
+        setReservationSelected(res);
+      }
+    };
+    getReservation();
+  }, [reservacionSelecionada]);
 
   useEffect(() => {
-    if (reservacionSelecionada.reservationId == undefined) getReservation();
-
     setCanCancelFunc(
       reservacionSelecionada.giraDateLimitForCancelInMilliseconds,
     );
@@ -95,7 +160,7 @@ const MiGiraDetailed = () => {
       console.log(imgLink);
     };
     f();
-  }, [reservacionSelecionada]);
+  }, [reservacionSelecionada, reservationsImages]);
 
   const {
     nameAndSurname,
@@ -109,6 +174,7 @@ const MiGiraDetailed = () => {
     bebiesNames,
     setBebiesNames,
     resetNames,
+    // calcBadge,
     methodOfPay,
     setMethodOfPay,
     methodOfPayWhenUsePoints,
@@ -121,6 +187,17 @@ const MiGiraDetailed = () => {
     goToUsePoints,
     setGoToUsePoints,
   } = useInfoPeople();
+
+  const [daysLeft, setDaysLeft] = useState(0);
+
+  useEffect(() => {
+    if (reservacionSelecionada.GiraDateInMilliseconds == undefined) return;
+    const fechaActual = new Date().getTime();
+    const diferenciaEnMilisegundos =
+      reservacionSelecionada.GiraDateInMilliseconds - fechaActual;
+    const diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
+    setDaysLeft(Math.trunc(diferenciaEnDias));
+  }, [reservacionSelecionada]);
 
   // useEffect(() => {
   //   if (reservaciones.length > 0) return;
@@ -147,7 +224,33 @@ const MiGiraDetailed = () => {
   // const handleClick = (id) =>
   // navigate(`/admin-options/list-giras-for-reservations/${currentId}/${id}`);
 
+  const calcBadge = (num, badges) => {
+    console.log(badges);
+    console.log(num);
+    let badgeSelected = {};
+    badges.forEach((badge, i) => {
+      if (num >= badge.minMoney) {
+        if (i == 0) badgeSelected = badge;
+        else if (i == badge.length) badgeSelected == badge;
+        else badgeSelected = badges[i];
+      }
+      return;
+    });
+    console.log(badgeSelected);
+    console.log(badges[4 - 1]);
+    return badgeSelected;
+  };
+
   const handleClickCancelarReservacion = async () => {
+    if (reservacionSelecionada.state == 'Cancelada') {
+      // alert('Ya esta reservacion fue cancelada');
+      infoAlert(
+        'No puedes cancelar',
+        'No puedes cancelar esta reservacion porque ya esta cancelada',
+      );
+      return;
+    }
+
     const res = await ask({
       title: 'Cancelar reservacion',
       text:
@@ -157,19 +260,33 @@ const MiGiraDetailed = () => {
       confirmButtonText: 'Si',
       cancelButtonText: 'No',
     });
+
     if (!res.isConfirmed) return;
+    waitingAlert('Cancelando reservacion...');
     const reservationUpdated = {
       reservationId: reservacionSelecionada.reservationId,
+      isPutInStatistics: false,
       state: 'Cancelada',
     };
-    waitingAlert('Cancelando reservacion...');
     const resReser = await updateReservation(reservationUpdated);
-    if (resReser)
-      successAlert(
+
+    // const newInfoUser = {
+    //   id: id,
+    //   moneySpent: moneySpent - reservacionSelecionada.total,
+    //   pointsEarned: pointsEarned - reservacionSelecionada.pointsEarned,
+    //   pointsSpent: pointsSpent - reservacionSelecionada.pointsUsed,
+    // };
+
+    // console.log(newInfoUser);
+    // const resUserInfo = await updateUserInfo(newInfoUser);
+
+    if (resReser) {
+      await successAlert(
         'Reservacion actualizada',
         'La reservacion fue cancelada correctamente.',
       );
-    else
+      setReservationSelected({});
+    } else
       errorAlert(
         'Error',
         'Ha ocurrido un error al intentar cancelar la reservacion, por favor revisa tu conexion a internet.',
@@ -195,12 +312,13 @@ const MiGiraDetailed = () => {
 
     waitingAlert('Confirmando reservacion...');
     const resReser = await updateReservation(reservationUpdated);
-    if (resReser)
-      successAlert(
+    if (resReser) {
+      await successAlert(
         'Reservacion actualizada',
         'La reservacion fue cancelada correctamente.',
       );
-    else
+      setReservationSelected({});
+    } else
       errorAlert(
         'Error',
         'Ha ocurrido un error al intentar cancelar la reservacion, por favor revisa tu conexion a internet.',
@@ -214,9 +332,13 @@ const MiGiraDetailed = () => {
   const setFalseWantUpNewImage = () => setWantUpNewImage(false);
 
   const uploadNewImage = async () => {
+    if (imgTransaccion.name == undefined) {
+      warningAlert('imagen necesaria', 'Debes de poner la imagen del recibo.');
+      return;
+    }
     const wantUploadImage = await ask({
-      title: 'Confirmar reservacion',
-      text: 'Estas seguro de que quieres confirmar la reservacion, esto solo debe hacerse si realmente el usuario ha pagado la reservacion.',
+      title: 'Mandar imagen',
+      text: 'Estas seguro de que quieres mandar la imagen, le notificaremos a nuestros administradores para que vean el recibo.',
       confirmButtonText: 'Si',
       cancelButtonText: 'No',
     });
@@ -261,8 +383,12 @@ const MiGiraDetailed = () => {
         imgTransaccion,
       );
 
-    if (res && resImage) successAlert('Imagen subida exitosamente');
-    else errorAlert('Error al subir imagen, intentelo de nuevo');
+    if (res && resImage) {
+      await successAlert('Imagen subida exitosamente');
+      deleteReservationImage(reservationId);
+      setReservationSelected({});
+      setWantUpNewImage(false);
+    } else errorAlert('Error al subir imagen, intentelo de nuevo');
 
     // console.log(imgTransaccion);
 
@@ -272,7 +398,7 @@ const MiGiraDetailed = () => {
   };
 
   if (reservacionSelecionada.reservationId == undefined)
-    return <>Cargando...</>;
+    return <MiGiraDetailedCharging />;
 
   return (
     <>
@@ -282,15 +408,21 @@ const MiGiraDetailed = () => {
         // onClick={() => handleClick(id)}
       >
         <ReservacionP head="Fecha Gira:" value={reservacionSelecionada.date} />
+        <ReservacionP head="Hora:" value={reservacionSelecionada.horaGira} />
         <ReservacionP
-          head="Fecha escrita:"
-          value={reservacionSelecionada.horaGira}
+          head="Dias restante:"
+          value={
+            daysLeft > 0
+              ? `${daysLeft} dias`
+              : daysLeft == 0
+              ? 'La gira es hoy'
+              : 'La gira paso'
+          }
         />
-
-        <ReservacionP
+        {/* <ReservacionP
           head="Metodo de pago:"
           value={reservacionSelecionada.methodOfPay}
-        />
+        /> */}
         {reservacionSelecionada.methodOfPay == 'tarjeta' ? (
           <ReservacionP
             head="Banco utilizado:"
@@ -311,10 +443,43 @@ const MiGiraDetailed = () => {
           head="Pago completado:"
           value={reservacionSelecionada.reservacionPagada ? 'Si' : 'No'}
         />
-        <ReservacionP
+        {/* <ReservacionP
           head="Precio cada adulto:"
           value={reservacionSelecionada.adultPrice}
-        />
+        /> */}
+        {reservacionSelecionada.pointsUsed > 0 ? (
+          <ReservacionP
+            head="Puntos usados:"
+            value={reservacionSelecionada.pointsUsed + ' puntos'}
+          />
+        ) : (
+          <></>
+        )}
+        {reservacionSelecionada.discountPercentWithBadge > 0 ? (
+          <ReservacionP
+            head="Porcentaje de descuento por insignia:"
+            value={reservacionSelecionada.discountPercentWithBadge + ' %'}
+          />
+        ) : null}
+
+        {reservacionSelecionada.discountPercentWithPoints > 0 ? (
+          <ReservacionP
+            head="Porcentaje de descuento por puntos:"
+            value={reservacionSelecionada.discountPercentWithPoints + ' %'}
+          />
+        ) : null}
+        {reservacionSelecionada.discountPercentWithBadge > 0 &&
+        reservacionSelecionada.discountPercentWithPoints > 0 ? (
+          <ReservacionP
+            head="Porcentaje total de descuento:"
+            value={
+              reservacionSelecionada.discountPercentWithBadge +
+              reservacionSelecionada.discountPercentWithPoints +
+              ' %'
+            }
+          />
+        ) : null}
+
         <ReservacionP
           head="Estado de reservacion:"
           value={reservacionSelecionada.state}
@@ -392,15 +557,24 @@ const MiGiraDetailed = () => {
         ) : (
           <></>
         )}
+
         <hr />
-        {reservacionSelecionada.pointsUsed > 0 ? (
+
+        {/* <ReservacionP
+          head="Descuento total:"
+          value={
+            reservacionSelecionada.discountPercentWithBadge +
+            reservacionSelecionada.discountPercentWithPoints +
+            ' %'
+          }
+        /> */}
+        {reservacionSelecionada.discountInMoney > 0 ? (
           <ReservacionP
-            head="Puntos usados:"
-            value={reservacionSelecionada.pointsUsed}
+            head="Descuento en dinero:"
+            value={reservacionSelecionada.discountInMoney}
           />
-        ) : (
-          <></>
-        )}
+        ) : null}
+
         <ReservacionP
           head="Total:"
           value={
@@ -420,7 +594,6 @@ const MiGiraDetailed = () => {
         ) : (
           <></>
         )}
-
         {wantUpNewImage ? (
           <ChangeImage
             total={reservacionSelecionada.total}
@@ -433,7 +606,6 @@ const MiGiraDetailed = () => {
         ) : (
           <></>
         )}
-
         {/* {wantUpNewImage ? (
           <MetodoPagoSeccion
             total={reservacionSelecionada.total}
@@ -458,7 +630,6 @@ const MiGiraDetailed = () => {
         ) : (
           <></>
         )} */}
-
         <div className="mt-5">
           <p className="mb-1 text-center fw-medium fs-5">
             Informacion de gira:
@@ -474,7 +645,6 @@ const MiGiraDetailed = () => {
             </span>
           </p>
         </div>
-
         <div className="position-fixed- start-0- -bottom-0 mt-4 w-100 d-flex justify-content-evenly">
           {!wantUpNewImage ? (
             <>
@@ -489,12 +659,25 @@ const MiGiraDetailed = () => {
                 <></>
               )}
               {!reservacionSelecionada.isConfirmByAdmin ? (
-                <button
-                  className="bg-success border-0 p-2 px-4 rounded-3 fw-medium"
-                  onClick={setTrueWantUpNewImage}
-                >
-                  Cambiar imagen
-                </button>
+                reservacionSelecionada.methodOfPay == 'efectivo' ||
+                (reservacionSelecionada.methodOfPay == 'points' &&
+                  reservacionSelecionada.methodOfPayWhenUsePoints ==
+                    'efectivo') ? (
+                  <button
+                    className="bg-success border-0 p-2 px-4 rounded-3 fw-medium"
+                    onClick={setTrueWantUpNewImage}
+                  >
+                    Realizar transferencia
+                  </button>
+                ) : reservacionSelecionada.discountInMoney <
+                  reservacionSelecionada.total ? (
+                  <button
+                    className="bg-success border-0 p-2 px-4 rounded-3 fw-medium"
+                    onClick={setTrueWantUpNewImage}
+                  >
+                    Cambiar imagen
+                  </button>
+                ) : null
               ) : (
                 <></>
               )}

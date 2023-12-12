@@ -12,10 +12,12 @@ const Accordings = ({
   priceChild,
   countBabies,
   priceBaby,
+  discountInMoney,
   description,
   title,
   duracion,
   city,
+  date,
   location,
 }) => {
   return (
@@ -33,7 +35,7 @@ const Accordings = ({
 
               <p className="m-0 fw-bold">{city}</p>
               <p className="m-0" style={{ fontSize: 14 }}>
-                jue, 21 sept.
+                {date}
               </p>
               <p className="m-0" style={{ fontSize: 14 }}>
                 {countPersons} adulto
@@ -63,13 +65,14 @@ const Accordings = ({
         header={
           <div className="d-flex justify-content-between px-3">
             <p className="m-0 fw-medium text-decoration-underline color-1">
-              Total a pagar hoy
+              Total a pagar
               <FaAnglesDown className="FaAnglesDown-2 color-1 ms-2" />
             </p>
             <p className="m-0 fw-bold fs-6">
               {countPersons * pricePerson +
                 countChildren * priceChild +
-                countBabies * priceBaby}
+                countBabies * priceBaby -
+                discountInMoney}
             </p>
           </div>
         }

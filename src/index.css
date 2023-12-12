@@ -198,3 +198,20 @@ button:focus-visible {
     rgba(0, 11, 38, 0) 49.52%
   );
 }
+
+.App {
+  height: 100vh;
+  min-height: -webkit-fill-available;
+  /* background-color: blue; */
+}
+/* background: #7c4343; */
+
+html {
+  /* min-height: 100vh; */
+  background: red;
+  height: -webkit-fill-available;
+}
+body {
+  min-height: 100vh;
+  background: red;
+}

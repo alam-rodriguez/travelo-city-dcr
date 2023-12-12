@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { IoMdCheckmark } from 'react-icons/io';
 import { RiImageAddFill } from 'react-icons/ri';
+import TextForDiscount from './TextForDiscount';
 
 const MetodoPagoSeccion = ({
   total,
@@ -14,7 +15,12 @@ const MetodoPagoSeccion = ({
   banksCountsNumbers,
   imgTransaccion,
   setImgTransaccion,
+  badge,
+  discountPercentWithBadge,
+  discountPercentWithPoints,
+  activePoints,
   discount,
+  calcDiscount,
 }) => {
   const inputAddImage = useRef(null);
 
@@ -23,7 +29,11 @@ const MetodoPagoSeccion = ({
     console.log(bankSelected);
   };
 
-  const handleChangePayMethod = (e) => setMethodOfPay(e.target.value);
+  const handleChangePayMethod = (e) => {
+    // console.log(e.tarjet.value);
+    setMethodOfPay(e.target.value);
+    // calcDiscount(e.tarjet.value);
+  };
 
   const handleChangeBank = (e) => setBankSelected(e.target.value);
 
@@ -59,7 +69,8 @@ const MetodoPagoSeccion = ({
           // defaultValue="holaa"
           value={methodOfPay}
           // defaultValue={methodOfPay}
-          required={discount < 100 ? true : false}
+          required={true}
+          // required={discount < 100 ? true : false}
           className="bg-transparent w-100 border text-black rounded-1 p-2"
           onChange={handleChangePayMethod}
         >
@@ -70,7 +81,7 @@ const MetodoPagoSeccion = ({
           )}
           <option value="efectivo">Voy a pagar en efectivo</option>
           <option value="tarjeta">Voy a pagar con targeta de credito</option>
-          {discount > 0 ? (
+          {discountPercentWithPoints > 0 && activePoints ? (
             <option value="points">Voy a utilizar mis puntos para pagar</option>
           ) : (
             <></>
@@ -101,13 +112,23 @@ const MetodoPagoSeccion = ({
             </span>
           </p>
           <p className="m-0 fw-medium">
-            Total a pagar: <span className="fw-bold">{total}</span>
+            Total a pagar: <span className="fw-bold">{totalWithDiscount}</span>
           </p>
+          <TextForDiscount
+            discount={discountPercentWithBadge}
+            text={`de descuento gracias a tu insignia de ${badge}`}
+          />
         </>
       ) : methodOfPay == 'efectivo' ? (
-        <p className="m-0 fw-medium">
-          Total a pagar: <span className="fw-bold">{total}</span>
-        </p>
+        <>
+          <p className="m-0 fw-medium">
+            Total a pagar: <span className="fw-bold">{totalWithDiscount}</span>
+          </p>
+          <TextForDiscount
+            discount={discountPercentWithBadge}
+            text={`de descuento gracias a tu insignia de ${badge}`}
+          />
+        </>
       ) : methodOfPay == 'points' && totalWithDiscount > 0 ? (
         <>
           <div className="my-3">
@@ -151,10 +172,27 @@ const MetodoPagoSeccion = ({
           <p className="m-0 fw-medium">
             Total a pagar: <span className="fw-bold">{totalWithDiscount}</span>
           </p>
+
+          <TextForDiscount
+            discount={discountPercentWithBadge}
+            text={`de descuento gracias a tu insignia de ${badge}`}
+          />
+          <TextForDiscount
+            discount={discountPercentWithPoints}
+            text="de descuento gracias a tus puntos"
+          />
         </>
       ) : methodOfPay == 'points' && totalWithDiscount == 0 ? (
         <>
           <p className="m-0 fw-medium">No tienes que pagar nada</p>
+          <TextForDiscount
+            discount={discountPercentWithBadge}
+            text="de descuento gracias a tu insignia"
+          />
+          <TextForDiscount
+            discount={discountPercentWithPoints}
+            text="de descuento gracias a tus puntos"
+          />
         </>
       ) : (
         <></>

@@ -16,7 +16,11 @@ import PerfilInfo from './perfil-components/PerfilInfo';
 import PerfilOption from './perfil-components/PerfilOption';
 import BtnSignOut from './perfil-components/BtnSignOut';
 import { useInfoPeople } from '../../zustand/giras/giras';
-import { getUserInfo } from '../../firebase/users/users';
+import {
+  existUser,
+  getUserInfo,
+  setUserInfo,
+} from '../../firebase/users/users';
 import { useInfoUser } from '../../zustand/user/user';
 import { useInfoApp } from '../../zustand/admin/app/app';
 import { getBadgesAndPointsOptions } from '../../firebase/admin-option/app-options/pointsSettings';
@@ -57,6 +61,7 @@ const Perfil = () => {
     badge,
     setBadge,
     calcBadge,
+    type,
 
     // discount,
     // setDiscount,
@@ -154,9 +159,23 @@ const Perfil = () => {
 
   const handleClickIniciarSesion = async () => {
     waitingAlert('Iniciando sesion');
-    const email = await signInWithGoogle();
+    // const email = await signInWithGoogle();
+    const infoUser = await signInWithGoogle();
+    const userExist = await existUser(infoUser.id);
+    let resUserInfo = true;
+    if (!userExist)
+      resUserInfo = await setUserInfo({
+        email: infoUser.email,
+        id: infoUser.id,
+        moneySpent: 0,
+        name: '',
+        number: 0,
+        pointsEarned: 0,
+        pointsSpent: 0,
+        type: 'customer',
+      });
 
-    if (email != false) {
+    if (infoUser != false && resUserInfo) {
       await successAlert('Has iniciado sesion correctamente.');
       // navigate('/');
       window.location.reload();
@@ -164,6 +183,15 @@ const Perfil = () => {
     } else errorAlert('Ha ocurrido un error al intentar iniciar sesion.');
 
     console.log(email);
+
+    // if (infoUser != false) {
+    //   setEmail(infoUser.email);
+    //   setId(infoUser.id);
+    // }
+
+    // if (resUserInfo)
+    //   successAlert('Registrado', 'Te haz registrado correctamente.');
+    // else errorAlert('Error', 'Ha ucurrido un error al intentar registrarte');
   };
 
   const cerrarSeccion = async () => {
@@ -183,12 +211,13 @@ const Perfil = () => {
     } else errorAlert('Ha ocurrido un error al intentar cerrar sesion.');
   };
 
-  if (!haveUserInfo) {
+  if (type == '') return <></>;
+  if (type == 'anonymous') {
     return (
       <div className="d-flex flex-column gap-3">
         <hr />
 
-        <h1>Giras</h1>
+        <h1>Perfil</h1>
 
         <div className="d-flex justify-content-center">
           <img className="" src={imageCandado} style={{ width: '35%' }} />
@@ -211,7 +240,7 @@ const Perfil = () => {
   }
 
   return (
-    <div className="mt-4 pb-5 bg-light-">
+    <div className="py-5 bg-light-">
       <PerfilInfo
         name={name}
         email={email}

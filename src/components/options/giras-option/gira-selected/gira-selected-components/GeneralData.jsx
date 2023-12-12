@@ -22,7 +22,7 @@ const GeneralData = ({ generalData }) => {
   };
 
   return (
-    <>
+    <div className="overflow-scroll">
       <p className="m-0 m-2 fs-4 fw-bold">Datos generales</p>
 
       <ul>
@@ -43,7 +43,7 @@ const GeneralData = ({ generalData }) => {
         <p className="m-0">Ver todo</p>
         <BsChevronRight />
       </div>
-    </>
+    </div>
   );
 };
 

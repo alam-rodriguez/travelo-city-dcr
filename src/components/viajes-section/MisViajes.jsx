@@ -5,7 +5,11 @@ import imageCandado from '../../assets/images/imageCandado.png';
 
 // Firebase
 import { signInWithGoogle } from '../../firebase/authentication/authWithGoogle';
-import { getUserInfo } from '../../firebase/users/users';
+import {
+  existUser,
+  getUserInfo,
+  setUserInfo,
+} from '../../firebase/users/users';
 import { useInfoUser } from '../../zustand/user/user';
 import ReservationItem from '../admin-options/giras/giras-reservaciones/giras-reservaciones-components/ReservationItem';
 import {
@@ -16,6 +20,7 @@ import { useReservacionesGiras } from '../../zustand/admin/giras/giras-reservaci
 import ReservacionP from '../admin-options/giras/giras-reservaciones/giras-reservaciones-components/ReservacionP';
 import MisGirasPriview from './mis-giras/MisGirasPriview';
 import { useNavigate } from 'react-router-dom';
+import { useAlerts } from '../../zustand/alerts/alerts';
 
 const MisViajes = () => {
   const navigate = useNavigate();
@@ -56,9 +61,14 @@ const MisViajes = () => {
     setDiscountInMoney,
 
     userReservations,
+    userAllReservations,
+    userReservationsNotDone,
     setUserReservations,
-    setUserReservationsNotDone,
+
+    searchedReservations,
     setReservations,
+    type,
+    setType,
   } = useInfoUser();
 
   useEffect(() => {
@@ -78,6 +88,7 @@ const MisViajes = () => {
         setMoneySpent(res.moneySpent);
         setPointsEarned(res.pointsEarned);
         setPointsSpent(res.pointsSpent);
+        setType(res.type);
         // console.log(res);
         // setBadge(res.badge);
       }
@@ -86,13 +97,35 @@ const MisViajes = () => {
     f();
   }, [id]);
 
+  const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
+
   const handleClickIniciarSesion = async () => {
-    const email = await signInWithGoogle();
-    console.log(email);
+    // const email = await signInWithGoogle();
+    // console.log(email);
+    waitingAlert('Iniciando sesion');
+    const infoUser = await signInWithGoogle();
+    const userExist = await existUser(infoUser.id);
+    let resUserInfo = true;
+    if (!userExist)
+      resUserInfo = await setUserInfo({
+        email: infoUser.email,
+        id: infoUser.id,
+        moneySpent: 0,
+        name: '',
+        number: 0,
+        pointsEarned: 0,
+        pointsSpent: 0,
+        type: 'customer',
+      });
+
+    if (infoUser != false && resUserInfo) {
+      await successAlert('Has iniciado sesion correctamente.');
+      window.location.reload();
+    } else errorAlert('Ha ocurrido un error al intentar iniciar sesion.');
   };
 
   useEffect(() => {
-    if (email == '' || userReservations.length > 0) return;
+    if (email == '' && searchedReservations) return;
     const f = async () => {
       const fechaActual = new Date().getTime();
       console.log(email);
@@ -115,12 +148,13 @@ const MisViajes = () => {
       // console.log(reservationsNotActives);
     };
     f();
-  }, [email]);
+  }, [searchedReservations]);
 
   const handleClickViewActivitiesDone = () =>
     navigate('/mis-giras/giras-pasadas');
 
-  if (!haveUserInfo) {
+  if (type == '') return <></>;
+  if (type == 'anonymous') {
     return (
       <div className="d-flex flex-column gap-3">
         <p className="m-0 display-5 fw-bold mt-5">Giras</p>
@@ -154,27 +188,21 @@ const MisViajes = () => {
     );
   }
 
-  // const { reservaciones, setReservaciones, setReservacionSelecionada } =
-  //   useReservacionesGiras();
-  // useEffect(() => {
-  //   if (reservaciones.length > 0) return;
-  //   console.log('Cargando reservaciones');
-  //   const f = async () => {
-  //     const res = await getReservationGira(currentId);
-  //     if (res == false) return;
-  //     res.sort((a, b) => b.dateInMilliseconds - a.dateInMilliseconds);
-  //     console.warn(res);
-  //     setReservaciones(res);
-  //   };
-  //   f();
-  // }, []);
-
-  // if (true) {
   return (
     <>
       <p className="m-0 display-5 fw-bold pt-4">Agenda de giras</p>
       <hr />
       <div className="my-4 mt-5">
+        {!searchedReservations ? (
+          <p className="text-center fs-5 fw-medium">
+            Cargando reservaciones...
+          </p>
+        ) : searchedReservations && userAllReservations.length == 0 ? (
+          <p className="text-center fs-5 fw-medium">Sin reservaciones</p>
+        ) : (
+          <></>
+        )}
+
         {userReservations.map((reservation) => (
           <MisGirasPriview
             reservation={reservation}
@@ -196,194 +224,85 @@ const MisViajes = () => {
           />
         ))}
 
-        <div className="d-flex justify-content-center mt-5">
-          <button
-            className="bg-color border-0 rounded-3 p-2 fs-6 fw-medium"
-            onClick={handleClickViewActivitiesDone}
-          >
-            Ver actividades pasadas
-          </button>
-        </div>
-        {/* {userReservations.map((reservation) => (
-              <div key={reservation.reservationId}>
-                <ReservacionP
-                  head="Titulo de gira:"
-                  value={reservation.title}
-                />
-                <ReservacionP head="Fecha:" value={reservation.date} />
-                <ReservacionP head="Hora:" value={reservation.horaGira} />
-                <ReservacionP head="Dias retantes:" value="9 dias" />
-
-                <ReservacionP head="Acompanantes:" value="9" />
-                <ReservacionP
-                  head="Puntos ganados:"
-                  value={reservation.pointsEarned}
-                />
-                <ReservacionP
-                  head="Estado de reservacion:"
-                  value={reservation.state}
-                />
-
-                <hr />
-
-                <ReservacionP head="Puntos utilizados:" value={5000} />
-                <ReservacionP head="Total:" value={50000} />
-              </div>
-            ))} */}
-
-        {/* <hr /> */}
-
-        {/* {reservaciones.map((reservacion) => (
-            <ReservationItem
-              key={reservacion.reservationId}
-              id={reservacion.reservationId}
-              date={reservacion.dayMadeReservation}
-              hour={reservacion.hourMakeReservation}
-              userName={reservacion.userName}
-              userNumber={reservacion.userNumber}
-              userEmail={reservacion.email}
-              stateReservation={reservacion.state}
-              adultsNames={reservacion.adultsNames}
-              adultPrice={reservacion.adultPrice}
-              childrenNames={reservacion.childrenNames}
-              childrenPrice={reservacion.childrenPrice}
-              bebiesNames={reservacion.bebiesNames}
-              bebiesPrice={reservacion.bebiesPrice}
-              reservacion={reservacion}
-              pointsUsed={reservacion.pointsUsed}
-              total={reservacion.total - reservacion.discountInMoney}
-              handleClick={{}}
-            />
-          ))} */}
-        {/* <div
-            className="border-bottom border-danger border-5 mb-5 pb-0"
-            // onClick={() => handleClick(reservacion)}
-          >
-            <ReservacionP head="Nombre:" value={userName} />
-            <ReservacionP head="Numero:" value={userNumber} />
-            <ReservacionP head="Email:" value={userEmail} />
-            <ReservacionP
-              head="Estado de reservacion:"
-              value={stateReservation}
-            />
-
-            {Object.keys(adultsNames).length > 0 ||
-            Object.keys(childrenNames).length > 0 ||
-            Object.keys(bebiesNames).length > 0 ? (
-              <p className="m-0 text-center fw-bold">acompanantes:</p>
-            ) : (
-              <></>
-            )}
-
-            {Object.keys(adultsNames).length > 0 ? (
-              <>
-                <ReservacionP
-                  head="Adultos:"
-                  value={(() => {
-                    const elementos = Object.keys(adultsNames).map((clave) => {
-                      const valor = adultsNames[clave];
-                      return <span key={clave}> {valor},</span>;
-                    });
-                    return elementos;
-                  })()}
-                />
-              </>
-            ) : (
-              <></>
-            )}
-
-            {Object.keys(childrenNames).length > 0 ? (
-              <>
-                <ReservacionP
-                  head="Ninos:"
-                  value={(() => {
-                    const elementos = Object.keys(childrenNames).map(
-                      (clave) => {
-                        const valor = childrenNames[clave];
-                        return <span key={clave}> {valor},</span>;
-                      },
-                    );
-                    return elementos;
-                  })()}
-                />
-              </>
-            ) : (
-              <></>
-            )}
-            {Object.keys(bebiesNames).length > 0 ? (
-              <>
-                <ReservacionP
-                  head="Bebes:"
-                  value={(() => {
-                    const elementos = Object.keys(bebiesNames).map((clave) => {
-                      const valor = bebiesNames[clave];
-                      return <span key={clave}> {valor},</span>;
-                    });
-                    return elementos;
-                  })()}
-                />
-              </>
-            ) : (
-              <></>
-            )}
-            <hr />
-            {pointsUsed > 0 ? (
-              <ReservacionP head="Puntos utilizados:" value={pointsUsed} />
-            ) : (
-              <></>
-            )}
-
-            <ReservacionP head="Total:" value={total} />
-          </div> */}
+        {userReservationsNotDone.length > 0 ? (
+          <div className="d-flex justify-content-center mt-5">
+            <button
+              className="bg-color border-0 rounded-3 p-2 fs-6 fw-medium"
+              onClick={handleClickViewActivitiesDone}
+            >
+              Ver actividades pasadas
+            </button>
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );
+
+  // const { reservaciones, setReservaciones, setReservacionSelecionada } =
+  //   useReservacionesGiras();
+  // useEffect(() => {
+  //   if (reservaciones.length > 0) return;
+  //   console.log('Cargando reservaciones');
+  //   const f = async () => {
+  //     const res = await getReservationGira(currentId);
+  //     if (res == false) return;
+  //     res.sort((a, b) => b.dateInMilliseconds - a.dateInMilliseconds);
+  //     console.warn(res);
+  //     setReservaciones(res);
+  //   };
+  //   f();
+  // }, []);
+
+  // if (true) {
+
   // }
 
-  return (
-    // <div className="d-flex flex-column gap-3">
-    //   <hr />
+  // return (
+  //   // <div className="d-flex flex-column gap-3">
+  //   //   <hr />
 
-    //   {/* <div className='text-center border-bottom pb-3'></div> */}
+  //   //   {/* <div className='text-center border-bottom pb-3'></div> */}
 
-    //   <h1>Viajes</h1>
+  //   //   <h1>Viajes</h1>
 
-    //   <div className="d-flex justify-content-center">
-    //     <img className="" src={imageCandado} style={{ width: '35%' }} />
-    //   </div>
+  //   //   <div className="d-flex justify-content-center">
+  //   //     <img className="" src={imageCandado} style={{ width: '35%' }} />
+  //   //   </div>
 
-    //   <input
-    //     className="form-control bg-primary text-white rounded-5"
-    //     type="button"
-    //     value="Iniciar sesion o crear una cuenta"
-    //     onClick={handleClickIniciarSesion}
-    //   />
+  //   //   <input
+  //   //     className="form-control bg-primary text-white rounded-5"
+  //   //     type="button"
+  //   //     value="Iniciar sesion o crear una cuenta"
+  //   //     onClick={handleClickIniciarSesion}
+  //   //   />
 
-    //   <input
-    //     className="form-control bg-transparent fw-bold py-3 rounded-3"
-    //     type="button"
-    //     value="No tienes una cuenta?"
-    //   />
-    // </div>
+  //   //   <input
+  //   //     className="form-control bg-transparent fw-bold py-3 rounded-3"
+  //   //     type="button"
+  //   //     value="No tienes una cuenta?"
+  //   //   />
+  //   // </div>
 
-    <div className="d-flex flex-column gap-3">
-      <p className="m-0 display-5 fw-bold mt-5">Giras</p>
-      <img
-        className="w-50 mx-auto mt-5"
-        src="https://a.travel-assets.com/egds/illustrations/uds-default/baggage__large.svg"
-      />
-      <p className="fw-medium m-0 fs-5">
-        Alam, no tienes ninguna gira en agenda, cual sera tu proxima aventura?
-      </p>
+  //   <div className="d-flex flex-column gap-3">
+  //     <p className="m-0 display-5 fw-bold mt-5">Giras</p>
+  //     <img
+  //       className="w-50 mx-auto mt-5"
+  //       src="https://a.travel-assets.com/egds/illustrations/uds-default/baggage__large.svg"
+  //     />
+  //     <p className="fw-medium m-0 fs-5">
+  //       Alam, no tienes ninguna gira en agenda, cual sera tu proxima aventura?
+  //     </p>
 
-      <input
-        className="form-control- border-0 p-2 bg-color text-white rounded-5 fw-medium"
-        type="button"
-        value="Buscar aventura"
-        onClick={handleClickIniciarSesion}
-      />
-    </div>
-  );
+  //     <input
+  //       className="form-control- border-0 p-2 bg-color text-white rounded-5 fw-medium"
+  //       type="button"
+  //       value="Buscar aventura"
+  //       onClick={handleClickIniciarSesion}
+  //     />
+  //   </div>
+  // );
 };
 
 export default MisViajes;

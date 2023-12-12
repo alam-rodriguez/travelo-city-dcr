@@ -42,6 +42,8 @@ const MisGirasRealizadas = () => {
     setBadge,
     calcBadge,
 
+    type,
+
     // discount,
     // setDiscount,
     discountPercentWithPoints,
@@ -62,6 +64,8 @@ const MisGirasRealizadas = () => {
   } = useInfoUser();
 
   useEffect(() => {
+    if (userReservationsNotDone.length == 0) navigate('/mis-giras');
+
     if (haveUserInfo || id == '') return;
 
     const f = async () => {
@@ -117,7 +121,9 @@ const MisGirasRealizadas = () => {
 
   const handleClickViewActivities = () => navigate('/mis-giras');
 
-  if (!haveUserInfo) {
+  if (type == '') return;
+
+  if (type == 'anonymous') {
     return (
       <div className="d-flex flex-column gap-3">
         <p className="m-0 display-5 fw-bold mt-5">Giras</p>
@@ -153,7 +159,7 @@ const MisGirasRealizadas = () => {
 
   return (
     <>
-      <p className="m-0 display-5 fw-bold pt-4">Agenda de giras</p>
+      <p className="m-0 display-5 fw-bold pt-4">Lista de giras realizadas</p>
       <hr />
       <div className="my-4 mt-5">
         {userReservationsNotDone.map((reservation) => (

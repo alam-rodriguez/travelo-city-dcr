@@ -12,6 +12,7 @@ import { getSugerencias } from '../firebase/sugerencias/sugerencias';
 // Zustand
 import { useGiras } from '../zustand/giras/giras';
 import { useSugerencias } from '../zustand/sugerencias/sugerencias';
+import CopyRigthText from './inicio/CopyRigthText';
 
 const Inicio = () => {
   const { giras } = useGiras();
@@ -32,7 +33,7 @@ const Inicio = () => {
   }, []);
 
   return (
-    <div className="pt-4" style={{ marginBottom: 500 }}>
+    <div className="pt-4 pb-4">
       <NameApp />
 
       <OptionsApp />
@@ -44,6 +45,8 @@ const Inicio = () => {
         />
       </div>
       <CoversSugerencias sugerencias={sugerencias} />
+
+      <CopyRigthText />
     </div>
   );
 };

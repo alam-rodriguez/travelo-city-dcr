@@ -41,6 +41,14 @@ export const useInfoUser = create((set) => ({
       }
     }),
   setBadge: (badge) => set(() => ({ badge: badge })),
+  resetInfoUser: () =>
+    set(() => ({
+      moneySpent: 0,
+      pointsEarned: 0,
+      pointsSpent: 0,
+      badge: { discountRate: 0, badge: 'Sin insignia', minMoney: 0 },
+      haveUserInfo: false,
+    })),
 
   userSawGiras: false,
   setTrueUserSawGiras: () => set(() => ({ userSawGiras: true })),
@@ -57,6 +65,7 @@ export const useInfoUser = create((set) => ({
   pointsHasToSpent: 0,
   setPointsHasToSpent: (points) => set(() => ({ pointsHasToSpent: points })),
 
+  searchedReservations: false,
   userReservations: [],
   userReservationsNotDone: [],
   userAllReservations: [],
@@ -75,8 +84,16 @@ export const useInfoUser = create((set) => ({
         userReservations: reservationsActives,
         userReservationsNotDone: reservationsDone,
         userAllReservations: reservations,
+        searchedReservations: true,
       };
     }),
+  resetReservations: () =>
+    set(() => ({
+      userReservations: [],
+      userReservationsNotDone: [],
+      userAllReservations: [],
+      searchedReservations: false,
+    })),
   setUserReservations: (reservations) =>
     set(() => ({ userReservations: reservations })),
   setUserReservationsNotDone: (reservations) =>
@@ -90,6 +107,12 @@ export const useInfoUser = create((set) => ({
     set((state) => ({
       reservationsImages: { ...state.reservationsImages, [id]: imgLink },
     })),
+  deleteReservationImage: (id) =>
+    set((state) => {
+      const imagesUpdated = { ...state.reservationsImages };
+      delete imagesUpdated[id];
+      return { reservationsImages: imagesUpdated };
+    }),
 
   commentSelected: {},
   setCommentSeleted: (comment) => set(() => ({ commentSelected: comment })),

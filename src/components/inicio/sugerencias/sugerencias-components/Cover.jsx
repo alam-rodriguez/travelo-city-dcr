@@ -28,8 +28,9 @@ const Cover = ({ sugerencia, id, imgPath, text, secondText }) => {
     // navigate(`/sugerencia`);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
+
   return (
-    <div style={{ margin: '80px auto' }} onClick={handleClick}>
+    <div style={{ margin: '80px 0' }} onClick={handleClick}>
       {sugerenciasImages[id] != undefined ? (
         <img
           className="w-100 object-fit-cover rounded-5"
