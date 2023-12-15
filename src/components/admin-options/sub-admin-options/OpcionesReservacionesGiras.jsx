@@ -9,19 +9,22 @@ const OpcionesReservacionesGiras = () => {
 
       <div className="d-flex gap-4 my-5 flex-wrap justify-content-between">
         <BtnOptions
-          text="Reservaciones giras"
+          text="Reservaciones giras activas"
           link="/admin-options/list-giras-for-reservations"
         />
-
         <BtnOptions
           text="Reservaciones giras realizadas"
           link="/admin-options/list-giras-done-for-reservations"
         />
         <BtnOptions
+          text="Reservaciones giras archivadas"
+          link="/admin-options/list-giras-archivadas-for-reservations"
+        />
+        <BtnOptions
           text="Todas las reservaciones"
           link="/admin-options/list-all-giras-reservations"
         />
-        <BtnOptions
+        {/* <BtnOptions
           text="Reservaciones canceladas"
           link="/admin-options/list-reservaciones-canceladas-giras-activas"
         />
@@ -32,7 +35,7 @@ const OpcionesReservacionesGiras = () => {
         <BtnOptions
           text="Reservaciones canceladas de giras archivadas"
           link="/admin-options/list-all-giras-reservations"
-        />
+        /> */}
       </div>
     </>
   );

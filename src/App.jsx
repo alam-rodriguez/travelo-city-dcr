@@ -82,6 +82,13 @@ import Reviews from './components/perfil-section/perfil-options/Reviews';
 import Settings from './components/perfil-section/perfil-options/Settings';
 import HelpAndFeedback from './components/perfil-section/perfil-options/HelpAndFeedback';
 import ActividadDeRecompensas from './components/perfil-section/perfil-options/ActividadDeRecompensas';
+import ListGirasArchivadasForReservations from './components/admin-options/giras/giras-reservaciones/ListGirasArchivadasForReservations';
+import EstadisticasGirasRealizadas from './components/admin-options/estadisticas/por-giras/EstadisticasGirasRealizadas';
+import EstadisticasGirasArchivadas from './components/admin-options/estadisticas/por-giras/EstadisticasGirasArchivadas';
+import EstadisticasAllGiras from './components/admin-options/estadisticas/por-giras/EstadisticasAllGiras';
+import EstadisticaUsuario from './components/admin-options/estadisticas/usuarios/EstadisticaUsuario';
+import GrupoDegirasList from './components/admin-options/estadisticas/por-grupos-de-giras/GrupoDegirasList';
+import GrupoSeleccionado from './components/admin-options/estadisticas/por-grupos-de-giras/GrupoSeleccionado';
 // import ChangeAppName from './components/admin-options/app-options/ChangeAppName';
 // import ManejadorGiras from './components/admin-options/sub-admin-options/OpcionesGiras';
 
@@ -244,7 +251,6 @@ function App() {
           <Route path="/perfil/reviews" Component={Reviews} />
           <Route path="/perfil/settings" Component={Settings} />
           <Route path="/perfil/help-and-feedback" Component={HelpAndFeedback} />
-
           {/* Components de admin */}
           <Route path="/admin-options" Component={AdminOptions} />
           <Route path="/admin-options/opciones-app" Component={OpcionesApp} />
@@ -302,9 +308,22 @@ function App() {
             Component={EstadisticasUsers}
           />
           <Route
+            path="/admin-options/opciones-estadisticas-giras/estadisticas-usuarios/:id"
+            Component={EstadisticaUsuario}
+          />
+          <Route
             path="/admin-options/opciones-estadisticas-giras/todas-las-estadisticas"
             Component={TodasLasEstadisticas}
           />
+          <Route
+            path="/admin-options/opciones-estadisticas-giras/giras-por-grupos"
+            Component={GrupoDegirasList}
+          />
+          <Route
+            path="/admin-options/opciones-estadisticas-giras/giras-por-grupos/group-selected"
+            Component={GrupoSeleccionado}
+          />
+
           <Route
             path="/admin-options/list-giras-for-reservations"
             Component={ListGirasForReservations}
@@ -316,6 +335,10 @@ function App() {
           <Route
             path="/admin-options/list-giras-done-for-reservations"
             Component={ListGirasDoneForReservations}
+          />
+          <Route
+            path="/admin-options/list-giras-archivadas-for-reservations"
+            Component={ListGirasArchivadasForReservations}
           />
           <Route
             path="/admin-options/list-giras-for-reservations/:currentId"
@@ -366,6 +389,18 @@ function App() {
             Component={ListEstadisticasActivas}
           />
           <Route
+            path="/admin-options/estadisticas-giras-realizadas"
+            Component={EstadisticasGirasRealizadas}
+          />
+          <Route
+            path="/admin-options/estadisticas-giras-archivadas"
+            Component={EstadisticasGirasArchivadas}
+          />
+          <Route
+            path="/admin-options/estadisticas-all-giras"
+            Component={EstadisticasAllGiras}
+          />
+          <Route
             path="/admin-options/list-giras-for-stadisticas/:id"
             Component={EstadisticaGira}
           />
@@ -374,7 +409,6 @@ function App() {
             path="/signIn-like-semi-admin"
             Component={SignInLikeSemiAdmin}
           />
-
           {/* Components de admin */}
         </Routes>
         {type == 'admin' ? <AdminIcon /> : <></>}

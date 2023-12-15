@@ -24,7 +24,9 @@ const ReservationItem = ({
 }) => {
   return (
     <div
-      className="border-bottom border-danger border-5 mb-5 pb-0"
+      className={`border-bottom border-danger border-5 mb-5 pb-0 ${
+        stateReservation == 'Cancelada' ? 'bg-danger-subtle' : ''
+      }`}
       onClick={() => handleClick(reservacion)}
     >
       <ReservacionP head="Fecha:" value={`${date} | ${hour}`} />

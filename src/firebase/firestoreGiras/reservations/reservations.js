@@ -64,6 +64,20 @@ export const createReservationGira = async (reservation) => {
   }
 };
 
+export const getAllReservations = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'reservationsGiras'));
+    const reservaciones = [];
+    querySnapshot.forEach((doc) => {
+      reservaciones.push(doc.data());
+    });
+    return reservaciones;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
 export const getReservationGira = async (id) => {
   try {
     const q = query(

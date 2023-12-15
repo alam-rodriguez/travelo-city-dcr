@@ -20,8 +20,11 @@ import { getGirasNoDone } from '../../../firebase/firestoreGiras/giras';
 import { createSugerenciaFirestore } from '../../../firebase/sugerencias/sugerencias';
 import { uploadImageSugerencia } from '../../../firebase/sugerencias/imagenesSugerencias';
 import { useAlerts } from '../../../zustand/alerts/alerts';
+import { useNavigate } from 'react-router-dom';
 
 const CrearSugerencia = () => {
+  const navigate = useNavigate();
+
   const {
     titulo,
     setTitulo,
@@ -55,17 +58,20 @@ const CrearSugerencia = () => {
         'imagen necesaria',
         'Debes de poner una imagen obligatoriamente',
       );
-
+      return;
+    }
+    if (listIdsGiras.length == 0) {
+      warningAlert(
+        'Debes de seleccionar por  lo menos una gira',
+        'Debes de seleccinoar como minimo una gira para crear la sugerencia',
+      );
       return;
     }
 
     const want = await ask({
       title: 'Quieres crear esta sugerencia?',
       text: 'Estas seguro de que quieres crear esta sugerencia ?, todas las personas la veran.',
-      // icon = 'question',
-      // confirmButtonColor = '#0008FF',
       confirmButtonText: 'Crear sugerencia',
-      // cancelButtonText = 'Cancelar',
     });
 
     if (!want.isConfirmed) return;
@@ -88,12 +94,13 @@ const CrearSugerencia = () => {
 
     const resImage = await uploadImageSugerencia('sugerencias', id, imageFile);
 
-    if (res && resImage)
-      successAlert(
+    if (res && resImage) {
+      await successAlert(
         'Sugerencia creada con exito',
         'La sugerencia se ha creado correctamente, todos tus usuarios la pueden ver.',
       );
-    else
+      navigate('/admin-options/opciones-sugerencias');
+    } else
       errorAlert(
         'Error',
         'Ha ocurrido un error al intentar crear la sugerencia.',

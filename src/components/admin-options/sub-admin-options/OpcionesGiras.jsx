@@ -24,7 +24,7 @@ const OpcionesGiras = () => {
           link="/admin-options/list-giras-archivadas"
         />
         <BtnOptions
-          text="Todos mis viajes"
+          text="Todas mis giras"
           link="/admin-options/list-all-giras"
         />
       </div>

@@ -14,12 +14,12 @@ import Headers from '../../../admin-options-components/Headers';
 import ListGiras from '../../giras-components/giras/ListGiras';
 
 const ListAllReservations = () => {
-  const { allGiras, setAllGiras } = girasListForAdmin();
+  const { allGiras, setAllGiras, setGiras } = girasListForAdmin();
   useEffect(() => {
     if (allGiras.length == 0) {
       const f = async () => {
         const resGiras = await getAllGiras();
-        if (resGiras != false) setAllGiras(resGiras);
+        if (resGiras != false) setGiras(resGiras);
       };
       f();
     }

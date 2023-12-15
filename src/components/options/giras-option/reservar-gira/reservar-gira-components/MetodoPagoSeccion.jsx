@@ -63,7 +63,7 @@ const MetodoPagoSeccion = ({
       </div>
       <div className="my-3">
         <p className="mb-1 fw-medium">
-          Como quieres pagar, en efectivo o con tarjeta ?
+          Como quieres pagar, en efectivo o con i ?
         </p>
         <select
           // defaultValue="holaa"
@@ -76,11 +76,9 @@ const MetodoPagoSeccion = ({
         >
           {methodOfPay == '' ? (
             <option value="">Debes de seleccionar una opcion</option>
-          ) : (
-            <></>
-          )}
-          <option value="efectivo">Voy a pagar en efectivo</option>
-          <option value="tarjeta">Voy a pagar con targeta de credito</option>
+          ) : null}
+          <option value="efectivo">Voy a pagar con efectivo</option>
+          <option value="tarjeta">Voy a pagar con transferencia</option>
           {discountPercentWithPoints > 0 && activePoints ? (
             <option value="points">Voy a utilizar mis puntos para pagar</option>
           ) : (
@@ -139,8 +137,8 @@ const MetodoPagoSeccion = ({
               className="bg-transparent w-100 border rounded-3 text-black rounded-1 p-2"
               onChange={handleChangePayMethodWhenUsePoints}
             >
-              <option value="efectivo">En efectivo</option>
-              <option value="tarjeta">Con tarjeta</option>
+              <option value="efectivo">Con efectivo</option>
+              <option value="tarjeta">Con transferencia</option>
             </select>
 
             {methodOfPayWhenUsePoints == 'tarjeta' ? (

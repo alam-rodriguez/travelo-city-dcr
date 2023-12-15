@@ -16,7 +16,9 @@ import {
 } from '../../../../firebase/firestoreGiras/giras';
 
 const ListTodasLasGiras = () => {
-  const { giras, setGiras, allGiras, setAllGiras } = girasListForAdmin();
+  const { allGiras, setGiras } = girasListForAdmin();
+
+  // const { giras, setGiras, allGiras, setAllGiras } = girasListForAdmin();
 
   useEffect(() => {
     if (allGiras.length == 0) {
@@ -25,7 +27,7 @@ const ListTodasLasGiras = () => {
         const resGiras = await getAllGiras();
         console.log(resGiras);
         console.warn('Cargando todas las giras de BD');
-        setAllGiras(resGiras);
+        setGiras(resGiras);
       };
       f();
     }

@@ -7,20 +7,25 @@ import { useNavigate } from 'react-router-dom';
 import { girasListForAdmin } from '../../../../zustand/admin/girasAdmin';
 
 // Firebase
-import { getGirasDone } from '../../../../firebase/firestoreGiras/giras';
+import {
+  getAllGiras,
+  getGirasDone,
+} from '../../../../firebase/firestoreGiras/giras';
 
 // Components
 import Headers from '../../admin-options-components/Headers';
 import ListGiras from '../giras-components/giras/ListGiras';
 
 const ListGirasDoneForReservations = () => {
-  const { girasDone, setGirasDone } = girasListForAdmin();
+  const { allGiras, girasDone, setGiras } = girasListForAdmin();
+
+  // const { girasDone, setGirasDone } = girasListForAdmin();
 
   useEffect(() => {
-    if (girasDone.length == 0) {
+    if (allGiras.length == 0) {
       const f = async () => {
-        const resGiras = await getGirasDone();
-        if (resGiras != false) setGirasDone(resGiras);
+        const resGiras = await getAllGiras();
+        if (resGiras != false) setGiras(resGiras);
       };
       f();
     }

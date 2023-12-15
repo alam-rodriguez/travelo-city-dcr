@@ -17,10 +17,13 @@ import {
 
 const ListEditarGiras = () => {
   useEffect(() => {
-    if (giras.length == 0) {
+    if (allGiras.length == 0) {
       const f = async () => {
         console.log('first');
-        const resGiras = await getGirasNoArchivadas();
+        const giras = [];
+        // const resGiras = await getGirasNoArchivadas();
+        const resGiras = await getAllGiras();
+
         console.log(resGiras);
         console.warn('Cargando giras de BD');
         setGiras(resGiras);
@@ -29,7 +32,12 @@ const ListEditarGiras = () => {
     }
   }, []);
 
-  const { giras, setGiras } = girasListForAdmin();
+  const {
+    // giras, setGiras\
+    allGiras,
+    girasActives,
+    setGiras,
+  } = girasListForAdmin();
 
   const navigate = useNavigate();
 
@@ -55,7 +63,7 @@ const ListEditarGiras = () => {
             <p className="m-0 fw-bold">${gira.prices.adulto}</p>
           </div>
         ))} */}
-        {giras.map((gira) => (
+        {girasActives.map((gira) => (
           <ListGiras
             key={gira.currentId}
             currentId={gira.currentId}

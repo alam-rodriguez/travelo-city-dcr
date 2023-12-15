@@ -42,7 +42,7 @@ const WhoTravelSection = ({
   return (
     <div className="bg-light- bg-white shadow my-3">
       <div className="border-bottom p-3">
-        <p className="m-0 fw-bold fs-4">Quien Viaja?</p>
+        <p className="m-0 fw-bold fs-4">Quien Viaja ?</p>
       </div>
       <div className="p-3">
         <p className="m-0 fw-medium">{descripcion}</p>

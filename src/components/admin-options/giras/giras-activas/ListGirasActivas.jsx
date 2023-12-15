@@ -10,19 +10,23 @@ import { girasListForAdmin } from '../../../../zustand/admin/girasAdmin';
 // Components
 import Headers from '../../admin-options-components/Headers';
 import ListGiras from '../giras-components/giras/ListGiras';
-import { getGirasNoDone } from '../../../../firebase/firestoreGiras/giras';
+import {
+  getAllGiras,
+  getGirasNoDone,
+} from '../../../../firebase/firestoreGiras/giras';
 
 const ListGirasActivas = () => {
-  const { girasNoDone, setGirasNoDone } = girasListForAdmin();
+  const { allGiras, girasActives, setGiras } = girasListForAdmin();
+  // const { girasNoDone, setGirasNoDone } = girasListForAdmin();
 
   useEffect(() => {
-    if (girasNoDone.length == 0) {
+    if (allGiras.length == 0) {
       const f = async () => {
         console.log('first');
-        const resGiras = await getGirasNoDone();
+        const resGiras = await getAllGiras();
         console.log(resGiras);
         console.warn('Cargando giras activas de BD');
-        setGirasNoDone(resGiras);
+        setGiras(resGiras);
       };
       f();
     }
@@ -37,7 +41,7 @@ const ListGirasActivas = () => {
     <>
       <Headers text="Giras activas" link={-1} />
       <div className="my-4">
-        {girasNoDone.map((gira) => (
+        {girasActives.map((gira) => (
           <ListGiras
             key={gira.currentId}
             currentId={gira.currentId}

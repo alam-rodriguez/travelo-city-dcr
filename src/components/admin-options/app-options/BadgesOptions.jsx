@@ -92,7 +92,7 @@ const BadgesAndPointsOptions = () => {
 
   return (
     <>
-      <Headers text="Opciones de insignias" link={-1} />
+      <Headers text="Insignias y puntos" link="/admin-options/opciones-app" />
       <div className="my-4">
         <Input
           id="costo-punto"

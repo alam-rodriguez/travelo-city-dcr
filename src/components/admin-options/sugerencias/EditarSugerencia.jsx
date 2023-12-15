@@ -32,7 +32,7 @@ import {
   getImageSugerencia,
   uploadImageSugerencia,
 } from '../../../firebase/sugerencias/imagenesSugerencias';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   useSugerenciaSelected,
   useSugerencias,
@@ -43,7 +43,7 @@ import { useAlerts } from '../../../zustand/alerts/alerts';
 const EditarSugerencia = () => {
   const { id: idOfParams } = useParams();
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   // const { giras } = useGiras();
 
   const {
@@ -233,10 +233,26 @@ const EditarSugerencia = () => {
   }, [id]);
 
   const handleClickDeleteSugerencia = async () => {
+    const want = await ask({
+      title: 'Quieres eliminiar la sugerencia?',
+      text: 'Estas seguro de que quieres eliminar la sugerencia realmente, se borrara permanentemente de la base de datos',
+      confirmButtonText: 'borrar sugerencia',
+    });
+    if (!want.isConfirmed) return;
+    const want2 = await ask({
+      title: 'Quieres eliminiar la sugerencia?',
+      text: 'Estas seguro de que quieres eliminar la sugerencia realmente, se borrara permanentemente de la base de datos',
+      confirmButtonText: 'borrar sugerencia',
+    });
+    if (!want2.isConfirmed) return;
+    waitingAlert('Borrando sugerencia...');
     console.log(id);
     const res = await deleteSugerencia(id);
     const resImage = await deleteImageSugerencia(`sugerencias/${id}`);
-    if (res && resImage) alert('Sugerencia borrada');
+    if (res && resImage) {
+      successAlert('Sugerencia borrada');
+      navigate('Sugerencia eliminada correctamente');
+    } else errorAlert('Error al intentar borrar la sugerencia');
     console.log('hola');
   };
 

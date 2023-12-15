@@ -4,26 +4,28 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Zusttand
-import { useGiras } from '../../../../zustand/giras/giras';
+import { girasListForAdmin } from '../../../../zustand/admin/girasAdmin';
+
+// Firebase
+import {
+  getAllGiras,
+  getGirasDone,
+} from '../../../../firebase/firestoreGiras/giras';
 
 // Components
 import Headers from '../../admin-options-components/Headers';
 import ListGiras from '../giras-components/giras/ListGiras';
-import { girasListForAdmin } from '../../../../zustand/admin/girasAdmin';
-import { getAllGiras } from '../../../../firebase/firestoreGiras/giras';
 
-const ListRelanzarGira = () => {
-  const { allGiras, girasActives, setGiras } = girasListForAdmin();
-  // const { giras, setGiras } = girasListForAdmin();
+const ListGirasArchivadasForReservations = () => {
+  const { allGiras, girasArchivadas, setGiras } = girasListForAdmin();
+
+  // const { girasDone, setGirasDone } = girasListForAdmin();
 
   useEffect(() => {
     if (allGiras.length == 0) {
       const f = async () => {
-        console.log('first');
         const resGiras = await getAllGiras();
-        console.log(resGiras);
-        console.warn('Cargando giras de BD');
-        setGiras(resGiras);
+        if (resGiras != false) setGiras(resGiras);
       };
       f();
     }
@@ -31,16 +33,16 @@ const ListRelanzarGira = () => {
 
   const navigate = useNavigate();
 
-  const handleClick = (currentId) =>
-    navigate(`/admin-options/giras-relanzar/${currentId}`);
+  const handleClick = (currentId) => {
+    navigate(`/admin-options/list-giras-for-reservations/${currentId}`);
+  };
 
   return (
     <>
-      <Headers text="Relanzar gira" link={-1} />
+      <Headers text="Reservaciones Giras realizadas" link={-1} />
       <div className="my-4">
-        {girasActives.map((gira) => (
+        {girasArchivadas.map((gira) => (
           <ListGiras
-            gira={gira}
             key={gira.currentId}
             currentId={gira.currentId}
             title={gira.title}
@@ -54,4 +56,4 @@ const ListRelanzarGira = () => {
   );
 };
 
-export default ListRelanzarGira;
+export default ListGirasArchivadasForReservations;

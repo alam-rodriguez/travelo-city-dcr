@@ -19,11 +19,10 @@ import ItemOfAllEstadisticas from '../../admin-options-components/estadisticas/I
 import { getAllReservations } from '../../../../firebase/firestoreGiras/reservations/reservations';
 import { useEstadisticas } from '../../../../zustand/admin/estadisticas/estadisticas';
 
-const ListEstadisticasActivas = () => {
+const EstadisticasGirasArchivadas = () => {
   const navigate = useNavigate();
 
-  const { girasActives, allGiras, setGiras, setGiraSelected } =
-    girasListForAdmin();
+  const { girasArchivadas, allGiras, setGiras } = girasListForAdmin();
 
   const {
     setStatistics,
@@ -73,9 +72,9 @@ const ListEstadisticasActivas = () => {
   }, []);
 
   useEffect(() => {
-    // if (girasActives.length == 0) return;
+    // if (girasArchivadas.length == 0) return;
     const f = async () => {
-      const idsOfGira = girasActives.map((gira) => gira.currentId);
+      const idsOfGira = girasArchivadas.map((gira) => gira.currentId);
       const reservattions = await getAllReservations();
       console.log(reservattions);
       const reservationsForStatistics = [];
@@ -88,86 +87,20 @@ const ListEstadisticasActivas = () => {
       });
       console.log(idsOfGira);
       console.log(reservationsForStatistics);
-      // let amountGiras = girasActives.length;
-      // let amountReservations = reservationsForStatistics.length;
-      // let amountReservationsCancelled = 0;
-      // let amountBabies = 0;
-      // let amountChildren = 0;
-      // let amountAdults = 0;
-      // let amountPeople = 0;
-      // let earningsWithBabies = 0;
-      // let earningsWithChildren = 0;
-      // let earningsWithAdults = 0;
-      // let pointsGenerated = 0;
-      // let pointsSpent = 0;
-      // let reservationsPaidWithMoney = 0;
-      // let reservationsPaidWithTransfer = 0;
-      // let earningsTotal = 0;
 
-      // reservationsForStatistics.forEach((reservation) => {
-      //   if (reservation.state == 'Cancelada') amountReservationsCancelled++;
-      //   amountBabies += Object.keys(reservation.bebiesNames).length;
-      //   amountChildren += Object.keys(reservation.childrenNames).length;
-      //   amountAdults += Object.keys(reservation.adultsNames).length;
-      //   amountPeople +=
-      //     Object.keys(reservation.bebiesNames).length +
-      //     Object.keys(reservation.childrenNames).length +
-      //     Object.keys(reservation.adultsNames).length;
-
-      //   earningsWithBabies +=
-      //     Object.keys(reservation.bebiesNames).length * reservation.bebiesPrice;
-      //   earningsWithChildren +=
-      //     Object.keys(reservation.childrenNames).length *
-      //     reservation.childrenPrice;
-      //   earningsWithAdults +=
-      //     Object.keys(reservation.adultsNames).length * reservation.adultPrice;
-      //   pointsGenerated += reservation.pointsEarned;
-      //   pointsSpent += reservation.pointsUsed;
-      //   if (reservation.methodOfPay == 'efectivo') reservationsPaidWithMoney++;
-      //   else if (reservation.methodOfPay == 'tarjeta')
-      //     reservationsPaidWithTransfer++;
-
-      //   earningsTotal += reservation.total - reservation.discountInMoney;
-
-      //   //  amountGiras++;
-      // });
-      console.log(girasActives);
-      setStatistics(
-        girasActives,
-        reservationsForStatistics,
-
-        // amountGiras,
-        // amountReservations,
-        // amountReservationsCancelled,
-        // amountBabies,
-        // amountChildren,
-        // amountAdults,
-        // amountPeople,
-        // earningsWithBabies,
-        // earningsWithChildren,
-        // earningsWithAdults,
-        // pointsGenerated,
-        // pointsSpent,
-        // reservationsPaidWithMoney,
-        // reservationsPaidWithTransfer,
-        // earningsTotal,
-      );
-
-      // console.log(amountGiras);
+      setStatistics(girasArchivadas, reservationsForStatistics);
     };
     f();
-  }, [girasActives]);
+  }, [girasArchivadas]);
 
-  const handleClick = (gira, currentId) => {
-    console.log(gira);
-    setGiraSelected(gira);
-    navigate(`/admin-options/list-giras-for-stadisticas/${gira.currentId}`);
+  const handleClick = (currentId) => {
+    navigate(`/admin-options/list-giras-for-stadisticas/${currentId}`);
     // navigate(`/admin-options/list-giras-for-reservations/${currentId}`);
   };
 
   return (
     <>
-      <Headers text="Estadisticas giras activas" link={-1} />
+      <Headers text="Estadisticas giras archivadas" link={-1} />
       <div className="my-4">
         {/* {giras.map((gira) => (
           <ListGiras
@@ -184,6 +117,7 @@ const ListEstadisticasActivas = () => {
             head="Cantidad de giras activas:"
             value={amountGiras}
           />
+
           <ItemOfAllEstadisticas
             head="Cantidad de reservaciones:"
             value={amountReservations}
@@ -225,6 +159,7 @@ const ListEstadisticasActivas = () => {
             value={pointsGenerated}
           />
           <ItemOfAllEstadisticas head="Puntos gastados:" value={pointsSpent} />
+
           <ItemOfAllEstadisticas
             head="Reservaciones pagadas con efectivo:"
             value={reservationsPaidWithMoney}
@@ -233,7 +168,9 @@ const ListEstadisticasActivas = () => {
             head="Reservaciones pagadas con transferencia:"
             value={reservationsPaidWithTransfer}
           />
+
           <hr />
+
           <ItemOfAllEstadisticas
             head="Total de ganancias:"
             value={earningsTotal}
@@ -244,23 +181,15 @@ const ListEstadisticasActivas = () => {
               Lista de giras que estan en estas estadisticas:
             </p>
             <hr />
-            {girasActives.map((gira) => (
+            {girasArchivadas.map((gira) => (
               <p
                 className="py-2 fw-medium border-bottom"
                 key={gira.currentId}
-                onClick={() => handleClick(gira)}
+                onClick={() => handleClick(gira.currentId)}
               >
                 - {gira.title} - {gira.date}
               </p>
             ))}
-
-            {/* <ul>
-              {girasActives.map((gira) => (
-                <li className="my-3" key={gira.currentId}>
-                  {gira.title} - {gira.date}
-                </li>
-              ))}
-            </ul> */}
           </div>
         </div>
       </div>
@@ -268,4 +197,4 @@ const ListEstadisticasActivas = () => {
   );
 };
 
-export default ListEstadisticasActivas;
+export default EstadisticasGirasArchivadas;

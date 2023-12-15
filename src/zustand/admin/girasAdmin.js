@@ -266,17 +266,44 @@ export const useCreateOrEditGira = create((set) => ({
 }));
 
 export const girasListForAdmin = create((set) => ({
-  giras: [],
-  setGiras: (giras) => set(() => ({ giras: giras })),
-  girasDone: [],
-  setGirasDone: (giras) => set(() => ({ girasDone: giras })),
-  girasNoDone: [],
-  setGirasNoDone: (giras) => set(() => ({ girasNoDone: giras })),
   allGiras: [],
-  setAllGiras: (giras) => set(() => ({ allGiras: giras })),
+  girasActives: [],
+  girasDone: [],
   girasArchivadas: [],
-  setGirasArchivadas: (giras) => set(() => ({ girasArchivadas: giras })),
+  setGiras: (giras) =>
+    set(() => {
+      const girasActivas = [];
+      const girasRealizadas = [];
+      const girasArchivadas = [];
+      giras.forEach((gira) => {
+        if (gira.showGira) girasActivas.push(gira);
+        else if (gira.giraDone && !gira.giraArchivada)
+          girasRealizadas.push(gira);
+        else girasArchivadas.push(gira);
+        console.log(gira);
+      });
+      return {
+        allGiras: giras,
+        girasActives: girasActivas,
+        girasDone: girasRealizadas,
+        girasArchivadas: girasArchivadas,
+      };
+    }),
+
+  // giras: [],
+  // setGiras: (giras) => set(() => ({ giras: giras })),
+  // girasDone: [],
+  // setGirasDone: (giras) => set(() => ({ girasDone: giras })),
+  // girasNoDone: [],
+  // setGirasNoDone: (giras) => set(() => ({ girasNoDone: giras })),
+  // allGiras: [],
+  // setAllGiras: (giras) => set(() => ({ allGiras: giras })),
+  // girasArchivadas: [],
+  // setGirasArchivadas: (giras) => set(() => ({ girasArchivadas: giras })),
   giraSelected: {},
   setGiraSelected: (newGira) => set((state) => ({ giraSelected: newGira })),
   removeGiraSelected: () => set(() => ({ giraSelected: {} })),
+
+  giraGroupSelected: [],
+  setGiraGroupSelected: (giras) => set(() => ({ giraGroupSelected: giras })),
 }));

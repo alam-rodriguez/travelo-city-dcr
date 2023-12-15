@@ -14,19 +14,27 @@ const OpcionesEstadisticasGiras = () => {
         />
         <BtnOptions
           text="Estadisticas de giras realizadas"
-          link="/admin-options/list-giras-done-for-stadisticas"
+          link="/admin-options/estadisticas-giras-realizadas"
+        />
+        <BtnOptions
+          text="Estadisticas de giras archivadas"
+          link="/admin-options/estadisticas-giras-archivadas"
+        />
+        <BtnOptions
+          text="Estadisticas de todas las giras"
+          link="/admin-options/estadisticas-all-giras"
         />
         <BtnOptions
           text="Estadisticas de usuarios"
           link="/admin-options/opciones-estadisticas-giras/estadisticas-usuarios"
         />
         <BtnOptions
-          text="Todas las estadisticas"
+          text="Estadisticas filtrada por fechas"
           link="/admin-options/opciones-estadisticas-giras/todas-las-estadisticas"
         />
         <BtnOptions
           text="Estadisticas de giras por grupos"
-          link="/admin-options/opciones-estadisticas-giras/todas-las-estadisticas"
+          link="/admin-options/opciones-estadisticas-giras/giras-por-grupos"
         />
       </div>
     </>

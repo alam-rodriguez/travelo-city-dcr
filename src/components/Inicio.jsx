@@ -46,7 +46,7 @@ const Inicio = () => {
       </div>
       <CoversSugerencias sugerencias={sugerencias} />
 
-      <CopyRigthText />
+      {/* <CopyRigthText /> */}
     </div>
   );
 };

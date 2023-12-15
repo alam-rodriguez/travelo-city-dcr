@@ -38,6 +38,13 @@
   scroll-snap-align: center;
 }
 
+.div-content {
+  scroll-snap-type: x mandatory;
+}
+.div-content-item {
+  scroll-snap-align: center;
+}
+
 .rotar {
   transform: rotate(180deg);
 }

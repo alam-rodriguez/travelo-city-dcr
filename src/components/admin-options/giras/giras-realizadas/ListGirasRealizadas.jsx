@@ -11,22 +11,25 @@ import { girasListForAdmin } from '../../../../zustand/admin/girasAdmin';
 import Headers from '../../admin-options-components/Headers';
 import ListGiras from '../giras-components/giras/ListGiras';
 import {
+  getAllGiras,
   getGirasDone,
   getGirasNoDone,
 } from '../../../../firebase/firestoreGiras/giras';
 
 const ListGirasRealizadas = () => {
-  const { girasNoDone, setGirasNoDone, girasDone, setGirasDone } =
-    girasListForAdmin();
+  const { allGiras, girasDone, setGiras } = girasListForAdmin();
+
+  // const { girasNoDone, setGirasNoDone, girasDone, setGirasDone } =
+  //   girasListForAdmin();
 
   useEffect(() => {
-    if (girasDone.length == 0) {
+    if (allGiras.length == 0) {
       const f = async () => {
         console.log('first');
-        const resGiras = await getGirasDone();
+        const resGiras = await getAllGiras();
         console.log(resGiras);
         console.warn('Cargando giras activas de BD');
-        setGirasDone(resGiras);
+        setGiras(resGiras);
       };
       f();
     }

@@ -12,8 +12,12 @@ import { getEstadisticasByCurrentId } from '../../../firebase/admin-option/estad
 
 // Zustand
 import { useEstadisticas } from '../../../zustand/admin/estadisticas/estadisticas';
+import { girasListForAdmin } from '../../../zustand/admin/girasAdmin';
 
 const EstadisticaGira = () => {
+  const { girasActives, allGiras, setGiras, giraSelected, setGiraSelected } =
+    girasListForAdmin();
+
   const { id } = useParams();
 
   const { countBabies, setCountBabies } = useEstadisticas();
@@ -36,6 +40,7 @@ const EstadisticaGira = () => {
       let countReservations = 0;
 
       const res = await getEstadisticasByCurrentId(id);
+      console.log(res);
       res.forEach((reservacion) => {
         countReservations += 1;
         Object.entries(reservacion.bebiesNames).forEach(
@@ -70,7 +75,7 @@ const EstadisticaGira = () => {
 
   return (
     <>
-      <Headers text="Estadisticas giras activas" link={-1} />
+      <Headers text="Estadistica de gira seleccionada" link={-1} />
       <div className="my-4">
         <EstadisticaValue
           head="Cantidad de reservaciones:"

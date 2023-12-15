@@ -8,7 +8,10 @@ const ListViwerInHome = ({ title, content }) => {
   return (
     <div className="my-5">
       <p className="m-0 fw-medium mb-2">{title}</p>
-      <div className="d-flex overflow-scroll gap-3" style={{ height: 240 }}>
+      <div
+        className="d-flex overflow-scroll gap-3 div-content"
+        style={{ height: 240 }}
+      >
         {content.length > 0 ? (
           content.map((gira) => (
             <ItemList

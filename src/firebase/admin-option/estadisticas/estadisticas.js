@@ -18,3 +18,17 @@ export const getEstadisticasByCurrentId = async (currentId) => {
     return false;
   }
 };
+
+export const getInfoUsers = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'users'));
+    const info = [];
+    querySnapshot.forEach((doc) => {
+      info.push(doc.data());
+    });
+    return info;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};

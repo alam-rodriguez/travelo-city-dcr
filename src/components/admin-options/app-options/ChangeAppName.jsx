@@ -11,7 +11,13 @@ import {
   setAppNames,
 } from '../../../firebase/admin-option/app-options/appName';
 
+// Zustand
+import { useAlerts } from '../../../zustand/alerts/alerts';
+
 const ChangeAppName = () => {
+  const { ask, successAlert, errorAlert, waitingAlert, warningAlert } =
+    useAlerts();
+
   const [nombreCorto, setNombreCorto] = useState('');
   const [nombreLargo, setNombreLargo] = useState('');
 
@@ -21,7 +27,6 @@ const ChangeAppName = () => {
       console.log(res);
 
       if (res) {
-        console.log('first');
         setNombreCorto(res.nombreCorto);
         setNombreLargo(res.nombreLargo);
       }
@@ -31,18 +36,25 @@ const ChangeAppName = () => {
 
   const handleClickGuardarNombres = async () => {
     if (nombreCorto.length <= 3 || nombreLargo.length <= 3) {
-      alert('Los nombres deben de tener por lo menos 3 caracteres');
+      warningAlert('Los nombres deben de tener por lo menos 3 caracteres');
       return;
     }
+    const want = await ask({
+      title: 'Quieres guardar los cambios ?',
+      text: 'Estas realmente seguro de que quieres realizar estos cambios ? vas cambiar el nombre de la app.',
+      confirmButtonText: 'Guardar',
+    });
+    if (!want.isConfirmed) return;
+    waitingAlert('Guardando cambios...');
 
     const res = await setAppNames({ nombreCorto, nombreLargo });
-    if (res) alert('Nombres actualizados');
-    else alert('Ha ocurrido un error');
+    if (res) successAlert('Nombres actualizados');
+    else errorAlert('Ha ocurrido un error');
   };
 
   return (
     <>
-      <Headers text="Giras Realizadas" link={-1} />
+      <Headers text="Nombres app" link="/admin-options/opciones-app" />
       <div className="my-4">
         {/* <div className="d-flex flex-column gap-2">
           <label className="fw-medium" htmlFor="nombre-largo">

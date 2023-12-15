@@ -14,12 +14,12 @@ import Headers from '../../admin-options-components/Headers';
 import ListGiras from '../giras-components/giras/ListGiras';
 
 const ListGirasForReservations = () => {
-  const { girasNoDone, setGirasNoDone } = girasListForAdmin();
+  const { allGiras, girasActives, setGiras } = girasListForAdmin();
   useEffect(() => {
-    if (girasNoDone.length == 0) {
+    if (allGiras.length == 0) {
       const f = async () => {
         const resGiras = await getGirasNoDone();
-        if (resGiras != false) setGirasNoDone(resGiras);
+        if (resGiras != false) setGiras(resGiras);
       };
       f();
     }
@@ -33,9 +33,12 @@ const ListGirasForReservations = () => {
 
   return (
     <>
-      <Headers text="Reservaciones Giras activas" link="/admin-options" />
+      <Headers
+        text="Reservaciones Giras activas"
+        link="/admin-options/opciones-reservaciones-giras"
+      />
       <div className="my-4">
-        {girasNoDone.map((gira) => (
+        {girasActives.map((gira) => (
           <ListGiras
             key={gira.currentId}
             currentId={gira.currentId}
