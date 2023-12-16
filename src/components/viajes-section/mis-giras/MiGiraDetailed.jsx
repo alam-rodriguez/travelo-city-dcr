@@ -659,7 +659,8 @@ const MiGiraDetailed = () => {
                 <></>
               )}
               {!reservacionSelecionada.isConfirmByAdmin ? (
-                reservacionSelecionada.methodOfPay == 'efectivo' ||
+                (reservacionSelecionada.methodOfPay == 'efectivo' &&
+                  reservacionSelecionada.state != 'Cancelada') ||
                 (reservacionSelecionada.methodOfPay == 'points' &&
                   reservacionSelecionada.methodOfPayWhenUsePoints ==
                     'efectivo') ? (
@@ -670,7 +671,8 @@ const MiGiraDetailed = () => {
                     Realizar transferencia
                   </button>
                 ) : reservacionSelecionada.discountInMoney <
-                  reservacionSelecionada.total ? (
+                    reservacionSelecionada.total &&
+                  reservacionSelecionada.state != 'Cancelada' ? (
                   <button
                     className="bg-success border-0 p-2 px-4 rounded-3 fw-medium"
                     onClick={setTrueWantUpNewImage}

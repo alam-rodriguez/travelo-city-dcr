@@ -2,7 +2,13 @@ import { useEffect } from 'react';
 import './App.css';
 
 // React-Router-dom
-import { Route, Routes } from 'react-router-dom';
+import {
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
 // Components de admin
 import CreateGira from './components/admin-options/giras/CreateGira';
@@ -95,6 +101,9 @@ import GrupoSeleccionado from './components/admin-options/estadisticas/por-grupo
 const routesForUser = [{ path: '/', component: Inicio }];
 
 function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const {
     isAdmin,
     userLogged,
@@ -112,12 +121,25 @@ function App() {
     setType,
   } = useInfoUser();
 
+  useEffect(() => {
+    if (
+      location.pathname.split('/')[1] == 'admin-options' &&
+      ((haveUserInfo && type == 'customer') || type == 'anonymous')
+    )
+      navigate('/');
+  }, [location, type]);
+
+  // const { haveUserInfo, type } = useInfoUser();
+  // useEffect(() => {
+  //   if ((haveUserInfo && type == 'customer') || type == 'anonymous')
+  //     navigate('/');
+  // }, [type]);
+
   const iniciarSesion = async () => {
     if (userLogged) return;
 
     try {
       const infoUser = await signInAutomatically();
-
       setEmail(infoUser.email);
       setId(infoUser.id);
       setType('customer');
@@ -411,7 +433,7 @@ function App() {
           />
           {/* Components de admin */}
         </Routes>
-        {type == 'admin' ? <AdminIcon /> : <></>}
+        {type == 'admin' || type == 'semi-admin' ? <AdminIcon /> : <></>}
 
         <ChatIcon />
         <NavBar />

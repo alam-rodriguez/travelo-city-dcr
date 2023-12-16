@@ -44,7 +44,10 @@ const MisGirasPriview = ({
     <div
       className="border-bottom- border-info- border-5- mb-5 pb-0"
       onClick={handleClick}
-      style={{ borderBottom: 'rgb(0, 8, 255) 5px solid' }}
+      style={{
+        borderBottom:
+          state != 'Cancelada' ? 'rgb(0, 8, 255) 5px solid' : 'red 5px solid',
+      }}
     >
       <ReservacionP head="Titulo de gira:" value={giraTitle} />
       <ReservacionP head="Fecha:" value={date} />

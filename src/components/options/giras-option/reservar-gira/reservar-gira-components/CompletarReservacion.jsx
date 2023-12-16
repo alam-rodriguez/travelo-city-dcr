@@ -25,7 +25,7 @@ const CompletarReservacion = ({
       </p>
       {!userLogged ? (
         <button
-          className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium"
+          className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium text-white"
           onClick={registrarUser}
           type="button"
         >
@@ -34,7 +34,7 @@ const CompletarReservacion = ({
       ) : (
         <div className="d-flex flex-column gap-3">
           <button
-            className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium"
+            className="bg-color border-0 w-100 rounded-2 fs-5 p-2 fw-medium text-white"
             onClick={setGoToUsePoints}
             type="submit"
           >

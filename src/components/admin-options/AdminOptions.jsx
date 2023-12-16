@@ -1,37 +1,55 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Headers from './admin-options-components/Headers';
 import BtnOptions from './admin-options-components/BtnOptions';
 
+// Zustand
+import { useInfoUser } from '../../zustand/user/user';
+import { useNavigate } from 'react-router-dom';
+
 const AdminOptions = () => {
+  const { type } = useInfoUser();
+
   return (
     <>
       <Headers text="Opciones de admin" link="/" />
 
       <div className="d-flex gap-4 my-5 flex-wrap justify-content-between">
-        <BtnOptions
-          text="Opciones de aplicacion"
-          link="/admin-options/opciones-app"
-        />
-        <BtnOptions
-          text="Opciones para giras"
-          link="/admin-options/opciones-giras"
-        />
+        {type == 'admin' ? (
+          <BtnOptions
+            text="Opciones de aplicacion"
+            link="/admin-options/opciones-app"
+          />
+        ) : null}
+
+        {type == 'admin' ? (
+          <BtnOptions
+            text="Opciones para giras"
+            link="/admin-options/opciones-giras"
+          />
+        ) : null}
+
         <BtnOptions
           text="Opciones para reservaciones"
           link="/admin-options/opciones-reservaciones-giras"
         />
-        <BtnOptions
-          text="Opciones para sugerencias"
-          link="/admin-options/opciones-sugerencias"
-        />
+
+        {type == 'admin' ? (
+          <BtnOptions
+            text="Opciones para sugerencias"
+            link="/admin-options/opciones-sugerencias"
+          />
+        ) : null}
+
         <BtnOptions
           text="Opciones para comentarios de giras"
           link="/admin-options/opciones-comentarios-giras"
         />
-        <BtnOptions
-          text="Opciones para estadisticas"
-          link="/admin-options/opciones-estadisticas-giras"
-        />
+        {type == 'admin' ? (
+          <BtnOptions
+            text="Opciones para estadisticas"
+            link="/admin-options/opciones-estadisticas-giras"
+          />
+        ) : null}
 
         {/* <BtnOptions text="Crear gira" link="/admin-options/create-gira" />
         <BtnOptions text="Editar gira" link="/admin-options/giras-editar" />
