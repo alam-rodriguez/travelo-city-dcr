@@ -34,6 +34,8 @@ const EditCommentGira = () => {
   const { ask, successAlert, errorAlert, waitingAlert, warningAlert } =
     useAlerts();
 
+  const { sendEmailToAdmins, nameAppLarge } = useInfoApp();
+
   // useEffect(() => {
   //   if (girasComments[giraId] != undefined) return;
   //   const f = async () => {
@@ -254,6 +256,10 @@ const EditCommentGira = () => {
         'Comentario actualizada exitosamente.',
       );
       deleteCommentsGira(giraId);
+      sendEmailToAdmins(
+        'Comentario actualizado',
+        `${commentSelected.name} ha actualizado un comentario en ${nameAppLarge}`,
+      );
     } else
       errorAlert(
         'Error',

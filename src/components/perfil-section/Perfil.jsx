@@ -8,7 +8,7 @@ import {
   MdOutlineHelp,
   MdPayment,
 } from 'react-icons/md';
-import { IoMdMail } from 'react-icons/io';
+import { IoMdMail, IoMdNotifications } from 'react-icons/io';
 import { RiSettings3Fill } from 'react-icons/ri';
 
 // Components
@@ -257,6 +257,12 @@ const Perfil = () => {
         icon={<BiSolidUser className="fs-3" />}
         text="Perfil"
         link="/perfil/profile"
+      />
+
+      <PerfilOption
+        icon={<IoMdNotifications className="fs-3" />}
+        text="Perfil"
+        link="/notificaciones"
       />
 
       <PerfilOption

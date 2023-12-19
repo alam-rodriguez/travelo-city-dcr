@@ -66,4 +66,41 @@ export const useInfoApp = create((set) => ({
       adminsEmails: emails.admins,
       semiAdminsEmails: emails.semiAdmins,
     })),
+
+  sendEmailToAdmins: (subject, text) =>
+    set((state) => {
+      const admins = [...state.adminsEmails, ...state.semiAdminsEmails];
+      console.log(admins);
+
+      for (const key in admins) {
+        const admin = admins[key];
+        // console.log(admin);
+        const response = fetch(
+          'https://server-to-send-mails.vercel.app/send-email',
+          {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              to: admin,
+              subject: subject,
+              text: text,
+            }),
+          },
+        );
+        response
+          .then((res) => res.json())
+          .then((res2) => {
+            console.log('Mensaje enviado');
+          })
+          .catch((e) => {
+            console.log('Error');
+            console.log(e);
+          });
+      }
+
+      return {};
+    }),
 }));

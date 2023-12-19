@@ -24,6 +24,8 @@ import { getReservationsByEmail } from '../../../firebase/firestoreGiras/reserva
 const AddCommentGira = () => {
   const { giraId, giraCurrentId } = useParams();
 
+  const { sendEmailToAdmins, nameAppLarge } = useInfoApp();
+
   const { giraSelected, setGiraSelected } = useGiras();
 
   const { girasComments, addGirasComments, deleteCommentsGira } =
@@ -263,6 +265,11 @@ const AddCommentGira = () => {
         'Comentario publiado correctamente, ahora todas las personas lo pueden ver.',
       );
       deleteCommentsGira(giraId);
+      sendEmailToAdmins(
+        'Nueva comentario',
+        `${name} ha publicado un comentario en ${nameAppLarge}`,
+      );
+      setGiraSelected({});
     } else
       errorAlert(
         'Error',

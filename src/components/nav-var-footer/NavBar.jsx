@@ -28,27 +28,27 @@ const NavBar = () => {
   return (
     <nav className="d-flex justify-content-around position-fixed start-0 bottom-0 w-100 pb-3 pt-1 bg-white -bg-danger">
       <NavBarItem
-        icon={<AiFillHome className="fs-4" />}
+        icon={<AiFillHome className="fs-5" />}
         text="Inicio"
         link="/"
       />
       <NavBarItem
-        icon={<TbSearch className="fs-4" />}
+        icon={<TbSearch className="fs-5" />}
         text="Buscar"
         link="/buscar"
       />
       <NavBarItem
-        icon={<FaSuitcase className="fs-4" />}
+        icon={<FaSuitcase className="fs-5" />}
         text="Mis giras"
         link="/mis-giras"
       />
-      {/* <NavBarItem
-        icon={<IoMdNotifications className="fs-2" />}
+      <NavBarItem
+        icon={<IoMdNotifications className="fs-5" />}
         text="Notificaciones"
         link="/notificaciones"
-      /> */}
+      />
       <NavBarItem
-        icon={<MdAccountCircle className="fs-4" />}
+        icon={<MdAccountCircle className="fs-5" />}
         text="Cuenta"
         link="/perfil"
       />

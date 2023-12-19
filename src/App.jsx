@@ -95,6 +95,7 @@ import EstadisticasAllGiras from './components/admin-options/estadisticas/por-gi
 import EstadisticaUsuario from './components/admin-options/estadisticas/usuarios/EstadisticaUsuario';
 import GrupoDegirasList from './components/admin-options/estadisticas/por-grupos-de-giras/GrupoDegirasList';
 import GrupoSeleccionado from './components/admin-options/estadisticas/por-grupos-de-giras/GrupoSeleccionado';
+import Notificaciones from './components/notificaciones/Notificaciones';
 // import ChangeAppName from './components/admin-options/app-options/ChangeAppName';
 // import ManejadorGiras from './components/admin-options/sub-admin-options/OpcionesGiras';
 
@@ -241,6 +242,8 @@ function App() {
           {/* <RoutesForUser /> */}
           <Route path="/" Component={Inicio} />
           <Route path="/buscar" Component={Buscar} />
+          <Route path="/notificaciones" Component={Notificaciones} />
+
           <Route path="/mis-giras" Component={MisViajes} />
           <Route
             path="/mis-giras/giras-pasadas"
@@ -345,7 +348,6 @@ function App() {
             path="/admin-options/opciones-estadisticas-giras/giras-por-grupos/group-selected"
             Component={GrupoSeleccionado}
           />
-
           <Route
             path="/admin-options/list-giras-for-reservations"
             Component={ListGirasForReservations}

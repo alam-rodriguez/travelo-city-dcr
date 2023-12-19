@@ -61,6 +61,7 @@ const ReservarGira = () => {
   }, []);
 
   const {
+    nameAppLarge,
     hasInfo,
     activePoints,
     costo: costPoints,
@@ -74,6 +75,7 @@ const ReservarGira = () => {
     editBadgeMinMoney,
     editBadgeDiscountRate,
     setSettingsBadgesAndPoints,
+    sendEmailToAdmins,
   } = useInfoApp();
 
   useEffect(() => {
@@ -635,6 +637,11 @@ const ReservarGira = () => {
         setReservationIsDone(true);
         resetInfoUser();
         reset();
+
+        sendEmailToAdmins(
+          'Nueva reservacion de gira',
+          `Hay una nueva reservacion en ${nameAppLarge}, entra a la app para la reservacion de ${nameAndSurname}`,
+        );
       })
       .catch(() => {
         errorAlert(
@@ -695,6 +702,78 @@ const ReservarGira = () => {
         lugarEncuentro={giraSelected.meetingPoint}
       />
     );
+
+  const enviarNotificacionDePedido = () => {
+    // let volver = false;
+
+    for (const key in adminsTokens) {
+      console.log(key);
+
+      if (adminsTokens[key] == 'sin-token') {
+        // volver = true;
+        console.log(adminsTokens[key]);
+        const response = fetch(
+          'https://server-to-send-mails.vercel.app/send-email',
+          {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              to: key,
+              subject: 'Hay un nuevo pedido!!!!!!!!!!',
+              text: 'Hay un nuevo pedido tienes que entrar a la app',
+            }),
+          },
+        );
+
+        response
+          .then((res) => res.json())
+          .then((res2) => {
+            console.warn(res2);
+          })
+          .catch((e) => {
+            console.log('Error');
+            console.log(e);
+          });
+
+        // return;
+      } else {
+        // if(volver){
+        //   return;
+        // }
+        // console.log(key, adminsTokens[key]);
+
+        const notificationData = {
+          notification: {
+            title: 'Hay un nuevo pedido',
+            body: 'Hay un nuevo pedido tienes que entrar a la app',
+            click_action: 'https://example.com/URL-de-tu-sitio',
+          },
+          to: adminsTokens[key],
+        };
+
+        const headers = {
+          Authorization: `Bearer AAAAQzkXViU:APA91bF3r-zFyoUMjw2mn5oQSbpCSF-bSakDFQ_a8avWBeul37SqSxE551h5wNnsSvzsdK6nv0XZXUWQvcn-Z-EyKBbj9v9i8PlC4vxmsCcUNBotjd2RfrSKqqmUTTxSbMZAGmP0tAiw`,
+          'Content-Type': 'application/json',
+        };
+
+        fetch('https://fcm.googleapis.com/fcm/send', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(notificationData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log('Respuesta de la API:', data);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      }
+    }
+  };
 
   if (giraSelected.id == undefined) return <></>;
   return (

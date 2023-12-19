@@ -38,7 +38,7 @@ import { useInfoApp } from '../../../zustand/admin/app/app';
 const MiGiraDetailed = () => {
   const navigate = useNavigate();
 
-  const { badges } = useInfoApp();
+  const { badges, sendEmailToAdmins, nameAppLarge } = useInfoApp();
 
   const {
     reservationSelected: reservacionSelecionada,
@@ -113,21 +113,29 @@ const MiGiraDetailed = () => {
 
   const [canCancel, setCanCancel] = useState(false);
 
-  const setCanCancelFunc = (dateLimit) => {
+  const setCanCancelFunc = (dateLimit, isConfirmByAdmin, isPutInStatistics) => {
+    console.log(isPutInStatistics);
+    console.log(isConfirmByAdmin);
     const dateActual = new Date().getTime();
     console.log(dateActual);
     console.log(dateLimit);
-    if (dateActual < dateLimit) setCanCancel(true);
-    else setCanCancel(false);
+    if (dateLimit < dateActual && !isConfirmByAdmin && isPutInStatistics) {
+      setCanCancel(true);
+    } else setCanCancel(false);
   };
 
   useEffect(() => {
+    console.log(reservacionSelecionada);
     if (reservacionSelecionada.reservationId != undefined) return;
     const getReservation = async () => {
       const res = await getReservationsById(reservationId);
       if (res != false) {
         console.log(res);
-        setCanCancelFunc(res.giraDateLimitForCancelInMilliseconds);
+        setCanCancelFunc(
+          res.giraDateLimitForCancelInMilliseconds,
+          res.isConfirmByAdmin,
+          res.isPutInStatistics,
+        );
         setReservationSelected(res);
       }
     };
@@ -137,6 +145,8 @@ const MiGiraDetailed = () => {
   useEffect(() => {
     setCanCancelFunc(
       reservacionSelecionada.giraDateLimitForCancelInMilliseconds,
+      reservacionSelecionada.isConfirmByAdmin,
+      reservacionSelecionada.isPutInStatistics,
     );
 
     console.log(reservationId);
@@ -286,6 +296,10 @@ const MiGiraDetailed = () => {
         'La reservacion fue cancelada correctamente.',
       );
       setReservationSelected({});
+      sendEmailToAdmins(
+        'Nueva reservacion de gira',
+        `Hay una nueva reservacion en ${nameAppLarge}, entra a la app para la reservacion de ${reservacionSelecionada.userName}`,
+      );
     } else
       errorAlert(
         'Error',
@@ -383,11 +397,21 @@ const MiGiraDetailed = () => {
         imgTransaccion,
       );
 
+    console.log(reservacionSelecionada);
+
     if (res && resImage) {
       await successAlert('Imagen subida exitosamente');
       deleteReservationImage(reservationId);
       setReservationSelected({});
       setWantUpNewImage(false);
+      sendEmailToAdmins(
+        methodOfPay == 'efectivo'
+          ? 'Nueva transferencia de reservacion'
+          : 'Nuevan imagen de comprobante',
+        methodOfPay == 'efectivo'
+          ? `${reservacionSelecionada.userName} ha pagado su reservacion con una transferencia en ${nameAppLarge}`
+          : `${reservacionSelecionada.userName} ha cambiado la imagen de su reservacion en ${nameAppLarge}`,
+      );
     } else errorAlert('Error al subir imagen, intentelo de nuevo');
 
     // console.log(imgTransaccion);

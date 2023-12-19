@@ -25,12 +25,12 @@ const NameApp = () => {
     setType,
   } = useInfoUser();
 
-  const { nameAppLarge } = useInfoApp();
+  const { nameAppLarge, sendEmailToAdmins } = useInfoApp();
   return (
     <header
       className="d-flex justify-content-center align-items-center gap-2 mt-4-"
       style={{ minHeight: '25.958px' }}
-      onClick={() => console.log(type)}
+      onClick={() => sendEmailToAdmins('subject', 'text')}
     >
       {nameAppLarge != '' ? (
         <>

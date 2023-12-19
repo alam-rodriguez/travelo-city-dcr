@@ -46,6 +46,7 @@ import Accordings from './gira-selected-components/Accordings';
 import BtnSeleccionarEntradas from './gira-selected-components/BtnSeleccionarEntradas';
 import { getGira } from '../../../../firebase/firestoreGiras/giras';
 import GiraSelectedCharging from './GiraSelectedCharging';
+import BtnVerEntradas from './gira-selected-components/BtnVerEntradas';
 
 const GiraSelected = () => {
   const { currentId } = useParams();
@@ -194,6 +195,8 @@ const GiraSelected = () => {
         deteleLastChildName={deteleLastChildName}
         deteleLastBebeName={deteleLastBebeName}
       />
+
+      <BtnVerEntradas currentId={giraSelected.currentId} />
     </div>
   );
 };

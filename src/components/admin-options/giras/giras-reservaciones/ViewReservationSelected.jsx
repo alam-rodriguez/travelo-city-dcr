@@ -107,6 +107,7 @@ const ViewReservationSelected = () => {
           ? 'Adelanto realizado con Puntos'
           : 'Pendiente',
       isConfirmByAdmin: false,
+      isPutInStatistics: true,
     };
     waitingAlert('Cancelando reservacion...');
     const resReser = await updateReservation(reservationUpdated);

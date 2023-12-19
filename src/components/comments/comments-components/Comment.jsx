@@ -16,6 +16,8 @@ import {
 import { useGirasComments } from '../../../zustand/comments/commentsGiras';
 import { useInfoUser } from '../../../zustand/user/user';
 import { useNavigate } from 'react-router-dom';
+import { useInfoApp } from '../../../zustand/admin/app/app';
+import { useGiras } from '../../../zustand/giras/giras';
 
 const Comment = ({
   id,
@@ -33,7 +35,11 @@ const Comment = ({
 }) => {
   const navigate = useNavigate();
 
+  const { setGiraSelected } = useGiras();
+
   const { type, setCommentSeleted } = useInfoUser();
+
+  const { sendEmailToAdmins, nameAppLarge } = useInfoApp();
 
   const [canEdit, setCanEdit] = useState(false);
 
@@ -99,7 +105,12 @@ const Comment = ({
         'Comentario borrado',
         'El comentario ha sido borrado exitosamente',
       );
+      setGiraSelected({});
       deleteCommentsGira(giraId);
+      sendEmailToAdmins(
+        'Comentario borrado',
+        `${name} ha borrrado un comentario en ${nameAppLarge}`,
+      );
     } else
       errorAlert(
         'Error',
