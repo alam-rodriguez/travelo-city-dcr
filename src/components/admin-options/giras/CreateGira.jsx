@@ -176,8 +176,14 @@ const CreateGira = () => {
 
   const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
 
-  const { hasInfo, setSettingsBadgesAndPoints, costo, badges, valuePoint } =
-    useInfoApp();
+  const {
+    hasInfo,
+    setSettingsBadgesAndPoints,
+    costo,
+    badges,
+    valuePoint,
+    sendEmailsAboutNewGiras,
+  } = useInfoApp();
 
   useEffect(() => {
     setBadgesForThisGira(badges);
@@ -405,12 +411,20 @@ const CreateGira = () => {
       else reject();
     });
     promiseCreateGira
-      .then((res) => {
+      .then(async (res) => {
         if (res != 'cancelado') {
           successAlert(
             'Gira creada exitosamente',
             'Toda la informacion de la gira y todas las imagenes han sido publicadas de manera exitosa',
           );
+          const result = await ask({
+            title: '¿Quieres anunciar esta nueva gira?',
+            text: 'Quieres mandar un email de esta gira a tus usuarios ?',
+            confirmButtonText: 'Enviar emails',
+          });
+          if (result.isConfirmed) {
+            sendEmailsAboutNewGiras(currentId);
+          }
           navigate('/giras');
         }
       })

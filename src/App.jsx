@@ -96,6 +96,8 @@ import EstadisticaUsuario from './components/admin-options/estadisticas/usuarios
 import GrupoDegirasList from './components/admin-options/estadisticas/por-grupos-de-giras/GrupoDegirasList';
 import GrupoSeleccionado from './components/admin-options/estadisticas/por-grupos-de-giras/GrupoSeleccionado';
 import Notificaciones from './components/notificaciones/Notificaciones';
+import { getAllUser } from './firebase/admin-option/users/usersForAdmin';
+import ContactAndAccounts from './components/admin-options/app-options/ContactAndAccounts';
 // import ChangeAppName from './components/admin-options/app-options/ChangeAppName';
 // import ManejadorGiras from './components/admin-options/sub-admin-options/OpcionesGiras';
 
@@ -167,6 +169,8 @@ function App() {
     adminsEmails,
     semiAdminsEmails,
     setEmailsAdmins,
+    setContactAndBanksAccounts,
+    setUsers,
   } = useInfoApp();
 
   const { giras, setGiras } = useGiras();
@@ -177,6 +181,7 @@ function App() {
     console.log(res);
     setNamesApp(res.appNames);
     setEmailsAdmins(res.admins);
+    setContactAndBanksAccounts(res.contactAndBanksAccounts);
     setSettingsBadgesAndPoints(res.settignsPoints);
   };
 
@@ -231,6 +236,15 @@ function App() {
   //   f();
   // }, [id]);
 
+  useEffect(() => {
+    const f = async () => {
+      const res = await getAllUser();
+      console.log(res);
+      if (res != false) setUsers(res);
+    };
+    f();
+  }, []);
+
   return (
     <div className="App bg-light">
       <main
@@ -243,7 +257,6 @@ function App() {
           <Route path="/" Component={Inicio} />
           <Route path="/buscar" Component={Buscar} />
           <Route path="/notificaciones" Component={Notificaciones} />
-
           <Route path="/mis-giras" Component={MisViajes} />
           <Route
             path="/mis-giras/giras-pasadas"
@@ -290,6 +303,10 @@ function App() {
           <Route
             path="/admin-options/opciones-app/opciones-insignias-y-puntos"
             Component={BadgesAndPointsOptions}
+          />
+          <Route
+            path="/admin-options/opciones-app/contact-and-banks-accounts"
+            Component={ContactAndAccounts}
           />
           <Route
             path="/admin-options/opciones-giras"

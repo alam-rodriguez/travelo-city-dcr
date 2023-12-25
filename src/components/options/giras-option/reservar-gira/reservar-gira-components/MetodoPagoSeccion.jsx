@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IoMdCheckmark } from 'react-icons/io';
 import { RiImageAddFill } from 'react-icons/ri';
 import TextForDiscount from './TextForDiscount';
@@ -22,6 +22,26 @@ const MetodoPagoSeccion = ({
   discount,
   calcDiscount,
 }) => {
+  const [banksAccounts, setBanksAccounts] = useState({});
+
+  useEffect(() => {
+    console.log(banksCountsNumbers[0].account);
+    setBankSelected(banksCountsNumbers[0].bank);
+    console.log(methodOfPay);
+    let banksAccounts = {};
+    console.log(banksCountsNumbers[0].account);
+    banksCountsNumbers.forEach((bankAccount) => {
+      banksAccounts[bankAccount.bank] = bankAccount.account;
+      // const newObj = {
+      //   ...banksAccounts,
+      //   [bankAccount.bank]: bankAccount.account,
+      // };
+      // console.log(bankAccount);
+    });
+    setBanksAccounts(banksAccounts);
+    console.log(banksAccounts);
+  }, []);
+
   const inputAddImage = useRef(null);
 
   const pagar = () => {
@@ -35,7 +55,10 @@ const MetodoPagoSeccion = ({
     // calcDiscount(e.tarjet.value);
   };
 
-  const handleChangeBank = (e) => setBankSelected(e.target.value);
+  const handleChangeBank = (e) => {
+    console.log(e.target.value);
+    setBankSelected(e.target.value);
+  };
 
   const handleClickSelecImage = () => inputAddImage.current.click();
 
@@ -97,16 +120,21 @@ const MetodoPagoSeccion = ({
               className="bg-transparent w-100 border rounded-3 text-black rounded-1 p-2"
               onChange={handleChangeBank}
             >
-              <option value="banreservas">Banco BANRESERVAS</option>
+              {banksCountsNumbers.map((bank) => (
+                <option key={bank.bank} value={bank.bank}>
+                  {bank.bank}
+                </option>
+              ))}
+              {/* <option value="banreservas">Banco BANRESERVAS</option>
               <option value="popular">Banco POPULAR</option>
               <option value="bhd">Banco BHD</option>
-              <option value="scotiabank">Banco SCOTIABANK</option>
+              <option value="scotiabank">Banco SCOTIABANK</option> */}
             </select>
           </div>
           <p className="m-0 fw-medium">
             Numero de cuenta:{' '}
             <span className="fw-bold text-decoration-underline color-1">
-              {banksCountsNumbers[bankSelected]}
+              {banksAccounts[bankSelected]}
             </span>
           </p>
           <p className="m-0 fw-medium">
@@ -150,15 +178,20 @@ const MetodoPagoSeccion = ({
                   className="bg-transparent w-100 border rounded-3 text-black rounded-1 p-2"
                   onChange={handleChangeBank}
                 >
-                  <option value="banreservas">Banco BANRESERVAS</option>
+                  {banksCountsNumbers.map((bank) => (
+                    <option key={bank.bank} value={bank.bank}>
+                      {bank.bank}
+                    </option>
+                  ))}
+                  {/* <option value="banreservas">Banco BANRESERVAS</option>
                   <option value="popular">Banco POPULAR</option>
                   <option value="bhd">Banco BHD</option>npm run
-                  <option value="scotiabank">Banco SCOTIABANK</option>
+                  <option value="scotiabank">Banco SCOTIABANK</option> */}
                 </select>
                 <p className="m-0 fw-medium">
                   Numero de cuenta:{' '}
                   <span className="fw-bold text-decoration-underline color-1">
-                    {banksCountsNumbers[bankSelected]}
+                    {banksAccounts[bankSelected]}
                   </span>
                 </p>
               </>

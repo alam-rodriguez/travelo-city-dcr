@@ -90,6 +90,7 @@ const GiraItem = ({
           : ''
       }`}
       style={{ width: '48%', height: 390 }}
+      // style={{ width: '48%', height: 300 }}
       onClick={handleClickGira}
     >
       {images[giraId] != undefined && images[giraId][imgId] != undefined ? (
@@ -97,6 +98,7 @@ const GiraItem = ({
           src={images[giraId][imgId]}
           className="w-100 object-fit-cover "
           style={{ height: '37%' }}
+          // style={{ height: '47%' }}
         />
       ) : (
         <div className="w-100" style={{ height: '37%' }}></div>

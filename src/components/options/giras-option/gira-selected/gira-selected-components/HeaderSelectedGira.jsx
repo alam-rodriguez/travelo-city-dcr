@@ -4,8 +4,45 @@ import React from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md';
 import { HiOutlineHeart } from 'react-icons/hi';
 import { IoShareOutline } from 'react-icons/io5';
+import { useAlerts } from '../../../../../zustand/alerts/alerts';
+import { useInfoApp } from '../../../../../zustand/admin/app/app';
 
 const HeaderSelectedGira = ({ text, minLengthToShow: ml, action }) => {
+  const { ask, successAlert, errorAlert, waitingAlert, warningAlert } =
+    useAlerts();
+
+  const { nameAppShort, nameAppLarge } = useInfoApp();
+
+  const handleClickShare = async () => {
+    // navigator.clipboard.writeText('Este es el texto a copiar').then(
+    //   () => {
+    //     successAlert('Copiado', 'La gira a sido copiada correctamente');
+    //     console.log('Contenido copiado al portapapeles');
+    //     /* Resuelto - texto copiado al portapapeles con éxito */
+    //   },
+    //   () => {
+    //     console.error('Error al copiar');
+    //     /* Rechazado - fallo al copiar el texto al portapapeles */
+    //   },
+    // );
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: nameAppLarge,
+          text: `Pagina oficial de ${nameAppShort} para actividades`,
+          url: window.location.href,
+        });
+        console.log('Enlace compartido con éxito');
+      } else {
+        console.log(
+          'La API de Web Share no está disponible en este navegador.',
+        );
+      }
+    } catch (error) {
+      console.error('Error al compartir enlace:', error);
+    }
+  };
+
   return (
     <header
       className="d-flex justify-content-between align-items-center position-fixed start-0 w-100 py-4 bg-white"
@@ -28,7 +65,10 @@ const HeaderSelectedGira = ({ text, minLengthToShow: ml, action }) => {
       )}
 
       <div className="d-flex gap-4 pe-2 bg-white">
-        <IoShareOutline className="display-6 color-1" />
+        <IoShareOutline
+          className="display-6 color-1"
+          onClick={handleClickShare}
+        />
         <HiOutlineHeart className="display-6" />
       </div>
     </header>

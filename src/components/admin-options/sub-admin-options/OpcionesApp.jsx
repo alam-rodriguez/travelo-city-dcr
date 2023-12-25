@@ -20,6 +20,10 @@ const OpcionesApp = () => {
           text="Configuracion de puntos y insignias"
           link="/admin-options/opciones-app/opciones-insignias-y-puntos"
         />
+        <BtnOptions
+          text="Configuracion de contacto y cuentas bancarias"
+          link="/admin-options/opciones-app/contact-and-banks-accounts"
+        />
         {/* <BtnOptions
           text="Estadisticas de giras realizadas"
           link="/admin-options/list-giras-done-for-stadisticas"

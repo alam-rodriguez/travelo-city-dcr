@@ -21,9 +21,12 @@ import { createSugerenciaFirestore } from '../../../firebase/sugerencias/sugeren
 import { uploadImageSugerencia } from '../../../firebase/sugerencias/imagenesSugerencias';
 import { useAlerts } from '../../../zustand/alerts/alerts';
 import { useNavigate } from 'react-router-dom';
+import { useInfoApp } from '../../../zustand/admin/app/app';
 
 const CrearSugerencia = () => {
   const navigate = useNavigate();
+
+  const { sendEmailsAboutNewSugerencia } = useInfoApp();
 
   const {
     titulo,
@@ -93,6 +96,13 @@ const CrearSugerencia = () => {
     const res = await createSugerenciaFirestore(newSugerencia);
 
     const resImage = await uploadImageSugerencia('sugerencias', id, imageFile);
+
+    const result = await ask({
+      title: '¿Quieres anunciar esta nueva sugerencia?',
+      text: 'Quieres mandar un email de esta sugerencia a tus usuarios ?',
+      confirmButtonText: 'Enviar emails',
+    });
+    if (result.isConfirmed) sendEmailsAboutNewSugerencia(id);
 
     if (res && resImage) {
       await successAlert(

@@ -76,6 +76,9 @@ const ReservarGira = () => {
     editBadgeDiscountRate,
     setSettingsBadgesAndPoints,
     sendEmailToAdmins,
+    numberApp,
+    emailApp,
+    banksAccounts,
   } = useInfoApp();
 
   useEffect(() => {
@@ -665,6 +668,10 @@ const ReservarGira = () => {
         pointsEarned: 0,
         pointsSpent: 0,
         type: 'customer',
+        notisGiras: true,
+        notisSugerencias: true,
+        notisReservations: true,
+        notisGeneral: true,
       });
 
     if (infoUser != false) {
@@ -855,7 +862,8 @@ const ReservarGira = () => {
           setMethodOfPayWhenUsePoints={setMethodOfPayWhenUsePoints}
           bankSelected={bankSelected}
           setBankSelected={setBankSelected}
-          banksCountsNumbers={banksCountsNumbers}
+          // banksCountsNumbers={banksCountsNumbers}
+          banksCountsNumbers={banksAccounts}
           imgTransaccion={imgTransaccion}
           setImgTransaccion={setImgTransaccion}
           badge={badgeUser.badge}

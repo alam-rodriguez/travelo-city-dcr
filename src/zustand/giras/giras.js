@@ -135,13 +135,13 @@ export const useInfoPeople = create((set) => ({
   methodOfPayWhenUsePoints: 'efectivo',
   setMethodOfPayWhenUsePoints: (method) =>
     set(() => ({ methodOfPayWhenUsePoints: method })),
-  bankSelected: 'banreservas',
+  bankSelected: '',
   setBankSelected: (bank) => set(() => ({ bankSelected: bank })),
   banksCountsNumbers: {
-    banreservas: 123456789,
-    popular: 87654321,
-    bhd: 135798642,
-    scotiabank: 12324354678765,
+    // banreservas: 123456789,
+    // popular: 87654321,
+    // bhd: 135798642,
+    // scotiabank: 12324354678765,
   },
   setBanksCountsNumbers: (counts) =>
     set(() => ({ banksCountsNumbers: counts })),

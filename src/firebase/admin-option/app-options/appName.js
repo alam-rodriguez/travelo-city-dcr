@@ -28,12 +28,14 @@ export const getInfoApp = async () => {
   console.log(querySnapshot);
   let admins = {};
   let appNames = {};
+  let contactAndBanksAccounts = [];
   let settignsPoints = {};
   let i = 1;
   querySnapshot.forEach((doc) => {
     if (i == 1) admins = doc.data();
     if (i == 2) appNames = doc.data();
-    if (i == 3) settignsPoints = doc.data();
+    if (i == 3) contactAndBanksAccounts = doc.data();
+    if (i == 4) settignsPoints = doc.data();
     console.log(i);
     console.log(doc.data());
     i++;
@@ -43,6 +45,7 @@ export const getInfoApp = async () => {
   const settings = {
     admins: admins,
     appNames: appNames,
+    contactAndBanksAccounts: contactAndBanksAccounts,
     settignsPoints: settignsPoints,
   };
   return settings;

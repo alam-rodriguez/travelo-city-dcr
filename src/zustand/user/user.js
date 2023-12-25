@@ -19,6 +19,35 @@ export const useInfoUser = create((set) => ({
   setPointsEarned: (points) => set(() => ({ pointsEarned: points })),
   pointsSpent: 0,
   setPointsSpent: (points) => set(() => ({ pointsSpent: points })),
+
+  notisGiras: true,
+  setNotisGiras: (value) => set(() => ({ notisGiras: value })),
+  notisSugerencias: true,
+  setNotisSugerencias: (value) => set(() => ({ notisSugerencias: value })),
+  notisReservations: true,
+  setNotisReservaciones: (value) => set(() => ({ notisReservations: value })),
+  notisGeneral: true,
+  setNotisGeneral: (value) => set(() => ({ notisGeneral: value })),
+
+  setInfoUser: (info) =>
+    set(() => {
+      console.log(info);
+      return {
+        id: info.id,
+        email: info.email,
+        name: info.name,
+        number: info.number,
+        moneySpent: info.moneySpent,
+        pointsEarned: info.pointsEarned,
+        pointsSpent: info.pointsSpent,
+        notisGiras: info.notisGiras,
+        notisSugerencias: info.notisSugerencias,
+        notisReservations: info.notisReservations,
+        notisGeneral: info.notisGeneral,
+        userLogged: true,
+        haveUserInfo: true,
+      };
+    }),
   badge: { discountRate: 0, badge: 'Sin insignia', minMoney: 0 },
   calcBadge: (num, badges) =>
     set(() => {

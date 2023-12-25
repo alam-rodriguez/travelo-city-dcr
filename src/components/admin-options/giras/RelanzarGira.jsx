@@ -37,7 +37,7 @@ import { getBadgesAndPointsOptions } from '../../../firebase/admin-option/app-op
 import { useInfoApp } from '../../../zustand/admin/app/app';
 
 const RelanzarGira = () => {
-  const { giras, setGiras } = girasListForAdmin();
+  const { girasActives, setGiras } = girasListForAdmin();
 
   const navigate = useNavigate();
 
@@ -208,8 +208,15 @@ const RelanzarGira = () => {
     editBadgesForThisGiraDescuentos,
   } = useCreateOrEditGira();
 
-  const { hasInfo, setSettingsBadgesAndPoints, costo, badges, valuePoint } =
-    useInfoApp();
+  const {
+    hasInfo,
+    setSettingsBadgesAndPoints,
+    costo,
+    badges,
+    valuePoint,
+    sendEmailsAboutNewGiras,
+  } = useInfoApp();
+
   useEffect(() => {
     if (hasInfo) return;
     const f = async () => {
@@ -230,7 +237,8 @@ const RelanzarGira = () => {
     console.log('first');
     // console.log(currentIdValue);
     // console.log(giras);
-    giras.forEach(async (gira) => {
+    console.log(girasActives);
+    girasActives.forEach(async (gira) => {
       if (gira.currentId == currentIdValue) {
         console.log('first');
         // console.log(gira);
@@ -498,17 +506,28 @@ const RelanzarGira = () => {
       console.log(newGira);
 
       const resCreateGira = await createGiraFirestore(newGira);
+
       console.log(resCreateGira);
+      console.log(resUploadImageCover);
+      console.log(resUploadImages);
+
+      const result = await ask({
+        title: '¿Quieres anunciar esta nueva gira?',
+        text: 'Quieres mandar un email de esta gira a tus usuarios ?',
+        confirmButtonText: 'Enviar emails',
+      });
+      if (result.isConfirmed) sendEmailsAboutNewGiras(currentId);
 
       if (resCreateGira && resUploadImageCover && resUploadImages) {
         resolve();
       } else {
         reject();
+        console.log('fff');
       }
     });
 
     promise
-      .then(() => {
+      .then(async () => {
         successAlert(
           'Gira relanzada correctamente',
           'Toda la gira ha sido relanzada exitosamente, tus usuarios ya la pueden ver.',
@@ -518,7 +537,7 @@ const RelanzarGira = () => {
       .catch(() => {
         errorAlert(
           'Error',
-          'Ha ocurrido un error al intentar relanzar la gira, intentelo de nuevo',
+          'Ha ocurrido un error al intentar relanzar la gira, intentelo de nuevo -------',
         );
       });
   };

@@ -16,12 +16,21 @@ import { useReservacionesGiras } from '../../../../zustand/admin/giras/giras-res
 import ReservacionItem from './giras-reservaciones-components/ReservacionP';
 import ReservacionP from './giras-reservaciones-components/ReservacionP';
 import ReservationItem from './giras-reservaciones-components/ReservationItem';
+import { useInfoApp } from '../../../../zustand/admin/app/app';
+import { useAlerts } from '../../../../zustand/alerts/alerts';
+import useSendEmails from '../../../../hooks/send-emails/useSendEmails';
 
 const ReservationsOfGira = () => {
   const { currentId } = useParams();
 
   const { reservaciones, setReservaciones, setReservacionSelecionada } =
     useReservacionesGiras();
+
+  const { emailsAboutReservationsWasSended, sendEmailsAboutReservations } =
+    useInfoApp();
+
+  const { ask, successAlert, errorAlert, waitingAlert, warningAlert } =
+    useAlerts();
 
   useEffect(() => {
     if (reservaciones.length > 0) return;
@@ -53,6 +62,23 @@ const ReservationsOfGira = () => {
     );
   };
 
+  const { sendEmailAboutReservations } = useSendEmails();
+
+  const sendEmails = async () => {
+    // const
+    // const res = await sendEmailsAboutReservations(currentId, reservaciones);
+    const want = await ask({
+      title: 'Quieres enviar mensajes?',
+      text: 'Estas seguro de que quieres enviar mensajes sobre esta gira a tus usuarios ?',
+      confirmButtonText: 'Enviar emails',
+    });
+
+    if (!want.isConfirmed) return;
+    waitingAlert('Enviando emails...');
+    await sendEmailAboutReservations(currentId, reservaciones);
+    successAlert('Emails enviados');
+  };
+
   return (
     <>
       <Headers text="Reservaciones de giras" link={-1} />
@@ -79,6 +105,13 @@ const ReservationsOfGira = () => {
             handleClick={handleClick}
           />
         ))}
+
+        <input
+          onClick={sendEmails}
+          className="bg-secondary border-0 shadow-lg w-100 bg-color text-white rounded-5 p-2 fs-5 fw-medium"
+          type="button"
+          value="Enviar emails de dias faltantes"
+        />
       </div>
     </>
   );

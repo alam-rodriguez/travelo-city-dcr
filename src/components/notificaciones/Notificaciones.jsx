@@ -21,6 +21,17 @@ const Notificaciones = () => {
     setMoneySpent,
     setPointsEarned,
     setPointsSpent,
+    setInfoUser,
+
+    notisGiras,
+    notisSugerencias,
+    notisReservations,
+    notisGeneral,
+
+    setNotisGiras,
+    setNotisSugerencias,
+    setNotisReservaciones,
+    setNotisGeneral,
   } = useInfoUser();
 
   useEffect(() => {
@@ -29,66 +40,71 @@ const Notificaciones = () => {
       const res = await getUserInfo(id);
       console.log(res);
       if (res != false) {
-        setId(res.id);
-        setName(res.name);
-        setEmail(res.email);
-        setNumber(res.number);
-        setMoneySpent(res.moneySpent);
-        setPointsEarned(res.pointsEarned);
-        setPointsSpent(res.pointsSpent);
+        setInfoUser(res);
+        // setId(res.id);
+        // setName(res.name);
+        // setEmail(res.email);
+        // setNumber(res.number);
+        // setMoneySpent(res.moneySpent);
+        // setPointsEarned(res.pointsEarned);
+        // setPointsSpent(res.pointsSpent);
+        // setNotificationsOfNewGiras(res.notisGiras);
+        // setNotificationsOfNewSugerencias(res.notisSugerencias);
+        // setNotificationsOfStateReservations(res.notisReservations);
       }
     };
     f();
   }, [id]);
 
-  const [notificationsOfNewGiras, setNotificationsOfNewGiras] = useState(true);
-  const [notificationsOfNewSugerencias, setNotificationsOfNewSugerencias] =
-    useState(true);
-  const [
-    notificationsOfStateReservations,
-    setNotificationsOfStateReservations,
-  ] = useState(true);
+  // const [notificationsOfNewGiras, setNotificationsOfNewGiras] = useState(true);
+  // const [notificationsOfNewSugerencias, setNotificationsOfNewSugerencias] =
+  //   useState(true);
+  // const [
+  //   notificationsOfStateReservations,
+  //   setNotificationsOfStateReservations,
+  // ] = useState(true);
 
-  const handleChangeNotificationsOfNewGiras = (value) => {
-    setNotificationsOfNewGiras(value);
-    saveInfo();
-  };
+  const handleChangeNotificationsOfNewGiras = (value) => setNotisGiras(value);
 
-  const handleChangeNotificationsOfNewSugerencias = (value) => {
-    setNotificationsOfNewSugerencias(value);
-    saveInfo();
-  };
+  const handleChangeNotificationsOfNewSugerencias = (value) =>
+    setNotisSugerencias(value);
 
-  const handleChangeNotificationsOfStateReservations = (value) => {
-    setNotificationsOfStateReservations(value);
-    saveInfo();
-  };
+  const handleChangeNotificationsOfStateReservations = (value) =>
+    setNotisReservaciones(value);
+
+  const handleChangeNotificationsOfGeneral = (value) => setNotisGeneral(value);
 
   const saveInfo = async () => {
-    if (!haveUserInfo) return;
+    const want = await ask({
+      title: 'Guardar configuracion',
+      text: 'Quieres guarda la configuracion de las notificaciones',
+      confirmButtonText: 'Guardar configuracion',
+    });
+    if (!want.isConfirmed) return;
+    waitingAlert('Guardando informacion...');
     const infoUser = await updateUserInfo({
       id,
-      notisGiras: notificationsOfNewGiras,
-      notisSugerencias: notificationsOfNewSugerencias,
-      notisReservations: notificationsOfStateReservations,
+      notisGiras,
+      notisSugerencias,
+      notisReservations,
+      notisGeneral,
     });
-    // waitingAlert('Guardando configuracion...');
-    console.log(infoUser);
-    if (infoUser) successAlert('Informacion guardada.');
+    if (infoUser)
+      successAlert(
+        'Informacion guardada.',
+        'la configuracion fue guardada correctamente.',
+      );
     else errorAlert('Error al guardar configuracion');
-
-    console.log(notificationsOfNewGiras);
-    console.log(notificationsOfNewSugerencias);
-    console.log(notificationsOfStateReservations);
   };
 
-  useEffect(() => {
-    saveInfo();
-  }, [
-    notificationsOfNewGiras,
-    notificationsOfNewSugerencias,
-    notificationsOfStateReservations,
-  ]);
+  // useEffect(() => {
+  //   saveInfo();
+  // }, [
+  //   notisGiras,
+  //   notisSugerencias,
+  //   notisReservations,
+  //   notisGeneral,
+  // ]);
 
   return (
     <div className="pt-4">
@@ -97,27 +113,47 @@ const Notificaciones = () => {
       <p className="my-5">
         Puedes activar las notificaciones para que te llegen alertas sobre las
         giras, las sugerencias y tus reservaciones, de esta manera estaras
-        altanto de tu adtividad y de nuestro app.
+        altanto de tus adtividades y de nuestro app.
       </p>
 
-      <Switch
-        id="active-points"
-        text="Recibir notificaciones de nuevas giras"
-        checked={notificationsOfNewGiras}
-        handleChange={handleChangeNotificationsOfNewGiras}
-      />
-      <Switch
-        id="active-points"
-        text="Recibir notificaciones de nuevas sugerencias"
-        checked={notificationsOfNewSugerencias}
-        handleChange={handleChangeNotificationsOfNewSugerencias}
-      />
-      <Switch
-        id="active-points"
-        text="Recibir notificaciones de estado de reservaciones"
-        checked={notificationsOfStateReservations}
-        handleChange={handleChangeNotificationsOfStateReservations}
-      />
+      {haveUserInfo ? (
+        <>
+          <Switch
+            id="notis-giras"
+            text="Recibir notificaciones de nuevas giras"
+            checked={notisGiras}
+            handleChange={handleChangeNotificationsOfNewGiras}
+          />
+          <Switch
+            id="notis-sugerencias"
+            text="Recibir notificaciones de nuevas sugerencias"
+            checked={notisSugerencias}
+            handleChange={handleChangeNotificationsOfNewSugerencias}
+          />
+          <Switch
+            id="notis-reservaciones"
+            text="Recibir notificaciones de estado de reservaciones"
+            checked={notisReservations}
+            handleChange={handleChangeNotificationsOfStateReservations}
+          />
+          <Switch
+            id="notis-general"
+            text="Recibir notificaciones en general"
+            checked={notisGeneral}
+            handleChange={handleChangeNotificationsOfGeneral}
+          />
+        </>
+      ) : null}
+
+      {haveUserInfo ? (
+        <input
+          onClick={saveInfo}
+          className="border-0 shadow-lg w-75 bg-color text-white rounded-5 p-2 fs-5 fw-medium position-fixed start-50 translate-middle"
+          style={{ bottom: 80 }}
+          type="button"
+          value="Guardar configuracion"
+        />
+      ) : null}
     </div>
   );
 };

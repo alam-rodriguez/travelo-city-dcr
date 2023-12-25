@@ -32,7 +32,8 @@ import {
   signOutFirebase,
 } from '../../firebase/authentication/authWithGoogle';
 import { useAlerts } from '../../zustand/alerts/alerts';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import ContactDev from './perfil-components/ContactDev';
 
 // Firebase
 // import { signOut } from '../../firebase/authentication/authWithGoogle';
@@ -75,6 +76,7 @@ const Perfil = () => {
 
     discountInMoney,
     setDiscountInMoney,
+    setInfoUser,
   } = useInfoUser();
 
   // Alerts
@@ -89,14 +91,15 @@ const Perfil = () => {
       const res = await getUserInfo(id);
       console.log(res);
       if (res != false) {
-        setName(res.name);
-        setEmail(res.email);
-        // setNameAndSurname(res.name);
-        setNumber(res.number);
+        setInfoUser(res);
+        // setName(res.name);
+        // setEmail(res.email);
+        // // setNameAndSurname(res.name);
         // setNumber(res.number);
-        setMoneySpent(res.moneySpent);
-        setPointsEarned(res.pointsEarned);
-        setPointsSpent(res.pointsSpent);
+        // // setNumber(res.number);
+        // setMoneySpent(res.moneySpent);
+        // setPointsEarned(res.pointsEarned);
+        // setPointsSpent(res.pointsSpent);
         // console.log(res);
         // setBadge(res.badge);
       }
@@ -173,6 +176,10 @@ const Perfil = () => {
         pointsEarned: 0,
         pointsSpent: 0,
         type: 'customer',
+        notisGiras: true,
+        notisSugerencias: true,
+        notisReservations: true,
+        notisGeneral: true,
       });
 
     if (infoUser != false && resUserInfo) {
@@ -261,7 +268,7 @@ const Perfil = () => {
 
       <PerfilOption
         icon={<IoMdNotifications className="fs-3" />}
-        text="Perfil"
+        text="Notificaciones"
         link="/notificaciones"
       />
 
@@ -307,12 +314,7 @@ const Perfil = () => {
 
       <BtnSignOut cerrarSeccion={cerrarSeccion} />
 
-      <p
-        className="text-center text-secondary fw-light"
-        style={{ fontSize: 10 }}
-      >
-        Desarrollado por Alam Rodriguez
-      </p>
+      <ContactDev />
     </div>
   );
 };
