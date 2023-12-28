@@ -16,7 +16,7 @@ const ImagesViwer = ({ giraId, coverImageId, imagesIds }) => {
   }, []);
 
   return (
-    <div className="position-absolute start-0 overflow-hidden- slider-container">
+    <div className="position-absolute start-50 translate-middle-x overflow-hidden- slider-container width-max">
       <div
         className="img-div d-flex- overflow-x-scroll- gap-1- bg-danger- w-100- slider "
         style={{ marginTop: 70, height: 240 }}

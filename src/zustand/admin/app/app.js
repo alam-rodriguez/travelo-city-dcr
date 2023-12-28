@@ -49,16 +49,21 @@ export const useInfoApp = create((set) => ({
       newArray[index].discountRate = rate;
       return { badges: newArray };
     }),
-
+  //!!
   setSettingsBadgesAndPoints: (settings) =>
-    set(() => ({
-      hasInfo: true,
-      activePoints: settings.activePoints,
-      costo: settings.costPoint,
-      valuePoint: settings.valuePoint,
-      activeBadges: settings.activeBadges,
-      badges: settings.badges,
-    })),
+    set(() => {
+      console.log(settings);
+      if (settings.activePoints == undefined) return {};
+      console.log(settings);
+      return {
+        hasInfo: true,
+        activePoints: settings.activePoints,
+        costo: settings.costPoint,
+        valuePoint: settings.valuePoint,
+        activeBadges: settings.activeBadges,
+        badges: settings.badges,
+      };
+    }),
 
   adminsEmails: [],
   semiAdminsEmails: [],
@@ -292,9 +297,12 @@ export const useInfoApp = create((set) => ({
     }),
   setContactAndAccounts: () => set(() => ({})),
   setContactAndBanksAccounts: (info) =>
-    set(() => ({
-      numberApp: info.numberApp,
-      emailApp: info.emailApp,
-      banksAccounts: info.banksAccounts,
-    })),
+    set(() => {
+      if (info.numberApp == undefined) return {};
+      return {
+        numberApp: info.numberApp,
+        emailApp: info.emailApp,
+        banksAccounts: info.banksAccounts,
+      };
+    }),
 }));

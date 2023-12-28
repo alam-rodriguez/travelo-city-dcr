@@ -407,6 +407,10 @@ const CreateGira = () => {
         imagesWithId,
       );
 
+      if (result.isConfirmed) {
+        sendEmailsAboutNewGiras(currentId);
+      }
+
       if (resCreateGira && resCoverImage && resUploadImages) resolve();
       else reject();
     });
@@ -422,9 +426,7 @@ const CreateGira = () => {
             text: 'Quieres mandar un email de esta gira a tus usuarios ?',
             confirmButtonText: 'Enviar emails',
           });
-          if (result.isConfirmed) {
-            sendEmailsAboutNewGiras(currentId);
-          }
+
           navigate('/giras');
         }
       })

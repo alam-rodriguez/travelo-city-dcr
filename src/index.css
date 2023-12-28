@@ -215,10 +215,16 @@ button:focus-visible {
 
 html {
   /* min-height: 100vh; */
-  background: red;
+
   height: -webkit-fill-available;
 }
 body {
+  background-color: red;
+  /* max-width: 200px; */
   min-height: 100vh;
   background: red;
+}
+
+.width-max {
+  width: 550px;
 }

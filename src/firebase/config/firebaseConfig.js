@@ -4,12 +4,12 @@ import { getStorage, ref } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDGcBD0sF3G7Qdk7XSZIcyTBAwc_Oj4tJA',
-  authDomain: 'travelo-city-dcr.firebaseapp.com',
-  projectId: 'travelo-city-dcr',
-  storageBucket: 'travelo-city-dcr.appspot.com',
-  messagingSenderId: '808080043077',
-  appId: '1:808080043077:web:51925ef296ce24004f472c',
+  apiKey: import.meta.env.VITE_REACT_APP_API_KEY,
+  authDomain: import.meta.env.VITE_REACT_APP_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_REACT_APP_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_REACT_APP_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_REACT_APP_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);

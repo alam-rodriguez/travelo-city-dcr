@@ -164,7 +164,12 @@ const MetodoPagoSeccion = ({
             <select
               className="bg-transparent w-100 border rounded-3 text-black rounded-1 p-2"
               onChange={handleChangePayMethodWhenUsePoints}
+              required={methodOfPay == 'points' ? true : false}
+              // value={methodOfPayWhenUsePoints}
             >
+              {methodOfPayWhenUsePoints == '' ? (
+                <option value="">Debes de seleccionar una opcion</option>
+              ) : null}
               <option value="efectivo">Con efectivo</option>
               <option value="tarjeta">Con transferencia</option>
             </select>

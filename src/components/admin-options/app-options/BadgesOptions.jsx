@@ -23,19 +23,6 @@ const BadgesAndPointsOptions = () => {
   const { ask, successAlert, errorAlert, waitingAlert, warningAlert } =
     useAlerts();
 
-  useEffect(() => {
-    console.log(badges);
-    if (hasInfo) return;
-    const f = async () => {
-      const res = await getBadgesAndPointsOptions();
-      if (res != false) {
-        setSettingsBadgesAndPoints(res);
-      }
-      console.log(res);
-    };
-    f();
-  }, []);
-
   const { hasInfo } = useInfoApp();
 
   const {
@@ -58,6 +45,20 @@ const BadgesAndPointsOptions = () => {
 
     setSettingsBadgesAndPoints,
   } = useInfoApp();
+
+  useEffect(() => {
+    console.log(badges);
+    console.log(badges);
+    if (hasInfo) return;
+    const f = async () => {
+      const res = await getBadgesAndPointsOptions();
+      if (res != false) {
+        setSettingsBadgesAndPoints(res);
+      }
+      console.log(res);
+    };
+    f();
+  }, []);
 
   const saveSettings = async () => {
     const want = await ask({

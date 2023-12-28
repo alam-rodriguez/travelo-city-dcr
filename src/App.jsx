@@ -183,6 +183,7 @@ function App() {
     setEmailsAdmins(res.admins);
     setContactAndBanksAccounts(res.contactAndBanksAccounts);
     setSettingsBadgesAndPoints(res.settignsPoints);
+    console.log(res.settignsPoints);
   };
 
   useEffect(() => {
@@ -204,7 +205,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!hasInfo) return;
+    if (!hasInfo || adminsEmails == undefined) return;
     adminsEmails.forEach((emailAdmin) => {
       if (emailAdmin == email) setType('admin');
     });
@@ -246,7 +247,7 @@ function App() {
   }, []);
 
   return (
-    <div className="App bg-light">
+    <div className="App bg-light width-max" style={{ margin: '0 auto' }}>
       <main
         className="container pb-5- pt-5- pb-4 bg-light"
         style={{ marginTop: 0 }}

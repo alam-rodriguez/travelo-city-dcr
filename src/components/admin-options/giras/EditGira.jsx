@@ -57,7 +57,7 @@ const EditGira = () => {
   // const { giras, setGiras, giraSelected, setGiraSelected, removeGiraSelected } =
   //   useGiras();
 
-  const { giras, setGiras } = girasListForAdmin();
+  const { giras, setGiras, girasActives } = girasListForAdmin();
   const { allGiras, setAllGiras } = girasListForAdmin();
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const EditGira = () => {
         const resGiras = await getAllGiras();
         console.log(resGiras);
         console.warn('Cargando todas las giras de BD');
-        setAllGiras(resGiras);
+        setGiras(resGiras);
       };
       f();
     }
@@ -79,15 +79,16 @@ const EditGira = () => {
 
   useEffect(() => {
     const dateInMilliseconds = new Date().getTime();
-    giras.map((gira) => {
+    console.log(girasActives);
+    girasActives.map((gira) => {
       if (gira.dateInMilliseconds < dateInMilliseconds) {
         console.log(gira.dateInMilliseconds);
         setViewBtnForSaveGira(true);
-        alert('Ya esta gira paso');
+        alenrt('Ya esta gira paso');
         return;
       }
     });
-  }, [giras]);
+  }, [girasActives]);
 
   const {
     id,

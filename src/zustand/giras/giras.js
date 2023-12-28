@@ -132,7 +132,7 @@ export const useInfoPeople = create((set) => ({
 
   methodOfPay: '',
   setMethodOfPay: (method) => set(() => ({ methodOfPay: method })),
-  methodOfPayWhenUsePoints: 'efectivo',
+  methodOfPayWhenUsePoints: '',
   setMethodOfPayWhenUsePoints: (method) =>
     set(() => ({ methodOfPayWhenUsePoints: method })),
   bankSelected: '',
