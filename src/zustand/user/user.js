@@ -29,6 +29,16 @@ export const useInfoUser = create((set) => ({
   notisGeneral: true,
   setNotisGeneral: (value) => set(() => ({ notisGeneral: value })),
 
+  allGiras: [],
+  setAllGiras: (giras) => set(() => ({ allGiras: giras })),
+
+  favoritesGirasId: [],
+  setFavoritesGirasId: (idsGiras) =>
+    set(() => ({ favoritesGirasId: idsGiras })),
+
+  favoritesGiras: [],
+  setFavoritesGiras: (giras) => set(() => ({ favoritesGiras: giras })),
+
   setInfoUser: (info) =>
     set(() => {
       console.log(info);
@@ -44,6 +54,7 @@ export const useInfoUser = create((set) => ({
         notisSugerencias: info.notisSugerencias,
         notisReservations: info.notisReservations,
         notisGeneral: info.notisGeneral,
+        favoritesGirasId: info.favoritesGiras,
         userLogged: true,
         haveUserInfo: true,
       };

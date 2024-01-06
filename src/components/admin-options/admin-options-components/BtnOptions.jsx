@@ -8,7 +8,7 @@ const BtnOptions = ({ text, link }) => {
 
   return (
     <button
-      className="bg-color border-0 p-2 fs-6 rounded-2 fw-medium"
+      className="bg-color border-0 p-2 fs-6 rounded-2 fw-medium text-white"
       style={{ width: '45%' }}
       onClick={() => navigate(link)}
     >

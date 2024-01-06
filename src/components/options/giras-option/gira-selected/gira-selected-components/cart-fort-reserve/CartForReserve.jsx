@@ -26,6 +26,7 @@ import {
 } from '../../../../../../zustand/giras/giras';
 import { useNavigate } from 'react-router-dom';
 import PriceView from './PriceView';
+import { useAlerts } from '../../../../../../zustand/alerts/alerts';
 
 const CartForReserve = ({
   title,
@@ -41,6 +42,7 @@ const CartForReserve = ({
   canCancelFree,
   freeCancellationLimit,
   dateLimitForCancel,
+  dateInMilliseconds,
 }) => {
   const navigate = useNavigate();
   const { setViewBtnSeleccionarEntrada: setViewBtn } =
@@ -58,6 +60,9 @@ const CartForReserve = ({
     decrementCountBabies,
     incrementCountBabies,
   } = useViewSeleccionarPersonas();
+
+  const { ask, successAlert, errorAlert, waitingAlert, infoAlert } =
+    useAlerts();
 
   const miRef = useRef();
 
@@ -84,7 +89,17 @@ const CartForReserve = ({
     setViewSeleccionarPersonas(true);
   };
 
-  const handleClickGoToReservarGira = () => navigate('/giras/reservar-gira');
+  const handleClickGoToReservarGira = () => {
+    const fechaInMilliseconds = new Date().getTime();
+    if (fechaInMilliseconds > dateInMilliseconds) {
+      infoAlert(
+        'La gira paso.',
+        'Ya esta gira paso, no puedes realizar la reservacion.',
+      );
+      return;
+    }
+    navigate('/giras/reservar-gira');
+  };
 
   return (
     <div

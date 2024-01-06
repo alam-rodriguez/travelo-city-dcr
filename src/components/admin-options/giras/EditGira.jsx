@@ -84,7 +84,7 @@ const EditGira = () => {
       if (gira.dateInMilliseconds < dateInMilliseconds) {
         console.log(gira.dateInMilliseconds);
         setViewBtnForSaveGira(true);
-        alenrt('Ya esta gira paso');
+        alert('Ya esta gira paso');
         return;
       }
     });

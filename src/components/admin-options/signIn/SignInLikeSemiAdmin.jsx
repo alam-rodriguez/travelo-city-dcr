@@ -11,10 +11,14 @@ import {
   getAdmins,
 } from '../../../firebase/admin-option/app-options/signInAdmins';
 
+// Hooks
+import useAdmin from '../../../hooks/app/admin/useAdmin';
+
 const SignInLikeSemiAdmin = () => {
+  const { passwordForSignIn } = useAdmin();
+
   useEffect(() => {
-    const f = async () => {};
-    f();
+    passwordForSignIn();
   }, []);
 
   const handleClickIniciarSesionLikeAdmin = async () => {
@@ -83,6 +87,11 @@ const SignInLikeSemiAdmin = () => {
       pointsEarned: 0,
       pointsSpent: 0,
       type: 'semi-admin',
+      favoritesGiras: [],
+      notisGiras: true,
+      notisSugerencias: true,
+      notisReservations: true,
+      notisGeneral: true,
     });
 
     admins.semiAdmins = [...admins.semiAdmins, infoUser.email];

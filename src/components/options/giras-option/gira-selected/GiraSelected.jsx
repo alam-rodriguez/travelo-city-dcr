@@ -70,6 +70,7 @@ const GiraSelected = () => {
     useInfoPeople();
 
   useEffect(() => {
+    console.log(giraSelected);
     console.log(giraSelected.dateInMilliseconds);
     if (giraSelected.id != undefined) return;
     // console.log(giraSelected.hourInformation.amORpm);
@@ -77,7 +78,7 @@ const GiraSelected = () => {
     console.log('sigio');
     if (giraSelected.id == undefined) {
       const f = async () => {
-        console.log(giraSelected.id);
+        console.log(giraSelected);
         console.warn('Buscando gira por Id');
         const gira = await getGira(currentId);
         setGiraSelected(gira);
@@ -106,6 +107,7 @@ const GiraSelected = () => {
   return (
     <div className="scale-up-center-" onClick={() => console.log(giraSelected)}>
       <HeaderSelectedGira
+        currentId={giraSelected.currentId}
         text={
           !viewDescription
             ? giraSelected.title ?? ''
@@ -177,6 +179,7 @@ const GiraSelected = () => {
         freeCancellationLimit={giraSelected.freeCancellationLimit ?? 0}
         dateLimitForCancel={giraSelected.dateLimitForCancel ?? ''}
         giraSelected={giraSelected ?? {}}
+        dateInMilliseconds={giraSelected.dateInMilliseconds}
       />
 
       <BtnSeleccionarEntradas />

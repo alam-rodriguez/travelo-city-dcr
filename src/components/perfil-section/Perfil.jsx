@@ -34,6 +34,7 @@ import {
 import { useAlerts } from '../../zustand/alerts/alerts';
 import { Link, useNavigate } from 'react-router-dom';
 import ContactDev from './perfil-components/ContactDev';
+import useUserInfoHook from '../../hooks/user/useUserInfoHook';
 
 // Firebase
 // import { signOut } from '../../firebase/authentication/authWithGoogle';
@@ -81,6 +82,8 @@ const Perfil = () => {
 
   // Alerts
   const { ask, successAlert, errorAlert, waitingAlert } = useAlerts();
+
+  const { getUserInfoFunc, setUserInfoFunc } = useUserInfoHook();
 
   useEffect(() => {
     if (haveUserInfo || id == '') return;
@@ -160,46 +163,47 @@ const Perfil = () => {
   //   return badgeSelected;
   // };
 
-  const handleClickIniciarSesion = async () => {
-    waitingAlert('Iniciando sesion');
-    // const email = await signInWithGoogle();
-    const infoUser = await signInWithGoogle();
-    const userExist = await existUser(infoUser.id);
-    let resUserInfo = true;
-    if (!userExist)
-      resUserInfo = await setUserInfo({
-        email: infoUser.email,
-        id: infoUser.id,
-        moneySpent: 0,
-        name: '',
-        number: 0,
-        pointsEarned: 0,
-        pointsSpent: 0,
-        type: 'customer',
-        notisGiras: true,
-        notisSugerencias: true,
-        notisReservations: true,
-        notisGeneral: true,
-      });
+  // const handleClickIniciarSesion = async () => {
+  //   waitingAlert('Iniciando sesion');
+  //   // const email = await signInWithGoogle();
+  //   const infoUser = await signInWithGoogle();
+  //   const userExist = await existUser(infoUser.id);
+  //   let resUserInfo = true;
+  //   if (!userExist)
+  //     resUserInfo = await setUserInfo({
+  //       email: infoUser.email,
+  //       id: infoUser.id,
+  //       moneySpent: 0,
+  //       name: '',
+  //       number: 0,
+  //       pointsEarned: 0,
+  //       pointsSpent: 0,
+  //       type: 'customer',
+  //       notisGiras: true,
+  //       notisSugerencias: true,
+  //       notisReservations: true,
+  //       notisGeneral: true,
 
-    if (infoUser != false && resUserInfo) {
-      await successAlert('Has iniciado sesion correctamente.');
-      // navigate('/');
-      window.location.reload();
-      // window.scrollTo({ top: 0, behavior: 'instant' });
-    } else errorAlert('Ha ocurrido un error al intentar iniciar sesion.');
+  //     });
 
-    console.log(email);
+  //   if (infoUser != false && resUserInfo) {
+  //     await successAlert('Has iniciado sesion correctamente.');
+  //     // navigate('/');
+  //     window.location.reload();
+  //     // window.scrollTo({ top: 0, behavior: 'instant' });
+  //   } else errorAlert('Ha ocurrido un error al intentar iniciar sesion.');
 
-    // if (infoUser != false) {
-    //   setEmail(infoUser.email);
-    //   setId(infoUser.id);
-    // }
+  //   console.log(email);
 
-    // if (resUserInfo)
-    //   successAlert('Registrado', 'Te haz registrado correctamente.');
-    // else errorAlert('Error', 'Ha ucurrido un error al intentar registrarte');
-  };
+  //   // if (infoUser != false) {
+  //   //   setEmail(infoUser.email);
+  //   //   setId(infoUser.id);
+  //   // }
+
+  //   // if (resUserInfo)
+  //   //   successAlert('Registrado', 'Te haz registrado correctamente.');
+  //   // else errorAlert('Error', 'Ha ucurrido un error al intentar registrarte');
+  // };
 
   const cerrarSeccion = async () => {
     const wantCerrarSeccion = await ask({
@@ -234,7 +238,7 @@ const Perfil = () => {
           className="form-control bg-primary text-white rounded-5"
           type="button"
           value="Iniciar sesion o crear una cuenta"
-          onClick={handleClickIniciarSesion}
+          onClick={setUserInfoFunc}
         />
 
         <input

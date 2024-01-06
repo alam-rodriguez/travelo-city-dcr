@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // Icons
 import { BiSearchAlt2 } from 'react-icons/bi';
+import { IoMdSearch } from 'react-icons/io';
 
 // Components
 import OptionsApp from '../inicio/options-app/OptionsApp';
-import { IoMdSearch } from 'react-icons/io';
+import FavoritesGiras from './FavoritesGiras';
+
+// Hooks
+import useUserInfoHook from '../../hooks/user/useUserInfoHook';
+
+// Zustand
+import { useInfoUser } from '../../zustand/user/user';
 
 const Buscar = () => {
   return (
@@ -21,6 +28,7 @@ const Buscar = () => {
           Tus busquedas recientes apareceran aqui.
         </p>
       </div>
+      <FavoritesGiras />
     </div>
   );
 };

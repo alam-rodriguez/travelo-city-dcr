@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 // Icons
 import { HiOutlineHeart } from 'react-icons/hi';
 import { TbClockHour5 } from 'react-icons/tb';
+import { FaHeart } from 'react-icons/fa';
 
 // React-router-dom
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +14,7 @@ import { useGiras, useImages } from '../../../zustand/giras/giras';
 // Firebase
 import { getImage } from '../../../firebase/firestoreGiras/imagenesGira';
 import { useInfoUser } from '../../../zustand/user/user';
+import useUserInfoHook from '../../../hooks/user/useUserInfoHook';
 
 const GiraItem = ({
   giraId,
@@ -35,7 +37,9 @@ const GiraItem = ({
 
   const { images, addImage } = useImages();
 
-  const { userSawGiras } = useInfoUser();
+  const { favoritesGirasId, userSawGiras } = useInfoUser();
+
+  const { addOrDeleteFaboriteGira } = useUserInfoHook();
 
   useEffect(() => {
     // console.log(imgPath);
@@ -72,11 +76,33 @@ const GiraItem = ({
 
   const { setGiraSelected } = useGiras();
 
-  const handleClickGira = () => {
-    console.log(gira);
+  const handleClickGira = (e) => {
+    // return;
+    console.log(e.target.classList[0]);
+    if (
+      e.target.classList[0] == 'heart' ||
+      e.target.classList[0] == undefined
+    ) {
+      addOrDeleteFaboriteGira(currentId);
+      return;
+    }
+
+    // console.log(gira);
     setGiraSelected(gira);
     navigate(`/giras/${currentId}`);
   };
+
+  const handleClickAddToFavorite = () => {
+    console.log(currentId);
+  };
+
+  const [isFavorite, setIsFavorite] = useState(false);
+  useEffect(() => {
+    let isFavorite = false;
+    if (favoritesGirasId.includes(currentId)) isFavorite = true;
+    else isFavorite = false;
+    setIsFavorite(isFavorite);
+  }, [favoritesGirasId]);
 
   if (!gira.showGira) return <></>;
 
@@ -84,7 +110,7 @@ const GiraItem = ({
     <div
       className={`${
         !userSawGiras ? 'scale-up-center' : ''
-      } rounded-4 overflow-hidden border position-relative my-2 shadow overflow-y-scroll ${
+      } z-1 rounded-4 overflow-hidden border position-relative my-2 shadow overflow-y-scroll ${
         giraIsDone && (userType == 'admin' || userType == 'semi-admin')
           ? 'bg-danger-subtle'
           : ''
@@ -93,6 +119,17 @@ const GiraItem = ({
       // style={{ width: '48%', height: 300 }}
       onClick={handleClickGira}
     >
+      <div
+        className="bg-white position-absolute rounded-circle d-flex justify-content-center align-items-center"
+        style={{ top: 10, right: 10, height: 30, width: 30 }}
+        // onClick={handleClickAddToFavorite}
+      >
+        {!isFavorite ? (
+          <HiOutlineHeart className="heart fs-3 -text-danger" />
+        ) : (
+          <FaHeart className="heart fs-5 text-danger" />
+        )}
+      </div>
       {images[giraId] != undefined && images[giraId][imgId] != undefined ? (
         <img
           src={images[giraId][imgId]}
@@ -104,12 +141,6 @@ const GiraItem = ({
         <div className="w-100" style={{ height: '37%' }}></div>
       )}
       <div className="m-2">
-        <div
-          className="position-absolute bg-white rounded-circle d-flex justify-content-center align-items-center"
-          style={{ top: 10, right: 10, height: 30, width: 30 }}
-        >
-          <HiOutlineHeart className="fs-3" />
-        </div>
         <p className="m-0 fw-bold mb-2" style={{ fontSize: 12 }}>
           {title}
         </p>

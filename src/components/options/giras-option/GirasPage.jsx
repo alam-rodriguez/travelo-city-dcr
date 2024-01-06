@@ -13,13 +13,17 @@ import { getGiras } from '../../../firebase/firestoreGiras/giras';
 import { useInfoUser } from '../../../zustand/user/user';
 import GiraItemChargin from './GiraItemChargin';
 import { useInfoApp } from '../../../zustand/admin/app/app';
+import useUserInfoHook from '../../../hooks/user/useUserInfoHook';
 
 const GirasPage = () => {
   const { giras, setGiras } = useGiras();
 
   const { images, addImage } = useImages();
 
-  const { isAdmin, userSawGiras, setTrueUserSawGiras, type } = useInfoUser();
+  const { id, isAdmin, userSawGiras, setTrueUserSawGiras, type } =
+    useInfoUser();
+
+  const { getUserInfoFunc, setUserInfoFunc } = useUserInfoHook();
 
   // useEffect(() => {
   //   console.log(giras);
@@ -52,6 +56,14 @@ const GirasPage = () => {
   //     f();
   //   }
   // }, []);
+
+  useEffect(() => {
+    // const f = async () => {
+    getUserInfoFunc();
+    // console.log(res);
+    // };
+    // f();
+  }, [id]);
 
   return (
     <div className="mb-3">
